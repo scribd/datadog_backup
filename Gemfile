@@ -1,6 +1,6 @@
 source 'https://rubygems.org'
 
-gem 'dogapi'
+gem 'dogapi', '~> 1.40'
 
 group :development, :test do 
   gem 'pry'

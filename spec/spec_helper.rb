@@ -1,6 +1,7 @@
 $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 
 require 'datadog_sync'
+require 'logger'
 
 SPEC_ROOT = File.expand_path(File.dirname(__FILE__))
 WORK_ROOT = File.expand_path(File.join(SPEC_ROOT, '..'))
