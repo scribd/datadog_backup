@@ -97,6 +97,7 @@ describe DatadogSync::Dashboards do
 
   describe '#filename' do
     subject { dashboards.filename('abc-123-def') }
-    it { is_expected.to eq('output/abc-123-def.rb') }
+    it { is_expected.to eq('output/abc-123-def.json') }
   end
+
 end

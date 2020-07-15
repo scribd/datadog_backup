@@ -19,7 +19,7 @@ LOGGER.level = Logger::INFO
 @options = {
   action: nil,
   client: nil,
-  output_dir: ENV.fetch('PWD'),
+  output_dir: File.join(ENV.fetch('PWD'), 'output'),
   resources: [DatadogSync::Dashboards, DatadogSync::Monitors],
   logger: LOGGER
 }

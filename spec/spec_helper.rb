@@ -3,6 +3,12 @@ $:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
 require 'datadog_sync'
 require 'logger'
 
+$stdout.sync = $stderr.sync = true
+unless defined?(LOGGER)
+  LOGGER = Logger.new($stderr)
+end
+LOGGER.level = Logger::INFO
+
 SPEC_ROOT = File.expand_path(File.dirname(__FILE__))
 WORK_ROOT = File.expand_path(File.join(SPEC_ROOT, '..'))
 

@@ -1,9 +1,8 @@
 source 'https://rubygems.org'
 
-gem 'dogapi', '~> 1.40'
+gemspec
 
 group :development, :test do 
-  gem 'pry'
   gem 'rspec'
   gem 'guard-rspec'
   gem 'climate_control'

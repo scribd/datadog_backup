@@ -8,12 +8,12 @@ module DatadogSync
     def backup!
       all_boards.map do |board|
         id = board['id']
-        marshall(get_board(id), filename(id))
+        write(jsondump(get_board(id)), filename(id))
       end
     end
 
     def filename(id)
-      File.join(output_dir, id + '.rb')
+      File.join(output_dir, id + '.json')
     end
 
     def get_board(id)

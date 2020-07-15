@@ -53,12 +53,39 @@ describe DatadogSync::Core do
     end
   end
 
-  describe '#marshall' do
-    subject { core.marshall('abc123', 'output/abc-123-def.rb') }
+  describe '#initialize' do
+    subject { core }
+
+    context 'output directory does not exist' do
+      it 'makes the directory' do
+        expect(FileUtils).to receive(:mkdir_p).with('output')
+        subject
+      end
+    end
+
+  end
+
+  describe '#write' do
+    subject { core.write('abc123', 'output/abc-123-def.json') }
+    let(:file_like_object) { double }
+
     it 'writes a file to abc-123-def.rb' do
-      allow(File).to receive(:open).with('output/abc-123-def.rb', 'w')
-      expect_any_instance_of(File).to receive(:write).with('abc123')
+      allow(File).to receive(:open).and_call_original
+      allow(File).to receive(:open).with('output/abc-123-def.json', 'w').and_return(file_like_object)
+      allow(file_like_object).to receive(:write)
+      allow(file_like_object).to receive(:close)
+
       subject
+
+      expect(file_like_object).to have_received(:write).with('abc123')
     end
   end
+
+
+  describe '#jsondump' do
+    subject { core.jsondump(a: :b) }
+    it { is_expected.to eq( %Q|{\n  "a": "b"\n}| ) }
+  end
+
+
 end
