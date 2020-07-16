@@ -13,7 +13,7 @@ module DatadogSync
     end
 
     def filename(id)
-      File.join(output_dir, id + '.json')
+      File.join(output_dir, 'dashboards', id + '.json')
     end
 
     def get_board(id)

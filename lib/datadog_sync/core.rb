@@ -8,10 +8,6 @@ module DatadogSync
       @opts[:action]
     end
 
-    def action!
-      self.send(action.to_sym)
-    end
-
     def backup
       self.backup!
     end
@@ -35,7 +31,7 @@ module DatadogSync
     end
 
     def execute!
-      action!
+      self.send(action.to_sym)
     end
 
     ##
@@ -44,7 +40,9 @@ module DatadogSync
 
     def initialize(opts)
       @opts = opts
-      ::FileUtils.mkdir_p(output_dir)
+      output_dirs.map do |dir|
+        ::FileUtils.mkdir_p(dir)
+      end
     end
 
     def jsondump(object)
@@ -55,18 +53,17 @@ module DatadogSync
       @opts[:logger]
     end
 
-    def write(data, filename)
-      logger.info "Backing up #{filename}"
-      file = ::File.open(filename,'w')
-      file.write(data)
-    ensure
-      file.close
-    end
 
     def output_dir
       @opts[:output_dir]
+
     end
 
+    def output_dirs
+      %w[ dashboards monitors ].map do |subdir|
+        File.join(output_dir, subdir)
+      end
+    end
 
     def restore
       self.restore!
@@ -75,7 +72,14 @@ module DatadogSync
     ##
     # subclass is expected to implement #restore!
     ##
-    #
+
+    def write(data, filename)
+      logger.info "Backing up #{filename}"
+      file = ::File.open(filename,'w')
+      file.write(data)
+    ensure
+      file.close
+    end
 
   end
 end

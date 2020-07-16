@@ -2,26 +2,25 @@ require 'spec_helper'
 
 describe DatadogSync::Core do
   let(:client_double) { double }
+  let(:tempdir) { Dir.mktmpdir }
   let(:core) {
     DatadogSync::Core.new(
       action: 'backup',
       client: client_double,
-      output_dir: 'output',
+      output_dir: tempdir,
       resources: [],
       logger: Logger.new('/dev/null')
     )
   }
 
-  describe '#action' do
-    subject { core.action }
-    it { is_expected.to eq 'backup' }
-  end
 
-  describe '#action!' do
+  describe '#execute!' do
+    subject { core.execute! }
+
     it 'is expected to call the #backup method' do
-    expect(core).to receive(:backup)
+      expect(core).to receive(:backup)
 
-    core.action!
+      subject
     end
   end
 
@@ -55,12 +54,10 @@ describe DatadogSync::Core do
 
   describe '#initialize' do
     subject { core }
-
-    context 'output directory does not exist' do
-      it 'makes the directory' do
-        expect(FileUtils).to receive(:mkdir_p).with('output')
-        subject
-      end
+    it 'makes the subdirectories' do
+      expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/dashboards")
+      expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/monitors")
+      subject
     end
 
   end
