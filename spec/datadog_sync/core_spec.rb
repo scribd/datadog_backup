@@ -17,7 +17,7 @@ describe DatadogSync::Core do
     subject { core.execute! }
 
     it 'is expected to call the #backup method' do
-      expect(core).to receive(:backup)
+      expect(core).to receive(:backup).and_return({})
 
       subject
     end

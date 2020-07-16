@@ -67,12 +67,9 @@ describe DatadogSync::Dashboards do
   end
 
   describe '#backup!' do
-    subject { dashboards.backup! }
+    subject { dashboards.backup!.map(&:class) }
 
-    it 'subsequently calls each id' do
-      subject
-      expect(client_double).to have_received(:get_board).with('abc-123-def')
-    end
+    it { is_expected.to eq [Concurrent::Future] }
   end
 
   describe '#all_boards' do

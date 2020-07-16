@@ -3,6 +3,7 @@ $:.unshift(File.expand_path('../lib', File.dirname(__FILE__)))
 require 'datadog_sync'
 require 'logger'
 require 'tmpdir'
+require 'dogapi'
 
 $stdout.sync = $stderr.sync = true
 LOGGER = Logger.new($stderr) unless defined?(LOGGER)

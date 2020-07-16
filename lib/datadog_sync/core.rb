@@ -1,8 +1,10 @@
 require 'fileutils'
 require 'multi_json'
+require 'concurrent-ruby'
 
 module DatadogSync
   class Core
+
     def action
       @opts[:action]
     end
@@ -27,10 +29,14 @@ module DatadogSync
         raise "Method #{method} failed with error #{response}"
       end
       response[1]
+    rescue ::Net::OpenTimeout
+      sleep(0.1)
+      retry
     end
 
     def execute!
-      send(action.to_sym)
+      futures = send(action.to_sym)
+      logger.info(futures.map(&:value!))
     end
 
     ##
@@ -38,6 +44,7 @@ module DatadogSync
     ##
 
     def initialize(opts)
+      super()
       @opts = opts
       output_dirs.map do |dir|
         ::FileUtils.mkdir_p(dir)
