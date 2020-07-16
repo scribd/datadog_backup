@@ -3,7 +3,7 @@ require 'spec_helper'
 describe DatadogSync::Core do
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
-  let(:core) {
+  let(:core) do
     DatadogSync::Core.new(
       action: 'backup',
       client: client_double,
@@ -11,8 +11,7 @@ describe DatadogSync::Core do
       resources: [],
       logger: Logger.new('/dev/null')
     )
-  }
-
+  end
 
   describe '#execute!' do
     subject { core.execute! }
@@ -29,25 +28,24 @@ describe DatadogSync::Core do
     it { is_expected.to eq client_double }
   end
 
-
   describe '#client_with_200' do
     subject { core.client_with_200(:get_all_boards) }
 
     context 'with 200' do
-      before(:example) {
-        allow(client_double).to receive(:get_all_boards).and_return(['200', {foo: :bar}])
-      }
+      before(:example) do
+        allow(client_double).to receive(:get_all_boards).and_return(['200', { foo: :bar }])
+      end
 
-      it { is_expected.to eq({foo: :bar}) }
+      it { is_expected.to eq({ foo: :bar }) }
     end
 
     context 'with not 200' do
-      before(:example) {
+      before(:example) do
         allow(client_double).to receive(:get_all_boards).and_return(['401', {}])
-      }
+      end
 
       it 'raises an error' do
-        expect{subject}.to raise_error(RuntimeError)
+        expect { subject }.to raise_error(RuntimeError)
       end
     end
   end
@@ -59,7 +57,6 @@ describe DatadogSync::Core do
       expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/monitors")
       subject
     end
-
   end
 
   describe '#write' do
@@ -78,11 +75,8 @@ describe DatadogSync::Core do
     end
   end
 
-
   describe '#jsondump' do
     subject { core.jsondump(a: :b) }
-    it { is_expected.to eq( %Q|{\n  "a": "b"\n}| ) }
+    it { is_expected.to eq(%({\n  "a": "b"\n})) }
   end
-
-
 end

@@ -1,16 +1,14 @@
-$:.unshift(File.expand_path("../lib", File.dirname(__FILE__)))
+$:.unshift(File.expand_path('../lib', File.dirname(__FILE__)))
 
 require 'datadog_sync'
 require 'logger'
 require 'tmpdir'
 
 $stdout.sync = $stderr.sync = true
-unless defined?(LOGGER)
-  LOGGER = Logger.new($stderr)
-end
+LOGGER = Logger.new($stderr) unless defined?(LOGGER)
 LOGGER.level = Logger::INFO
 
-SPEC_ROOT = File.expand_path(File.dirname(__FILE__))
+SPEC_ROOT = __dir__
 WORK_ROOT = File.expand_path(File.join(SPEC_ROOT, '..'))
 
 RSpec.configure do |config|

@@ -4,30 +4,28 @@ require 'timeout'
 
 describe 'bin/datadog_sync' do
   # Contract Or[nil,String] => self
-  def run_bin(args = "", input = nil)
+  def run_bin(args = '', input = nil)
     status = nil
-    output = ""
+    output = ''
     cmd = "bin/datadog_sync #{args}"
     Open3.popen2e(cmd) do |i, oe, t|
-      begin
-        pid = t.pid
+      pid = t.pid
 
-        if input
-          i.puts input
-          i.close
-        end
-
-        Timeout.timeout(0.5) do
-          oe.each { |v|
-            output << v
-          }
-        end
-      rescue Timeout::Error
-        LOGGER.warn "Timing out #{t.inspect} after 1 second"
-        Process.kill(15, pid)
-      ensure
-        status = t.value
+      if input
+        i.puts input
+        i.close
       end
+
+      Timeout.timeout(0.5) do
+        oe.each do |v|
+          output << v
+        end
+      end
+    rescue Timeout::Error
+      LOGGER.warn "Timing out #{t.inspect} after 1 second"
+      Process.kill(15, pid)
+    ensure
+      status = t.value
     end
     [output, status]
   end
@@ -46,14 +44,14 @@ describe 'bin/datadog_sync' do
   required_vars.map do |v|
     it "dies unless given ENV[#{v}]" do
       ClimateControl.env[v] = nil
-      out_err, status = run_bin("backup")
+      out_err, status = run_bin('backup')
       expect(out_err).to match(/#{v} must be specified/)
       expect(status).to_not be_success
     end
   end
 
   it 'supplies help' do
-    out_err, status = run_bin("--help")
+    out_err, status = run_bin('--help')
     expect(out_err).to match(/Usage: datadog_sync/)
     expect(status).to be_success
   end

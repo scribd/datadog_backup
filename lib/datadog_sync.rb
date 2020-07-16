@@ -1,5 +1,4 @@
 module DatadogSync
-
 end
 
 require_relative 'datadog_sync/core'

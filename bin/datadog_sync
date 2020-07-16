@@ -9,9 +9,7 @@ require 'datadog_sync'
 require 'dogapi'
 
 $stdout.sync = $stderr.sync = true
-unless defined?(LOGGER)
-  LOGGER = Logger.new($stderr)
-end
+LOGGER = Logger.new($stderr) unless defined?(LOGGER)
 LOGGER.level = Logger::INFO
 
 ##
@@ -53,7 +51,7 @@ def prereqs
   opts.parse!
 
   @options[:action] = ARGV.first
-  if ['backup', 'restore'].include?(@options[:action])
+  if %w[backup restore].include?(@options[:action])
   else
     puts opts
     exit 0
@@ -68,24 +66,20 @@ def prereqs
   end
 end
 
-
 def main
-  begin
-    @options[:client] = Dogapi::Client.new(
-      ENV.fetch('DATADOG_API_KEY'),
-      ENV.fetch('DATADOG_APP_KEY')
-    )
-    @options[:resources].each do |resource|
-      resource.new(@options).execute!
-    end
-
-  rescue => e
-    LOGGER.error "Unhandled exception #{e.class}: #{e.message}"
-    e.backtrace.each do |v|
-      LOGGER.debug v
-    end
-    raise
+  @options[:client] = Dogapi::Client.new(
+    ENV.fetch('DATADOG_API_KEY'),
+    ENV.fetch('DATADOG_APP_KEY')
+  )
+  @options[:resources].each do |resource|
+    resource.new(@options).execute!
   end
+rescue StandardError => e
+  LOGGER.error "Unhandled exception #{e.class}: #{e.message}"
+  e.backtrace.each do |v|
+    LOGGER.debug v
+  end
+  raise
 end
 
 prereqs

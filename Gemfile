@@ -2,9 +2,9 @@ source 'https://rubygems.org'
 
 gemspec
 
-group :development, :test do 
-  gem 'rspec'
-  gem 'guard-rspec'
+group :development, :test do
   gem 'climate_control'
+  gem 'guard-rspec'
+  gem 'rspec'
   gem 'rubocop'
 end

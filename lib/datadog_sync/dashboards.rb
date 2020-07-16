@@ -1,6 +1,5 @@
 module DatadogSync
   class Dashboards < Core
-
     def all_boards
       client_with_200(:get_all_boards).fetch('dashboards')
     end
@@ -20,9 +19,6 @@ module DatadogSync
       client_with_200(:get_board, id)
     end
 
-
-    def restore!
-    end
-
+    def restore!; end
   end
 end

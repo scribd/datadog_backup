@@ -2,7 +2,7 @@ require 'spec_helper'
 
 describe DatadogSync::Dashboards do
   let(:client_double) { double }
-  let(:dashboards) {
+  let(:dashboards) do
     DatadogSync::Dashboards.new(
       action: 'backup',
       client: client_double,
@@ -10,15 +10,15 @@ describe DatadogSync::Dashboards do
       resources: [],
       logger: Logger.new('/dev/null')
     )
-  }
-  let(:dashboard_description) {
+  end
+  let(:dashboard_description) do
     {
       'description' => 'bar',
       'id' => 'abc-123-def',
       'title' => 'foo'
     }
-  }
-  let(:all_boards) {
+  end
+  let(:all_boards) do
     [
       '200',
       {
@@ -27,18 +27,18 @@ describe DatadogSync::Dashboards do
         ]
       }
     ]
-  }
-  let(:example_dashboard) {
+  end
+  let(:example_dashboard) do
     [
       '200',
       board_abc_123_def
     ]
-  }
-  let(:board_abc_123_def) {
+  end
+  let(:board_abc_123_def) do
     {
       'graphs' => [
         {
-          'definition' =>  {
+          'definition' => {
             'viz' => 'timeseries',
             'requests' => [
               {
@@ -53,19 +53,17 @@ describe DatadogSync::Dashboards do
       'description' => 'example dashboard',
       'title' => 'example dashboard'
     }
-  }
-  before(:example) {
+  end
+  before(:example) do
     allow(client_double).to receive(:get_all_boards).and_return(all_boards)
     allow(client_double).to receive(:get_board).and_return(example_dashboard)
-  }
+  end
 
   describe '#backup' do
     it 'is expected to call the #backup! method' do
       expect(dashboards).to receive(:backup!)
       dashboards.backup
     end
-
-
   end
 
   describe '#backup!' do
@@ -85,7 +83,6 @@ describe DatadogSync::Dashboards do
       expect(client_double).to have_received(:get_all_boards)
     end
 
-
     it { is_expected.to eq [dashboard_description] }
   end
 
@@ -99,5 +96,4 @@ describe DatadogSync::Dashboards do
     subject { dashboards.filename('abc-123-def') }
     it { is_expected.to eq('output/dashboards/abc-123-def.json') }
   end
-
 end
