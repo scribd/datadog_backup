@@ -14,10 +14,6 @@ module DatadogSync
       end
     end
 
-    def filename(id)
-      ::File.join(output_dir, 'dashboards', id + '.json')
-    end
-
     def get_and_write(id)
       write(jsondump(get_board(id)), filename(id))
     end

@@ -39,9 +39,10 @@ module DatadogSync
       logger.info(futures.map(&:value!))
     end
 
-    ##
-    # subclass is expected to implement #filename
-    ##
+    def filename(id)
+      ::File.join(output_dir, myclass, "#{id}.json")
+    end
+
 
     def initialize(opts)
       super()
@@ -57,6 +58,10 @@ module DatadogSync
 
     def logger
       @opts[:logger]
+    end
+
+    def myclass
+      self.class.to_s.split(':').last.downcase
     end
 
     def output_dir

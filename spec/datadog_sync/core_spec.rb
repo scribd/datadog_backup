@@ -59,13 +59,18 @@ describe DatadogSync::Core do
     end
   end
 
+  describe '#myclass' do
+    subject { core.myclass }
+    it { is_expected.to eq 'core' }
+  end
+
   describe '#write' do
-    subject { core.write('abc123', 'output/abc-123-def.json') }
+    subject { core.write('abc123', "#{tempdir}/dashboards/abc-123-def.json") }
     let(:file_like_object) { double }
 
     it 'writes a file to abc-123-def.rb' do
       allow(File).to receive(:open).and_call_original
-      allow(File).to receive(:open).with('output/abc-123-def.json', 'w').and_return(file_like_object)
+      allow(File).to receive(:open).with("#{tempdir}/dashboards/abc-123-def.json", 'w').and_return(file_like_object)
       allow(file_like_object).to receive(:write)
       allow(file_like_object).to receive(:close)
 
