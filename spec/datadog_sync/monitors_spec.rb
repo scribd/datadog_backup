@@ -48,10 +48,13 @@ describe DatadogSync::Monitors do
   describe '#backup!' do
     subject { monitors.backup! }
 
-    it 'subsequently calls each id' do
-      allow(monitors).to receive(:write)
-      subject
-      expect(monitors).to have_received(:write).with(monitors.jsondump(monitor_description),monitors.filename(123455))
+    it 'is expected to create a file' do
+      file = double('file')
+      allow(File).to receive(:open).with(monitors.filename(123455), 'w').and_return( file )
+      expect(file).to receive(:write).with(::MultiJson.dump(monitor_description, pretty: true))
+      allow(file).to receive(:close)
+
+      monitors.backup!.map(&:value!)
     end
   end
 

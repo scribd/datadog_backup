@@ -2,11 +2,12 @@ require 'spec_helper'
 
 describe DatadogSync::Dashboards do
   let(:client_double) { double }
+  let(:tempdir) { Dir.mktmpdir }
   let(:dashboards) do
     DatadogSync::Dashboards.new(
       action: 'backup',
       client: client_double,
-      output_dir: 'output',
+      output_dir: tempdir,
       resources: [],
       logger: Logger.new('/dev/null')
     )
@@ -67,9 +68,16 @@ describe DatadogSync::Dashboards do
   end
 
   describe '#backup!' do
-    subject { dashboards.backup!.map(&:class) }
+    subject { dashboards.backup! }
 
-    it { is_expected.to eq [Concurrent::Future] }
+    it 'is expected to create a file' do
+      file = double('file')
+      allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return( file )
+      expect(file).to receive(:write).with(::MultiJson.dump(board_abc_123_def, pretty: true))
+      allow(file).to receive(:close)
+
+      dashboards.backup!.map(&:value!)
+    end
   end
 
   describe '#all_boards' do
@@ -91,6 +99,6 @@ describe DatadogSync::Dashboards do
 
   describe '#filename' do
     subject { dashboards.filename('abc-123-def') }
-    it { is_expected.to eq('output/dashboards/abc-123-def.json') }
+    it { is_expected.to eq("#{tempdir}/dashboards/abc-123-def.json") }
   end
 end

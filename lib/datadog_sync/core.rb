@@ -45,7 +45,6 @@ module DatadogSync
 
 
     def initialize(opts)
-      super()
       @opts = opts
       output_dirs.map do |dir|
         ::FileUtils.mkdir_p(dir)
