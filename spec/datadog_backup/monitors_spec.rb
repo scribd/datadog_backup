@@ -1,9 +1,9 @@
 require 'spec_helper'
 
-describe DatadogSync::Monitors do
+describe DatadogBackup::Monitors do
   let(:client_double) { double }
   let(:monitors) do
-    DatadogSync::Monitors.new(
+    DatadogBackup::Monitors.new(
       action: 'backup',
       client: client_double,
       output_dir: 'output',

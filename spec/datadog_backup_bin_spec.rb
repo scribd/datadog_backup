@@ -2,12 +2,12 @@ require 'open3'
 require 'climate_control'
 require 'timeout'
 
-describe 'bin/datadog_sync' do
+describe 'bin/datadog_backup' do
   # Contract Or[nil,String] => self
   def run_bin(args = '', input = nil)
     status = nil
     output = ''
-    cmd = "bin/datadog_sync #{args}"
+    cmd = "bin/datadog_backup #{args}"
     Open3.popen2e(cmd) do |i, oe, t|
       pid = t.pid
 
@@ -52,7 +52,7 @@ describe 'bin/datadog_sync' do
 
   it 'supplies help' do
     out_err, status = run_bin('--help')
-    expect(out_err).to match(/Usage: datadog_sync/)
+    expect(out_err).to match(/Usage: datadog_backup/)
     expect(status).to be_success
   end
 end

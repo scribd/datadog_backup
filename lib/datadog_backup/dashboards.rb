@@ -1,4 +1,4 @@
-module DatadogSync
+module DatadogBackup
   class Dashboards < Core
 
     def all_boards

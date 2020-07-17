@@ -5,7 +5,7 @@ $:.unshift File.join(File.dirname(__FILE__), '../lib')
 require 'logger'
 require 'optparse'
 
-require 'datadog_sync'
+require 'datadog_backup'
 require 'dogapi'
 
 $stdout.sync = $stderr.sync = true
@@ -18,7 +18,7 @@ LOGGER.level = Logger::INFO
   action: nil,
   client: nil,
   output_dir: File.join(ENV.fetch('PWD'), 'output'),
-  resources: [DatadogSync::Dashboards, DatadogSync::Monitors],
+  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   logger: LOGGER
 }
 
@@ -39,13 +39,13 @@ def prereqs
       @options[:backup_dir] = path
     end
     opts.on('--monitors-only') do
-      @options[:resources] = [DatadogSync::Monitors]
+      @options[:resources] = [DatadogBackup::Monitors]
     end
     opts.on('--dashboards-only') do
-      @options[:resources] = [DatadogSync::Dashboards]
+      @options[:resources] = [DatadogBackup::Dashboards]
     end
     opts.on('--dashboards-only') do
-      @options[:resources] = [DatadogSync::Dashboards]
+      @options[:resources] = [DatadogBackup::Dashboards]
     end
   end
   opts.parse!

@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe DatadogSync::Core do
+describe DatadogBackup::Core do
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:core) do
-    DatadogSync::Core.new(
+    DatadogBackup::Core.new(
       action: 'backup',
       client: client_double,
       output_dir: tempdir,

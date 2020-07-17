@@ -1,15 +1,15 @@
 lib = File.expand_path('lib', __dir__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'datadog_sync/version'
+require 'datadog_backup/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = 'datadog_sync'
-  spec.version       = DatadogSync::VERSION
+  spec.name          = 'datadog_backup'
+  spec.version       = DatadogBackup::VERSION
   spec.authors       = ['Kamran Farhadi', 'Jim Park']
   spec.email         = ['kamranf@scribd.com', 'jimp@scribd.com']
   spec.summary       = 'A utility to backup and restore Datadog accounts'
   spec.description   = 'A utility to backup and restore Datadog accounts'
-  spec.homepage      = 'https://github.com/scribd/datadog_sync'
+  spec.homepage      = 'https://github.com/scribd/datadog_backup'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")

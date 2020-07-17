@@ -1,4 +1,4 @@
-module DatadogSync
+module DatadogBackup
   class Monitors < Core
     def all_monitors
       client_with_200(:get_all_monitors)

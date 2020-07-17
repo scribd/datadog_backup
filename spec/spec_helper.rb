@@ -1,6 +1,6 @@
 $:.unshift(File.expand_path('../lib', File.dirname(__FILE__)))
 
-require 'datadog_sync'
+require 'datadog_backup'
 require 'logger'
 require 'tmpdir'
 require 'dogapi'

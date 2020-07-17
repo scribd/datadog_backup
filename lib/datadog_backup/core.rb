@@ -2,7 +2,7 @@ require 'fileutils'
 require 'multi_json'
 require 'concurrent-ruby'
 
-module DatadogSync
+module DatadogBackup
   class Core
 
     def action

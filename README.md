@@ -1,6 +1,6 @@
-# Datadog Sync
+# Datadog Backup
 
-Use `datadog_sync` to backup your datadog account.
+Use `datadog_backup` to backup your datadog account.
 Currently supports
 
   - dashboards
@@ -11,12 +11,11 @@ Additional features may be built out over time.
 ## Installation
 
 ```
-$ gem install datadog_sync
+$ gem install datadog_backup
 ```
 
 ## Usage
 
 ```
 $ DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync backup --output-dir=./
-$ DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync restore --output-dir=./
 ```

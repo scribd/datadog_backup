@@ -1,4 +1,4 @@
 require 'spec_helper'
 
-describe DatadogSync do
+describe DatadogBackup do
 end

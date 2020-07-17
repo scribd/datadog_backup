@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe DatadogSync::Dashboards do
+describe DatadogBackup::Dashboards do
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:dashboards) do
-    DatadogSync::Dashboards.new(
+    DatadogBackup::Dashboards.new(
       action: 'backup',
       client: client_double,
       output_dir: tempdir,
