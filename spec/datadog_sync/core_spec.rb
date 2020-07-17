@@ -53,8 +53,7 @@ describe DatadogSync::Core do
   describe '#initialize' do
     subject { core }
     it 'makes the subdirectories' do
-      expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/dashboards")
-      expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/monitors")
+      expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/core")
       subject
     end
   end
@@ -65,12 +64,12 @@ describe DatadogSync::Core do
   end
 
   describe '#write' do
-    subject { core.write('abc123', "#{tempdir}/dashboards/abc-123-def.json") }
+    subject { core.write('abc123', "#{tempdir}/core/abc-123-def.json") }
     let(:file_like_object) { double }
 
     it 'writes a file to abc-123-def.rb' do
       allow(File).to receive(:open).and_call_original
-      allow(File).to receive(:open).with("#{tempdir}/dashboards/abc-123-def.json", 'w').and_return(file_like_object)
+      allow(File).to receive(:open).with("#{tempdir}/core/abc-123-def.json", 'w').and_return(file_like_object)
       allow(file_like_object).to receive(:write)
       allow(file_like_object).to receive(:close)
 

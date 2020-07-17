@@ -40,15 +40,13 @@ module DatadogSync
     end
 
     def filename(id)
-      ::File.join(output_dir, myclass, "#{id}.json")
+      ::File.join(mydir, "#{id}.json")
     end
 
 
     def initialize(opts)
       @opts = opts
-      output_dirs.map do |dir|
-        ::FileUtils.mkdir_p(dir)
-      end
+      ::FileUtils.mkdir_p(mydir)
     end
 
     def jsondump(object)
@@ -63,14 +61,12 @@ module DatadogSync
       self.class.to_s.split(':').last.downcase
     end
 
-    def output_dir
-      @opts[:output_dir]
+    def mydir
+      ::File.join(output_dir,myclass)
     end
 
-    def output_dirs
-      %w[dashboards monitors].map do |subdir|
-        File.join(output_dir, subdir)
-      end
+    def output_dir
+      @opts[:output_dir]
     end
 
     def restore
