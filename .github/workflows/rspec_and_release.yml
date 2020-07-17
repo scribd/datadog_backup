@@ -18,7 +18,7 @@ jobs:
         ruby-version: 2.7.1
     - name: Test with Rspec
       run: |
-          gem install --no-rdoc --no-ri bundler
+          gem install --no-document bundler
           bundle install --jobs 4 --retry 3
           bundle exec rspec --format documentation
   release:
@@ -34,7 +34,7 @@ jobs:
         ruby-version: 2.7.1
     - name: Build with bundler
       run: |
-          gem install --no-rdoc --no-ri bundler
+          gem install --no-document bundler
           bundle install --jobs 4 --retry 3 --deployment --without "development test"
     - name: Zip
       run : |
