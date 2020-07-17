@@ -1,0 +1,51 @@
+name: Rspec and Release
+
+on:
+  push:
+    branches: [master, cidev]
+  pull_request:
+    branches: [master, cidev]
+
+jobs:
+  rspec:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby 2.7.1
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.7.1
+    - name: Test with Rspec
+      run: |
+          gem install --no-rdoc --no-ri bundler
+          bundle install --jobs 4 --retry 3
+          bundle exec rspec --format documentation
+  release:
+    if: github.event_name == 'push'
+    needs: rspec
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby 2.7.1
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.7.1
+    - name: Build with bundler
+      run: |
+          gem install --no-rdoc --no-ri bundler
+          bundle install --jobs 4 --retry 3 --deployment --without "development test"
+    - name: Zip
+      run : |
+        zip -r datadog_backup.zip ./*
+    - name: Semantic Release
+      id: semantic
+      uses: cycjimmy/semantic-release-action@v2
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        semantic_version: 17
+        extra_plugins: |
+          @semantic-release/changelog
+          @semantic-release/git
