@@ -16,7 +16,7 @@ describe 'bin/datadog_sync' do
         i.close
       end
 
-      Timeout.timeout(0.5) do
+      Timeout.timeout(1.0) do
         oe.each do |v|
           output << v
         end
