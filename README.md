@@ -17,5 +17,5 @@ $ gem install datadog_backup
 ## Usage
 
 ```
-$ DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync backup --output-dir=./
+$ DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync backup --backup-dir=./
 ```

@@ -62,11 +62,11 @@ module DatadogBackup
     end
 
     def mydir
-      ::File.join(output_dir,myclass)
+      ::File.join(backup_dir,myclass)
     end
 
-    def output_dir
-      @opts[:output_dir]
+    def backup_dir
+      @opts[:backup_dir]
     end
 
     def restore

@@ -2,11 +2,12 @@ require 'spec_helper'
 
 describe DatadogBackup::Monitors do
   let(:client_double) { double }
+  let(:tempdir) { Dir.mktmpdir }
   let(:monitors) do
     DatadogBackup::Monitors.new(
       action: 'backup',
       client: client_double,
-      output_dir: 'output',
+      backup_dir: tempdir,
       resources: [],
       logger: Logger.new('/dev/null')
     )
@@ -71,6 +72,6 @@ describe DatadogBackup::Monitors do
 
   describe '#filename' do
     subject { monitors.filename(123455) }
-    it { is_expected.to eq('output/monitors/123455.json') }
+    it { is_expected.to eq("#{tempdir}/monitors/123455.json") }
   end
 end

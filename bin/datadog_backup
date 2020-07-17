@@ -17,7 +17,7 @@ LOGGER.level = Logger::INFO
 @options = {
   action: nil,
   client: nil,
-  output_dir: File.join(ENV.fetch('PWD'), 'output'),
+  backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   logger: LOGGER
 }
@@ -35,7 +35,7 @@ def prereqs
     opts.on('--verbose', '-v', 'verbose') do
       LOGGER.level = Logger::DEBUG
     end
-    opts.on('--backup-dir PATH') do |path|
+    opts.on('--backup-dir PATH; backup by default') do |path|
       @options[:backup_dir] = path
     end
     opts.on('--monitors-only') do

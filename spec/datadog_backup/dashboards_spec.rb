@@ -7,7 +7,7 @@ describe DatadogBackup::Dashboards do
     DatadogBackup::Dashboards.new(
       action: 'backup',
       client: client_double,
-      output_dir: tempdir,
+      backup_dir: tempdir,
       resources: [],
       logger: Logger.new('/dev/null')
     )
