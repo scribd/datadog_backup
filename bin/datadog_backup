@@ -44,9 +44,6 @@ def prereqs
     opts.on('--dashboards-only') do
       @options[:resources] = [DatadogBackup::Dashboards]
     end
-    opts.on('--dashboards-only') do
-      @options[:resources] = [DatadogBackup::Dashboards]
-    end
   end
   opts.parse!
 
