@@ -36,7 +36,7 @@ module DatadogBackup
 
     def execute!
       futures = send(action.to_sym)
-      logger.info(futures.map(&:value!))
+      logger.debug(futures.map(&:value!))
     end
 
     def filename(id)
