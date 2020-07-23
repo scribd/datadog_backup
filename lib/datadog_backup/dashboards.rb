@@ -15,10 +15,10 @@ module DatadogBackup
     end
 
     def get_and_write(id)
-      write(dump(get_board(id)), filename(id))
+      write(dump(get_by_id(id)), filename(id))
     end
 
-    def get_board(id)
+    def get_by_id(id)
       client_with_200(:get_board, id)
     end
 

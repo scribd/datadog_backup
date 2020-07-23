@@ -2,12 +2,22 @@ require 'fileutils'
 require 'concurrent-ruby'
 require 'json'
 require 'yaml'
+require 'hashdiff'
+require 'awesome_print'
 
 module DatadogBackup
   class Core
 
     def action
       @opts[:action]
+    end
+
+    def all_files!
+      ::Dir.glob(::File.join(backup_dir, '**', '*')).select { |f| ::File.file?(f) }
+    end
+
+    def all_ids
+      all_files!.map { |file| ::File.basename(file, '.*') }
     end
 
     def backup
@@ -20,6 +30,11 @@ module DatadogBackup
 
     def backup_dir
       @opts[:backup_dir]
+    end
+
+    def class_from_id(id)
+      class_string = ::File.dirname(find_file!(id)).split('/').last.capitalize
+      ::DatadogBackup.const_get(class_string)
     end
 
     def client
@@ -39,6 +54,18 @@ module DatadogBackup
       retry
     end
 
+    def diff(id)
+      current = get_by_id(id)
+      filesystem = load_by_id(id)
+      Hashdiff.diff(current, filesystem)
+    end
+
+    def diffs
+      result = all_ids.map {|id| [id, diff(id)] }.to_h
+      ap(result, index: false)
+      result
+    end
+
     def execute!
       futures = send(action.to_sym)
       logger.debug(futures.map(&:value!))
@@ -48,6 +75,14 @@ module DatadogBackup
       ::File.join(mydir, "#{id}.#{output_format.to_s}")
     end
 
+    def find_file!(id)
+      ::Dir.glob(::File.join(backup_dir, '**', "#{id}.*")).first
+    end
+
+
+    def get_by_id(id)
+      raise 'subclass is expected to implement #get_by_id(id)'
+    end
 
     def initialize(opts)
       @opts = opts
@@ -60,7 +95,7 @@ module DatadogBackup
       elsif output_format == :yaml
         YAML.dump(object)
       else
-        raise "output_format not specified"
+        raise "invalid output_format specified or not specified"
       end
     end
 
@@ -70,8 +105,12 @@ module DatadogBackup
       elsif output_format == :yaml
         YAML.load(string)
       else
-        raise "output_format not specified"
+        raise "invalid output_format specified or not specified"
       end
+    end
+
+    def load_by_id(id)
+      load(::File.read(find_file!(id)))
     end
 
     def logger

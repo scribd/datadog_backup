@@ -2,13 +2,16 @@ PATH
   remote: .
   specs:
     datadog_backup (0.0.3)
+      awesome_print (= 1.8.0)
       concurrent-ruby (= 1.1.6)
       dogapi (~> 1.40)
+      hashdiff (= 1.0.1)
 
 GEM
   remote: https://rubygems.org/
   specs:
     ast (2.4.1)
+    awesome_print (1.8.0)
     climate_control (0.2.0)
     coderay (1.1.3)
     concurrent-ruby (1.1.6)
@@ -31,6 +34,7 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
+    hashdiff (1.0.1)
     listen (3.2.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)

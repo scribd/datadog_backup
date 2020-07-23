@@ -75,4 +75,9 @@ describe DatadogBackup::Monitors do
     subject { monitors.filename(123455) }
     it { is_expected.to eq("#{tempdir}/monitors/123455.json") }
   end
+
+  describe '#get_by_id' do
+    subject { monitors.get_by_id(123455) }
+    it { is_expected.to eq monitor_description }
+  end
 end

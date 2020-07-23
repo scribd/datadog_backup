@@ -52,7 +52,7 @@ def prereqs
   opts.parse!
 
   @options[:action] = ARGV.first
-  if %w[backup restore].include?(@options[:action])
+  if %w[backup restore diffs].include?(@options[:action])
   else
     puts opts
     exit 0

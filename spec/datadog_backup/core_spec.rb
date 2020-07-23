@@ -24,6 +24,45 @@ describe DatadogBackup::Core do
     )
   end
 
+  describe '#all_files!' do
+    before(:example) {
+      core.write('{"text": "all_files"}', "#{tempdir}/core/all_files.json")
+    }
+
+    after(:example) {
+      FileUtils.rm "#{tempdir}/core/all_files.json"
+    }
+
+    subject { core.all_files! }
+    it { is_expected.to eq(["#{tempdir}/core/all_files.json"] ) }
+
+  end
+
+  describe '#diff' do
+    before(:example) do
+      core.write('{"text": "diff1"}', "#{tempdir}/core/diff.json")
+      allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
+    end
+    subject { core.diff('diff') }
+    it { is_expected.to eq [["~", "text", "diff2", "diff1"]] }
+  end
+
+  describe '#diffs' do
+    before(:example) do
+      core.write('{"text": "diff"}', "#{tempdir}/core/diffs1.json")
+      core.write('{"text": "diff"}', "#{tempdir}/core/diffs2.json")
+      core.write('{"text": "diff"}', "#{tempdir}/core/diffs3.json")
+      allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
+    end
+    subject { core.diffs }
+    it { is_expected.to eq({
+                              'diffs1' => [["~", "text", "diff2", "diff"]],
+                              'diffs2' => [["~", "text", "diff2", "diff"]],
+                              'diffs3' => [["~", "text", "diff2", "diff"]]
+                            }) }
+
+  end
+
   describe '#execute!' do
     subject { core.execute! }
 
@@ -73,6 +112,20 @@ describe DatadogBackup::Core do
     end
   end
 
+  describe '#find_file!' do
+    before(:example) {
+      core.write('{"text": "find_file"}', "#{tempdir}/core/find_file.json")
+    }
+
+    after(:example) {
+      FileUtils.rm "#{tempdir}/core/find_file.json"
+    }
+
+    subject { core.find_file!('find_file') }
+    it { is_expected.to eq "#{tempdir}/core/find_file.json" }
+
+  end
+
   describe '#filename' do
     context ':json' do
       subject { core.filename('abc-123-def') }
@@ -83,6 +136,12 @@ describe DatadogBackup::Core do
       subject { core_yaml.filename('abc-123-def') }
       it { is_expected.to eq("#{tempdir}/core/abc-123-def.yaml") }
     end
+  end
+
+  describe '#class_from_id' do
+    before(:example) { core.write(%({"a": "b"}), "#{tempdir}/core/abc-123-def.json") }
+    subject { core.class_from_id('abc-123-def') }
+    it { is_expected.to eq DatadogBackup::Core }
   end
 
   describe '#initialize' do
@@ -101,6 +160,21 @@ describe DatadogBackup::Core do
 
     context ':yaml' do
       subject { core_yaml.load(%(---\na: b\n)) }
+      it { is_expected.to eq("a" => "b") }
+    end
+  end
+
+  describe '#load_by_id' do
+    context 'written in json read in json mode' do
+      before(:example) { core.write(%({"a": "b"}), "#{tempdir}/core/abc-123-def.json") }
+
+      subject { core.load_by_id('abc-123-def') }
+      it { is_expected.to eq("a" => "b") }
+    end
+    context 'written in yaml read in json mode' do
+      before(:example) { core_yaml.write(%({"a": "b"}), "#{tempdir}/core/abc-123-def.yaml") }
+
+      subject { core.load_by_id('abc-123-def') }
       it { is_expected.to eq("a" => "b") }
     end
   end

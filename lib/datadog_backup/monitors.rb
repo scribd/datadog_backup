@@ -13,6 +13,10 @@ module DatadogBackup
       end
     end
 
+    def get_by_id(id)
+      all_monitors.select {|monitor| monitor['id'] == id }.first
+    end
+
     def restore!; end
   end
 end

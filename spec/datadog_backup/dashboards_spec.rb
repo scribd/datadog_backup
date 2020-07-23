@@ -92,9 +92,8 @@ describe DatadogBackup::Dashboards do
     it { is_expected.to eq [dashboard_description] }
   end
 
-  describe '#get_board' do
-    subject { dashboards.get_board('abc-123-def') }
-
+  describe '#get_by_id' do
+    subject { dashboards.get_by_id('abc-123-def') }
     it { is_expected.to eq board_abc_123_def }
   end
 end
