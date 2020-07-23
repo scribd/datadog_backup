@@ -19,6 +19,7 @@ LOGGER.level = Logger::INFO
   client: nil,
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
+  output_format: :json,
   logger: LOGGER
 }
 
@@ -43,6 +44,9 @@ def prereqs
     end
     opts.on('--dashboards-only') do
       @options[:resources] = [DatadogBackup::Dashboards]
+    end
+    opts.on('--yaml') do
+      @options[:output_format] = :yaml
     end
   end
   opts.parse!

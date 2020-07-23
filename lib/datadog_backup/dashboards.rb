@@ -15,7 +15,7 @@ module DatadogBackup
     end
 
     def get_and_write(id)
-      write(jsondump(get_board(id)), filename(id))
+      write(dump(get_board(id)), filename(id))
     end
 
     def get_board(id)

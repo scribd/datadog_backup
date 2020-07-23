@@ -8,6 +8,7 @@ describe DatadogBackup::Monitors do
       action: 'backup',
       client: client_double,
       backup_dir: tempdir,
+      output_format: :json,
       resources: [],
       logger: Logger.new('/dev/null')
     )

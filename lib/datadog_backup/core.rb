@@ -1,6 +1,7 @@
 require 'fileutils'
-require 'multi_json'
 require 'concurrent-ruby'
+require 'json'
+require 'yaml'
 
 module DatadogBackup
   class Core
@@ -16,6 +17,10 @@ module DatadogBackup
     ##
     # subclass is expected to implement #backup!
     ##
+
+    def backup_dir
+      @opts[:backup_dir]
+    end
 
     def client
       @opts[:client]
@@ -40,7 +45,7 @@ module DatadogBackup
     end
 
     def filename(id)
-      ::File.join(mydir, "#{id}.json")
+      ::File.join(mydir, "#{id}.#{output_format.to_s}")
     end
 
 
@@ -49,8 +54,24 @@ module DatadogBackup
       ::FileUtils.mkdir_p(mydir)
     end
 
-    def jsondump(object)
-      ::MultiJson.dump(object, pretty: true)
+    def dump(object)
+      if output_format == :json
+        JSON.pretty_generate(object)
+      elsif output_format == :yaml
+        YAML.dump(object)
+      else
+        raise "output_format not specified"
+      end
+    end
+
+    def load(string)
+      if output_format == :json
+        JSON.load(string)
+      elsif output_format == :yaml
+        YAML.load(string)
+      else
+        raise "output_format not specified"
+      end
     end
 
     def logger
@@ -65,8 +86,9 @@ module DatadogBackup
       ::File.join(backup_dir,myclass)
     end
 
-    def backup_dir
-      @opts[:backup_dir]
+    # Either :json or :yaml
+    def output_format
+      @opts[:output_format]
     end
 
     def restore
