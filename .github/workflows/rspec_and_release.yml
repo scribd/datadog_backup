@@ -2,10 +2,8 @@ name: Rspec and Release
 
 on:
   push:
-    branches: [master, cidev]
   pull_request:
-    branches: [master, cidev]
-
+    
 jobs:
   rspec:
     runs-on: ubuntu-latest
