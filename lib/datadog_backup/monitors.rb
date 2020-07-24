@@ -8,7 +8,7 @@ module DatadogBackup
       all_monitors.map do |monitor|
         Concurrent::Future.execute do
           id = monitor['id']
-          write(jsondump(monitor), filename(id))
+          write(dump(monitor), filename(id))
         end
       end
     end

@@ -4,7 +4,6 @@ PATH
     datadog_backup (0.0.3)
       concurrent-ruby (= 1.1.6)
       dogapi (~> 1.40)
-      multi_json (= 1.15.0)
 
 GEM
   remote: https://rubygems.org/

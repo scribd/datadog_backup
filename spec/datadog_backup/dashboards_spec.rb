@@ -8,6 +8,7 @@ describe DatadogBackup::Dashboards do
       action: 'backup',
       client: client_double,
       backup_dir: tempdir,
+      output_format: :json,
       resources: [],
       logger: Logger.new('/dev/null')
     )
@@ -73,7 +74,7 @@ describe DatadogBackup::Dashboards do
     it 'is expected to create a file' do
       file = double('file')
       allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return( file )
-      expect(file).to receive(:write).with(::MultiJson.dump(board_abc_123_def, pretty: true))
+      expect(file).to receive(:write).with(::JSON.pretty_generate(board_abc_123_def))
       allow(file).to receive(:close)
 
       dashboards.backup!.map(&:value!)
@@ -95,10 +96,5 @@ describe DatadogBackup::Dashboards do
     subject { dashboards.get_board('abc-123-def') }
 
     it { is_expected.to eq board_abc_123_def }
-  end
-
-  describe '#filename' do
-    subject { dashboards.filename('abc-123-def') }
-    it { is_expected.to eq("#{tempdir}/dashboards/abc-123-def.json") }
   end
 end
