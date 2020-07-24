@@ -1,3 +1,10 @@
+# [0.3.0](https://github.com/scribd/datadog_backup/compare/v0.2.0...v0.3.0) (2020-07-24)
+
+
+### Features
+
+* add yaml option ([5645e71](https://github.com/scribd/datadog_backup/commit/5645e71826ee474201d54f51ed061ab1d3f9e872))
+
 # [0.2.0](https://github.com/scribd/datadog_backup/compare/v0.1.0...v0.2.0) (2020-07-18)
 
 
