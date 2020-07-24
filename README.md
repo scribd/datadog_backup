@@ -1,5 +1,7 @@
 # Datadog Backup
 
+![Rspec and Release](https://github.com/scribd/datadog_backup/workflows/Rspec%20and%20Release/badge.svg)
+
 Use `datadog_backup` to backup your datadog account.
 Currently supports
 
