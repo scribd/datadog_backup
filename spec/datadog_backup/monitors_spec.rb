@@ -41,22 +41,15 @@ describe DatadogBackup::Monitors do
   end
 
   describe '#backup' do
-    it 'is expected to call the #backup! method' do
-      expect(monitors).to receive(:backup!)
-      monitors.backup
-    end
-  end
-
-  describe '#backup!' do
-    subject { monitors.backup! }
+    subject { monitors.backup }
 
     it 'is expected to create a file' do
       file = double('file')
       allow(File).to receive(:open).with(monitors.filename(123455), 'w').and_return( file )
-      expect(file).to receive(:write).with(::MultiJson.dump(monitor_description, pretty: true))
+      expect(file).to receive(:write).with(::JSON.pretty_generate(monitor_description))
       allow(file).to receive(:close)
 
-      monitors.backup!.map(&:value!)
+      monitors.backup.map(&:value!)
     end
   end
 

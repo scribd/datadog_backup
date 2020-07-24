@@ -14,13 +14,8 @@ module DatadogBackup
     end
 
     def backup
-      backup!
+      raise 'subclass is expected to implement #backup'
     end
-
-    ##
-    # subclass is expected to implement #backup
-    ##
-
 
     def client
       @opts[:client]
@@ -74,12 +69,8 @@ module DatadogBackup
     end
 
     def restore
-      restore!
+      raise 'subclass is expected to implement #restore'
     end
-
-    ##
-    # subclass is expected to implement #restore!
-    ##
 
   end
 end

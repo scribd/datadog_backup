@@ -5,7 +5,7 @@ module DatadogBackup
       client_with_200(:get_all_boards).fetch('dashboards')
     end
 
-    def backup!
+    def backup
       all_boards.map do |board|
         Concurrent::Future.execute do
           id = board['id']
