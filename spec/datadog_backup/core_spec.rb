@@ -16,7 +16,7 @@ describe DatadogBackup::Core do
   
   describe '#diff' do
     before(:example) do
-      core.write('{"text": "diff1"}', "#{tempdir}/core/diff.json")
+      core.write_file('{"text": "diff1"}', "#{tempdir}/core/diff.json")
       allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
     end
     subject { core.diff('diff') }
@@ -25,9 +25,9 @@ describe DatadogBackup::Core do
   
   describe '#diffs' do
     before(:example) do
-      core.write('{"text": "diff"}', "#{tempdir}/core/diffs1.json")
-      core.write('{"text": "diff"}', "#{tempdir}/core/diffs2.json")
-      core.write('{"text": "diff"}', "#{tempdir}/core/diffs3.json")
+      core.write_file('{"text": "diff"}', "#{tempdir}/core/diffs1.json")
+      core.write_file('{"text": "diff"}', "#{tempdir}/core/diffs2.json")
+      core.write_file('{"text": "diff"}', "#{tempdir}/core/diffs3.json")
       allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
     end
     subject { core.diffs }

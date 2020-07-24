@@ -9,13 +9,13 @@ module DatadogBackup
       all_boards.map do |board|
         Concurrent::Future.execute do
           id = board['id']
-          get_and_write(id)
+          get_and_write_file(id)
         end
       end
     end
 
-    def get_and_write(id)
-      write(dump(get_by_id(id)), filename(id))
+    def get_and_write_file(id)
+      write_file(dump(get_by_id(id)), filename(id))
     end
 
     def get_by_id(id)

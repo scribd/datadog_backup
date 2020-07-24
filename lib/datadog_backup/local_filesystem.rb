@@ -67,7 +67,7 @@ module DatadogBackup
       @opts[:output_format]
     end
     
-    def write(data, filename)
+    def write_file(data, filename)
       logger.info "Backing up #{filename}"
       file = ::File.open(filename, 'w')
       file.write(data)

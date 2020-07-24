@@ -40,7 +40,7 @@ describe DatadogBackup::LocalFilesystem do
   
   describe '#class_from_id' do
     before(:example) do
-      core.write('abc', "#{tempdir}/core/abc-123-def.json") 
+      core.write_file('abc', "#{tempdir}/core/abc-123-def.json") 
     end
 
     after(:example) do
@@ -116,14 +116,14 @@ describe DatadogBackup::LocalFilesystem do
 
   describe '#load_from_file_by_id' do
     context 'written in json read in yaml mode' do
-      before(:example) { core.write(%({"a": "b"}), "#{tempdir}/core/abc-123-def.json") }
+      before(:example) { core.write_file(%({"a": "b"}), "#{tempdir}/core/abc-123-def.json") }
       after(:example) { FileUtils.rm "#{tempdir}/core/abc-123-def.json" }
 
       subject { core_yaml.load_from_file_by_id('abc-123-def') }
       it { is_expected.to eq("a" => "b") }
     end
     context 'written in yaml read in json mode' do
-      before(:example) { core.write(%(---\na: b), "#{tempdir}/core/abc-123-def.yaml") }
+      before(:example) { core.write_file(%(---\na: b), "#{tempdir}/core/abc-123-def.yaml") }
       after(:example) { FileUtils.rm "#{tempdir}/core/abc-123-def.yaml" }
 
       subject { core.load_from_file_by_id('abc-123-def') }
@@ -131,8 +131,8 @@ describe DatadogBackup::LocalFilesystem do
     end
   end
 
-  describe '#write' do
-    subject { core.write('abc123', "#{tempdir}/core/abc-123-def.json") }
+  describe '#write_file' do
+    subject { core.write_file('abc123', "#{tempdir}/core/abc-123-def.json") }
     let(:file_like_object) { double }
 
     it 'writes a file to abc-123-def.json' do
