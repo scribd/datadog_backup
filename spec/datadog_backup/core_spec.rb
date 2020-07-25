@@ -13,41 +13,6 @@ describe DatadogBackup::Core do
       logger: Logger.new('/dev/null')
     )
   end
-  
-  describe '#diff' do
-    before(:example) do
-      core.write_file('{"text": "diff1"}', "#{tempdir}/core/diff.json")
-      allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
-    end
-    subject { core.diff('diff') }
-    it { is_expected.to eq [["~", "text", "diff2", "diff1"]] }
-  end
-  
-  describe '#diffs' do
-    before(:example) do
-      core.write_file('{"text": "diff"}', "#{tempdir}/core/diffs1.json")
-      core.write_file('{"text": "diff"}', "#{tempdir}/core/diffs2.json")
-      core.write_file('{"text": "diff"}', "#{tempdir}/core/diffs3.json")
-      allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
-    end
-    subject { core.diffs }
-    it { is_expected.to eq({
-      'diffs1' => [["~", "text", "diff2", "diff"]],
-      'diffs2' => [["~", "text", "diff2", "diff"]],
-      'diffs3' => [["~", "text", "diff2", "diff"]]
-      }) }
-      
-    end
-    
-    describe '#execute!' do
-      subject { core.execute! }
-      
-      it 'is expected to call the #backup method' do
-        expect(core).to receive(:backup).and_return({})
-        
-        subject
-      end
-    end
     
     describe '#client' do
       subject { core.client }
@@ -74,6 +39,15 @@ describe DatadogBackup::Core do
           expect { subject }.to raise_error(RuntimeError)
         end
       end
+    end
+    
+    describe '#diff' do
+      before(:example) do
+        core.write_file('{"text": "diff1"}', "#{tempdir}/core/diff.json")
+        allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
+      end
+      subject { core.diff('diff') }
+      it { is_expected.to eq [["~", "text", "diff2", "diff1"]] }
     end
     
     describe '#initialize' do

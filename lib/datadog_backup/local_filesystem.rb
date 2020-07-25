@@ -1,19 +1,19 @@
+require 'fileutils'
+require 'json'
+require 'yaml'
+
 module DatadogBackup
   module LocalFilesystem
     ## 
     # Meant to be mixed into DatadogBackup::Core
-    # Relies on @opts[:backup_dir] and @opts[:output_format]
+    # Relies on @options[:backup_dir] and @options[:output_format]
     
     def all_files
       ::Dir.glob(::File.join(backup_dir, '**', '*')).select { |f| ::File.file?(f) }
     end
     
-    def all_ids
+    def all_file_ids
       all_files.map { |file| ::File.basename(file, '.*') }
-    end
-    
-    def backup_dir
-      @opts[:backup_dir]
     end
     
     def class_from_id(id)
@@ -60,11 +60,6 @@ module DatadogBackup
     
     def mydir
       ::File.join(backup_dir,myclass)
-    end
-
-    # Either :json or :yaml
-    def output_format
-      @opts[:output_format]
     end
     
     def write_file(data, filename)

@@ -16,7 +16,8 @@ LOGGER.level = Logger::INFO
 # Default parameters
 @options = {
   action: nil,
-  client: nil,
+  datadog_api_key: ENV.fetch('DATADOG_API_KEY'),
+  datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),  
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   output_format: :json,
@@ -33,7 +34,7 @@ def prereqs
       puts opts
       exit 0
     end
-    opts.on('--verbose', '-v', 'verbose') do
+    opts.on('--debug', 'debug logging enabled') do
       LOGGER.level = Logger::DEBUG
     end
     opts.on('--backup-dir PATH; backup by default') do |path|
@@ -52,36 +53,14 @@ def prereqs
   opts.parse!
 
   @options[:action] = ARGV.first
-  if %w[backup restore diffs].include?(@options[:action])
+  if %w[backup diffs].include?(@options[:action])
   else
     puts opts
     exit 0
   end
-
-  required_vars = %w[
-    DATADOG_API_KEY
-    DATADOG_APP_KEY
-  ]
-  required_vars.each do |v|
-    raise "#{v} must be specified in the environment variables" unless ENV[v]
-  end
-end
-
-def main
-  @options[:client] = Dogapi::Client.new(
-    ENV.fetch('DATADOG_API_KEY'),
-    ENV.fetch('DATADOG_APP_KEY')
-  )
-  @options[:resources].each do |resource|
-    resource.new(@options).execute!
-  end
-rescue StandardError => e
-  LOGGER.error "Unhandled exception #{e.class}: #{e.message}"
-  e.backtrace.each do |v|
-    LOGGER.debug v
-  end
-  raise
 end
 
 prereqs
-main
+
+DatadogBackup::Cli.new(@options).run!
+
