@@ -28,7 +28,7 @@ def prereqs
   ARGV << '--help' if ARGV.empty?
 
   opts = OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($0)} <backup|restore>"
+    opts.banner = "Usage: #{File.basename($0)} <backup|diffs>"
     opts.separator ''
     opts.on_tail('-h', '--help', 'Show this message') do
       puts opts

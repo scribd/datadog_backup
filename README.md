@@ -20,7 +20,7 @@ gem install datadog_backup-*.gem
 ## Usage
 
 ```
-DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync backup [--backup-dir /path/to/backups] [--verbose] [--monitors-only] [--dashboards-only]
+DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync <backup|diffs> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only]
 ```
 
 # Development
