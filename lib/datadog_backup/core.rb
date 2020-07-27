@@ -1,31 +1,15 @@
-require 'fileutils'
-require 'concurrent-ruby'
-require 'json'
-require 'yaml'
+require 'hashdiff'
 
 module DatadogBackup
   class Core
-
-    def action
-      @opts[:action]
-    end
+    include ::DatadogBackup::LocalFilesystem
+    include ::DatadogBackup::Options
 
     def backup
-      backup!
+      raise 'subclass is expected to implement #backup'
     end
 
-    ##
-    # subclass is expected to implement #backup!
-    ##
-
-    def backup_dir
-      @opts[:backup_dir]
-    end
-
-    def client
-      @opts[:client]
-    end
-
+    # Calls out to Datadog and checks for a '200' response
     def client_with_200(method, *id)
       response = client.send(method, *id)
       logger.debug response
@@ -39,72 +23,39 @@ module DatadogBackup
       retry
     end
 
-    def execute!
-      futures = send(action.to_sym)
-      logger.debug(futures.map(&:value!))
+    # Returns the Hashdiff diff.
+    # Optionally, supply an array of keys to remove from comparison
+    def diff(id, banlist=[])
+      current = except(get_by_id(id), banlist)
+      filesystem = except(load_from_file_by_id(id), banlist)
+      Hashdiff.diff(current, filesystem)
+    end
+    
+    # Returns a hash with banlist elements removed
+    def except(hash, banlist)
+        hash.tap do |hash| # tap returns self
+          banlist.each do |key| 
+            hash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
+          end
+        end
     end
 
-    def filename(id)
-      ::File.join(mydir, "#{id}.#{output_format.to_s}")
+    def get_by_id(id)
+      raise 'subclass is expected to implement #get_by_id(id)'
     end
 
-
-    def initialize(opts)
-      @opts = opts
+    def initialize(options)
+      @options = options
       ::FileUtils.mkdir_p(mydir)
-    end
-
-    def dump(object)
-      if output_format == :json
-        JSON.pretty_generate(object)
-      elsif output_format == :yaml
-        YAML.dump(object)
-      else
-        raise "output_format not specified"
-      end
-    end
-
-    def load(string)
-      if output_format == :json
-        JSON.load(string)
-      elsif output_format == :yaml
-        YAML.load(string)
-      else
-        raise "output_format not specified"
-      end
-    end
-
-    def logger
-      @opts[:logger]
     end
 
     def myclass
       self.class.to_s.split(':').last.downcase
     end
 
-    def mydir
-      ::File.join(backup_dir,myclass)
-    end
-
-    # Either :json or :yaml
-    def output_format
-      @opts[:output_format]
-    end
-
     def restore
-      restore!
+      raise 'subclass is expected to implement #restore'
     end
 
-    ##
-    # subclass is expected to implement #restore!
-    ##
-
-    def write(data, filename)
-      logger.info "Backing up #{filename}"
-      file = ::File.open(filename, 'w')
-      file.write(data)
-    ensure
-      file.close
-    end
   end
 end

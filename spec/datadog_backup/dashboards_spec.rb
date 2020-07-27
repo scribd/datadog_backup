@@ -62,14 +62,7 @@ describe DatadogBackup::Dashboards do
   end
 
   describe '#backup' do
-    it 'is expected to call the #backup! method' do
-      expect(dashboards).to receive(:backup!)
-      dashboards.backup
-    end
-  end
-
-  describe '#backup!' do
-    subject { dashboards.backup! }
+    subject { dashboards.backup }
 
     it 'is expected to create a file' do
       file = double('file')
@@ -77,7 +70,7 @@ describe DatadogBackup::Dashboards do
       expect(file).to receive(:write).with(::JSON.pretty_generate(board_abc_123_def))
       allow(file).to receive(:close)
 
-      dashboards.backup!.map(&:value!)
+      dashboards.backup.map(&:value!)
     end
   end
 
@@ -92,9 +85,8 @@ describe DatadogBackup::Dashboards do
     it { is_expected.to eq [dashboard_description] }
   end
 
-  describe '#get_board' do
-    subject { dashboards.get_board('abc-123-def') }
-
+  describe '#get_by_id' do
+    subject { dashboards.get_by_id('abc-123-def') }
     it { is_expected.to eq board_abc_123_def }
   end
 end

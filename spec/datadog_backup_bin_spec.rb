@@ -45,7 +45,6 @@ describe 'bin/datadog_backup' do
     it "dies unless given ENV[#{v}]" do
       ClimateControl.env[v] = nil
       out_err, status = run_bin('backup')
-      expect(out_err).to match(/#{v} must be specified/)
       expect(status).to_not be_success
     end
   end

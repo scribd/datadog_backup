@@ -5,20 +5,20 @@ module DatadogBackup
       client_with_200(:get_all_boards).fetch('dashboards')
     end
 
-    def backup!
+    def backup
       all_boards.map do |board|
         Concurrent::Future.execute do
           id = board['id']
-          get_and_write(id)
+          get_and_write_file(id)
         end
       end
     end
 
-    def get_and_write(id)
-      write(dump(get_board(id)), filename(id))
+    def get_and_write_file(id)
+      write_file(dump(get_by_id(id)), filename(id))
     end
 
-    def get_board(id)
+    def get_by_id(id)
       client_with_200(:get_board, id)
     end
 
