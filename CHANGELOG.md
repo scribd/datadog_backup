@@ -1,3 +1,16 @@
+# [0.4.0](https://github.com/scribd/datadog_backup/compare/v0.3.0...v0.4.0) (2020-07-27)
+
+
+### Bug Fixes
+
+* use maintained 'amazing_print' gem, rather than suffer a bajillion error messages ([a988416](https://github.com/scribd/datadog_backup/commit/a988416de11fd83ddd2d5bcf5b78bed59de65694))
+
+
+### Features
+
+* `diffs` provides a diff between what's on disk and in datadog ([8599b47](https://github.com/scribd/datadog_backup/commit/8599b47cd8761292247331982d9332f6b4da07b4))
+* add `diffs` function ([3f5cd41](https://github.com/scribd/datadog_backup/commit/3f5cd41ae6bae99abb44a1495ea76c527ddc0428))
+
 # [0.3.0](https://github.com/scribd/datadog_backup/compare/v0.2.0...v0.3.0) (2020-07-24)
 
 
