@@ -13,8 +13,13 @@ module DatadogBackup
       end
     end
 
+    def diff(id)
+      banlist = ['overall_state', 'overall_state_modified']
+      super(id, banlist)
+    end
+
     def get_by_id(id)
-      all_monitors.select {|monitor| monitor['id'] == id }.first
+      all_monitors.select {|monitor| monitor['id'].to_s == id.to_s }.first
     end
 
     def restore!; end

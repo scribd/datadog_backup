@@ -40,15 +40,29 @@ describe DatadogBackup::Core do
         end
       end
     end
-    
+
     describe '#diff' do
       before(:example) do
-        core.write_file('{"text": "diff1"}', "#{tempdir}/core/diff.json")
-        allow(core).to receive(:get_by_id).and_return({"text" => "diff2"})
+        allow(core).to receive(:get_by_id).and_return({"text" => "diff1", "extra" => "diff1"})
+        core.write_file('{"text": "diff2", "extra": "diff2"}', "#{tempdir}/core/diff.json")
       end
-      subject { core.diff('diff') }
-      it { is_expected.to eq [["~", "text", "diff2", "diff1"]] }
+
+      context 'without banlist' do
+        subject { core.diff('diff') }
+        it { is_expected.to eq [["~", "extra", "diff1", "diff2"],["~", "text", "diff1", "diff2"]] }
+      end
+
+      context 'with banlist' do
+        subject { core.diff('diff', ['extra']) }
+        it { is_expected.to eq [["~", "text", "diff1", "diff2"]] }
+      end
     end
+
+    describe '#except' do
+      subject { core.except({a: :b, b: :c}, [:b]) }
+      it { is_expected.to eq({a: :b}) }
+    end
+
     
     describe '#initialize' do
       subject { core }

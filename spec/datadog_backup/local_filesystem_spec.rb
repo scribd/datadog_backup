@@ -8,7 +8,7 @@ describe DatadogBackup::LocalFilesystem do
       action: 'backup',
       client: client_double,
       backup_dir: tempdir,
-      resources: [],
+      resources: [DatadogBackup::Dashboards],
       output_format: :json,
       logger: Logger.new('/dev/null')
     )
@@ -35,8 +35,25 @@ describe DatadogBackup::LocalFilesystem do
     
     subject { core.all_files }
     it { is_expected.to eq(["#{tempdir}/all_files.json"] ) }
-    
   end
+
+  describe '#all_file_ids_for_selected_resources' do
+    before(:example) {
+      Dir.mkdir("#{tempdir}/dashboards")
+      Dir.mkdir("#{tempdir}/monitors")
+      File.new("#{tempdir}/dashboards/all_files.json", 'w')
+      File.new("#{tempdir}/monitors/12345.json", 'w')
+    }
+    
+    after(:example) {
+      FileUtils.rm "#{tempdir}/dashboards/all_files.json"
+      FileUtils.rm "#{tempdir}/monitors/12345.json"
+    }
+    
+    subject { core.all_file_ids_for_selected_resources }
+    it { is_expected.to eq(["all_files"] ) }
+  end
+
   
   describe '#class_from_id' do
     before(:example) do
@@ -127,6 +144,14 @@ describe DatadogBackup::LocalFilesystem do
       after(:example) { FileUtils.rm "#{tempdir}/core/abc-123-def.yaml" }
 
       subject { core.load_from_file_by_id('abc-123-def') }
+      it { is_expected.to eq("a" => "b") }
+    end
+
+    context 'Integer as parameter' do
+      before(:example) { core.write_file(%(---\na: b), "#{tempdir}/core/12345.yaml") }
+      after(:example) { FileUtils.rm "#{tempdir}/core/12345.yaml" }
+
+      subject { core.load_from_file_by_id(12345) }
       it { is_expected.to eq("a" => "b") }
     end
   end

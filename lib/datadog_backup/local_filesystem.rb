@@ -13,7 +13,13 @@ module DatadogBackup
     end
     
     def all_file_ids
-      all_files.map { |file| ::File.basename(file, '.*') }
+        all_files.map { |file| ::File.basename(file, '.*') }
+    end
+
+    def all_file_ids_for_selected_resources
+      all_file_ids.select do |id|
+          resources.include? class_from_id(id)
+      end
     end
     
     def class_from_id(id)

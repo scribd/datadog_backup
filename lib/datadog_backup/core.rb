@@ -9,6 +9,7 @@ module DatadogBackup
       raise 'subclass is expected to implement #backup'
     end
 
+    # Calls out to Datadog and checks for a '200' response
     def client_with_200(method, *id)
       response = client.send(method, *id)
       logger.debug response
@@ -22,10 +23,21 @@ module DatadogBackup
       retry
     end
 
-    def diff(id)
-      current = get_by_id(id)
-      filesystem = load_from_file_by_id(id)
+    # Returns the Hashdiff diff.
+    # Optionally, supply an array of keys to remove from comparison
+    def diff(id, banlist=[])
+      current = except(get_by_id(id), banlist)
+      filesystem = except(load_from_file_by_id(id), banlist)
       Hashdiff.diff(current, filesystem)
+    end
+    
+    # Returns a hash with banlist elements removed
+    def except(hash, banlist)
+        hash.tap do |hash| # tap returns self
+          banlist.each do |key| 
+            hash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
+          end
+        end
     end
 
     def get_by_id(id)

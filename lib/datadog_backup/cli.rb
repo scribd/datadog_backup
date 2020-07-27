@@ -28,10 +28,8 @@ module DatadogBackup
     
     def diffs
       any_resource_instance
-        .all_file_ids
-        .map do |id|
-          [id, getdiff(id)]
-        end
+        .all_file_ids_for_selected_resources
+        .map { |id| [id, getdiff(id)] }
         .to_h
         .select {|k, v| v != []}
     end
