@@ -6,12 +6,18 @@ module DatadogBackup
     end
 
     def backup
-      all_boards.map do |board|
-        Concurrent::Future.execute do
+      logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
+
+      futures = all_boards.map do |board|
+        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, board) do |board|
           id = board['id']
           get_and_write_file(id)
         end
       end
+      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
+
+      return Concurrent::Promises.zip(*futures).value!
+      watcher.join
     end
 
     def get_and_write_file(id)

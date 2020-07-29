@@ -6,10 +6,8 @@ module DatadogBackup
 
     def backup
       all_monitors.map do |monitor|
-        Concurrent::Future.execute do
-          id = monitor['id']
-          write_file(dump(monitor), filename(id))
-        end
+        id = monitor['id']
+        write_file(dump(monitor), filename(id))
       end
     end
 

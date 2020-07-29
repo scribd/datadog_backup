@@ -12,6 +12,10 @@ module DatadogBackup
       @options[:client]
     end
 
+    def concurrency_limit
+      @options[:concurrency_limit] | 2
+    end
+
     def datadog_api_key
       @options[:datadog_api_key]
     end

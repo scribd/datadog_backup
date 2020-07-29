@@ -62,7 +62,7 @@ describe DatadogBackup::Monitors do
       expect(file).to receive(:write).with(::JSON.pretty_generate(monitor_description))
       allow(file).to receive(:close)
       
-      monitors.backup.map(&:value!)
+      monitors.backup
     end
   end
   
