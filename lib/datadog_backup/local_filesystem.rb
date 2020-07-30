@@ -53,7 +53,7 @@ module DatadogBackup
 
     def load_from_file(string, output_format)
       if output_format == :json
-        JSON.load(string)
+        JSON.parse(string)
       elsif output_format == :yaml
         YAML.safe_load(string)
       else

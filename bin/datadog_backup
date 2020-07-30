@@ -28,7 +28,7 @@ LOGGER.level = Logger::INFO
 def prereqs
   ARGV << '--help' if ARGV.empty?
 
-  opts = OptionParser.new do |opts|
+  options = OptionParser.new do |opts|
     opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} <backup|diffs>"
     opts.separator ''
     opts.on_tail('-h', '--help', 'Show this message') do
@@ -51,12 +51,12 @@ def prereqs
       @options[:output_format] = :yaml
     end
   end
-  opts.parse!
+  options.parse!
 
   @options[:action] = ARGV.first
   if %w[backup diffs].include?(@options[:action])
   else
-    puts opts
+    puts options
     exit 0
   end
 end

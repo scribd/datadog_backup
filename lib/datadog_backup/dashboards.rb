@@ -15,10 +15,10 @@ module DatadogBackup
           get_and_write_file(id)
         end
       end
-      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
 
-      return Concurrent::Promises.zip(*futures).value!
-      watcher.join
+      ::DatadogBackup::ThreadPool.watcher(logger).join
+
+      Concurrent::Promises.zip(*futures).value!
     end
 
     def get_and_write_file(id)

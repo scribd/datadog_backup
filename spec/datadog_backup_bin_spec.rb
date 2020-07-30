@@ -46,7 +46,7 @@ describe 'bin/datadog_backup' do
   required_vars.map do |v|
     it "dies unless given ENV[#{v}]" do
       ClimateControl.env[v] = nil
-      out_err, status = run_bin('backup')
+      _, status = run_bin('backup')
       expect(status).to_not be_success
     end
   end

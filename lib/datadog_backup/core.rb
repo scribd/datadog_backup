@@ -15,12 +15,12 @@ module DatadogBackup
     def client_with_200(method, *id)
       max_retries = 6
       retries ||= 0
+
       response = client.send(method, *id)
+
       logger.debug response
-      if response[0] == '200'
-      else
-        raise "Method #{method} failed with error #{response}"
-      end
+      raise "Method #{method} failed with error #{response}" unless response[0] == '200'
+
       response[1]
     rescue ::Net::OpenTimeout => e
       if (retries += 1) <= max_retries
@@ -43,7 +43,7 @@ module DatadogBackup
 
     # Returns a hash with banlist elements removed
     def except(hash, banlist)
-      hash.tap do |hash| # tap returns self
+      hash.tap do # tap returns self
         banlist.each do |key|
           hash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
         end

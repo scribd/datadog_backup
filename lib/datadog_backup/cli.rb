@@ -35,15 +35,13 @@ module DatadogBackup
         end
       end
 
-      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
+      ::DatadogBackup::ThreadPool.watcher(logger).join
 
-      return Concurrent::Promises
-             .zip(*futures)
-             .value!
-             .to_h
-             .reject { |_k, v| v == [] }
-
-      watcher.join
+      Concurrent::Promises
+        .zip(*futures)
+        .value!
+        .to_h
+        .reject { |_k, v| v == [] }
     end
 
     def getdiff(id)
