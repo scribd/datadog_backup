@@ -14,5 +14,14 @@ module DatadogBackup
         end
       end
     end
+    
+    def self.shutdown(logger)
+      logger.fatal "Shutdown signal caught. Performing orderly shut down of thread pool. Press Ctrl+C again to forcibly shut down, but be warned, DATA LOSS MAY OCCUR."
+      TPOOL.shutdown
+      TPOOL.wait_for_termination
+    rescue SystemExit, Interrupt
+      logger.fatal "OK Nuking, DATA LOSS MAY OCCUR."
+      TPOOL.kill
+    end
   end
 end
