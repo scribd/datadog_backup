@@ -66,18 +66,18 @@ module DatadogBackup
       end
     end
     
-    def run!
+    def run! 
       ap(self.send(action.to_sym), index: false)
-    end
-    
-    def thread_pool
-      ::DatadogBackup::ThreadPool::TPOOL
+    rescue SystemExit, Interrupt
+        begin
+          logger.fatal "Shutdown signal caught. Performing orderly shut down of thread pool. Press Ctrl+C again to forcibly shut down, but be warned, DATA LOSS MAY OCCUR."
+          ::DatadogBackup::ThreadPool::TPOOL.shutdown
+          ::DatadogBackup::ThreadPool::TPOOL.wait_for_termination
+        rescue SystemExit, Interrupt
+          logger.fatal "OK Nuking, DATA LOSS MAY OCCUR."
+          ::DatadogBackup::ThreadPool::TPOOL.kill
+        end
     end
 
-    def thread_pool_watcher
-      ::DatadogBackup::ThreadPool.watcher
-    end
-    
-    
   end
 end

@@ -4,7 +4,7 @@ module DatadogBackup
       min_threads: [2, Concurrent.processor_count].max,
       max_threads: [2, Concurrent.processor_count].max * 2,
       max_queue: [2, Concurrent.processor_count].max * 512,
-      fallback_policy: :caller_runs
+      fallback_policy: :abort
     )
     def self.watcher(logger)
       Thread.new(TPOOL) do |pool|
