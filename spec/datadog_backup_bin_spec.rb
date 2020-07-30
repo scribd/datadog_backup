@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'open3'
 require 'climate_control'
 require 'timeout'
@@ -18,7 +20,7 @@ describe 'bin/datadog_backup' do
 
       Timeout.timeout(1.0) do
         oe.each do |v|
-          output << v
+          output += v
         end
       end
     rescue Timeout::Error

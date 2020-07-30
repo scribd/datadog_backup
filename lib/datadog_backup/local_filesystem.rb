@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'fileutils'
 require 'json'
 require 'yaml'
@@ -53,7 +55,7 @@ module DatadogBackup
       if output_format == :json
         JSON.load(string)
       elsif output_format == :yaml
-        YAML.load(string)
+        YAML.safe_load(string)
       else
         raise 'invalid output_format specified or not specified'
       end

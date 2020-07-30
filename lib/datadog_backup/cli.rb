@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'optparse'
 require 'logger'
 require 'amazing_print'
@@ -11,9 +13,7 @@ module DatadogBackup
     end
 
     def backup
-      resource_instances.each do |resource_instance|
-        resource_instance.backup
-      end
+      resource_instances.each(&:backup)
       any_resource_instance.all_files
     end
 
@@ -41,7 +41,7 @@ module DatadogBackup
              .zip(*futures)
              .value!
              .to_h
-             .select { |_k, v| v != [] }
+             .reject { |_k, v| v == [] }
 
       watcher.join
     end

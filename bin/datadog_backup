@@ -1,6 +1,7 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: true
 
-$:.unshift File.join(File.dirname(__FILE__), '../lib')
+$LOAD_PATH.unshift File.join(File.dirname(__FILE__), '../lib')
 
 require 'logger'
 require 'optparse'
@@ -28,7 +29,7 @@ def prereqs
   ARGV << '--help' if ARGV.empty?
 
   opts = OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($0)} <backup|diffs>"
+    opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} <backup|diffs>"
     opts.separator ''
     opts.on_tail('-h', '--help', 'Show this message') do
       puts opts

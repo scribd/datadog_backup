@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DatadogBackup
   class Monitors < Core
     def all_monitors

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DatadogBackup
   class Dashboards < Core
     def all_boards
