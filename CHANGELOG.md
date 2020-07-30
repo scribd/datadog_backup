@@ -1,3 +1,11 @@
+# [0.5.0](https://github.com/scribd/datadog_backup/compare/v0.4.0...v0.5.0) (2020-07-30)
+
+
+### Features
+
+* Handle Ctrl-c by closing down the worker pool ([96791ba](https://github.com/scribd/datadog_backup/commit/96791ba23997114c356a097eb7a096ef2f7bd31c))
+* use thread pool to globally limit thread count ([915f5c2](https://github.com/scribd/datadog_backup/commit/915f5c27be2fdf1f3bde40c34d8999ee1248de43))
+
 # [0.4.0](https://github.com/scribd/datadog_backup/compare/v0.3.0...v0.4.0) (2020-07-27)
 
 
