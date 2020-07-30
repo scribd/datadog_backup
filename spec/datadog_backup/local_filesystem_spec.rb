@@ -12,7 +12,7 @@ describe DatadogBackup::LocalFilesystem do
       output_format: :json,
       logger: Logger.new('/dev/null')
     )
-  end  
+  end
   let(:core_yaml) do
     DatadogBackup::Core.new(
       action: 'backup',
@@ -25,39 +25,38 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#all_files' do
-    before(:example) {
+    before(:example) do
       File.new("#{tempdir}/all_files.json", 'w')
-    }
-    
-    after(:example) {
+    end
+
+    after(:example) do
       FileUtils.rm "#{tempdir}/all_files.json"
-    }
-    
+    end
+
     subject { core.all_files }
-    it { is_expected.to eq(["#{tempdir}/all_files.json"] ) }
+    it { is_expected.to eq(["#{tempdir}/all_files.json"]) }
   end
 
   describe '#all_file_ids_for_selected_resources' do
-    before(:example) {
+    before(:example) do
       Dir.mkdir("#{tempdir}/dashboards")
       Dir.mkdir("#{tempdir}/monitors")
       File.new("#{tempdir}/dashboards/all_files.json", 'w')
       File.new("#{tempdir}/monitors/12345.json", 'w')
-    }
-    
-    after(:example) {
+    end
+
+    after(:example) do
       FileUtils.rm "#{tempdir}/dashboards/all_files.json"
       FileUtils.rm "#{tempdir}/monitors/12345.json"
-    }
-    
+    end
+
     subject { core.all_file_ids_for_selected_resources }
-    it { is_expected.to eq(["all_files"] ) }
+    it { is_expected.to eq(['all_files']) }
   end
 
-  
   describe '#class_from_id' do
     before(:example) do
-      core.write_file('abc', "#{tempdir}/core/abc-123-def.json") 
+      core.write_file('abc', "#{tempdir}/core/abc-123-def.json")
     end
 
     after(:example) do
@@ -69,12 +68,12 @@ describe DatadogBackup::LocalFilesystem do
 
   describe '#dump' do
     context ':json' do
-      subject { core.dump({a: :b}) }
+      subject { core.dump({ a: :b }) }
       it { is_expected.to eq(%({\n  "a": "b"\n})) }
     end
 
     context ':yaml' do
-      subject { core_yaml.dump({"a" => "b"}) }
+      subject { core_yaml.dump({ 'a' => 'b' }) }
       it { is_expected.to eq(%(---\na: b\n)) }
     end
   end
@@ -92,42 +91,40 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#file_type' do
-    before(:example) {
+    before(:example) do
       File.new("#{tempdir}/file_type.json", 'w')
-    }
-    
-    after(:example) {
+    end
+
+    after(:example) do
       FileUtils.rm "#{tempdir}/file_type.json"
-    }
-    
+    end
+
     subject { core.file_type("#{tempdir}/file_type.json") }
     it { is_expected.to eq :json }
   end
-  
-  
+
   describe '#find_file_by_id' do
-    before(:example) {
+    before(:example) do
       File.new("#{tempdir}/find_file.json", 'w')
-    }
-    
-    after(:example) {
+    end
+
+    after(:example) do
       FileUtils.rm "#{tempdir}/find_file.json"
-    }
-    
+    end
+
     subject { core.find_file_by_id('find_file') }
     it { is_expected.to eq "#{tempdir}/find_file.json" }
-    
   end
 
   describe '#load_from_file' do
     context ':json' do
       subject { core.load_from_file(%({\n  "a": "b"\n}), :json) }
-      it { is_expected.to eq( "a" => "b" ) }
+      it { is_expected.to eq('a' => 'b') }
     end
 
     context ':yaml' do
       subject { core.load_from_file(%(---\na: b\n), :yaml) }
-      it { is_expected.to eq("a" => "b") }
+      it { is_expected.to eq('a' => 'b') }
     end
   end
 
@@ -137,22 +134,22 @@ describe DatadogBackup::LocalFilesystem do
       after(:example) { FileUtils.rm "#{tempdir}/core/abc-123-def.json" }
 
       subject { core_yaml.load_from_file_by_id('abc-123-def') }
-      it { is_expected.to eq("a" => "b") }
+      it { is_expected.to eq('a' => 'b') }
     end
     context 'written in yaml read in json mode' do
       before(:example) { core.write_file(%(---\na: b), "#{tempdir}/core/abc-123-def.yaml") }
       after(:example) { FileUtils.rm "#{tempdir}/core/abc-123-def.yaml" }
 
       subject { core.load_from_file_by_id('abc-123-def') }
-      it { is_expected.to eq("a" => "b") }
+      it { is_expected.to eq('a' => 'b') }
     end
 
     context 'Integer as parameter' do
       before(:example) { core.write_file(%(---\na: b), "#{tempdir}/core/12345.yaml") }
       after(:example) { FileUtils.rm "#{tempdir}/core/12345.yaml" }
 
-      subject { core.load_from_file_by_id(12345) }
-      it { is_expected.to eq("a" => "b") }
+      subject { core.load_from_file_by_id(12_345) }
+      it { is_expected.to eq('a' => 'b') }
     end
   end
 

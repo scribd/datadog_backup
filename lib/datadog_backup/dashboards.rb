@@ -1,6 +1,5 @@
 module DatadogBackup
   class Dashboards < Core
-
     def all_boards
       client_with_200(:get_all_boards).fetch('dashboards')
     end
@@ -27,7 +26,6 @@ module DatadogBackup
     def get_by_id(id)
       client_with_200(:get_board, id)
     end
-
 
     def restore!; end
   end

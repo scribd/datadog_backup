@@ -17,12 +17,11 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'dogapi', '1.41.0'
+  spec.add_dependency 'amazing_print', '1.2.1'
   spec.add_dependency 'concurrent-ruby', '1.1.6'
   spec.add_dependency 'concurrent-ruby-edge', '0.6.0'
+  spec.add_dependency 'dogapi', '1.41.0'
   spec.add_dependency 'hashdiff', '1.0.1'
-  spec.add_dependency 'amazing_print', '1.2.1'
-
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'pry'

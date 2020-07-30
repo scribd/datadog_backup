@@ -14,6 +14,4 @@ require_relative 'datadog_backup/thread_pool'
 require_relative 'datadog_backup/version'
 
 module DatadogBackup
-
 end
-

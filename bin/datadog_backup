@@ -17,7 +17,7 @@ LOGGER.level = Logger::INFO
 @options = {
   action: nil,
   datadog_api_key: ENV.fetch('DATADOG_API_KEY'),
-  datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),  
+  datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   output_format: :json,
@@ -63,4 +63,3 @@ end
 prereqs
 
 DatadogBackup::Cli.new(@options).run!
-

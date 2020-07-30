@@ -7,7 +7,7 @@ module DatadogBackup
     def backup_dir
       @options[:backup_dir]
     end
-    
+
     def client
       @options[:client]
     end
@@ -27,7 +27,7 @@ module DatadogBackup
     def logger
       @options[:logger]
     end
-    
+
     # Either :json or :yaml
     def output_format
       @options[:output_format]

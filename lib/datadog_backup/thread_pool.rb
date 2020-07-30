@@ -6,21 +6,22 @@ module DatadogBackup
       max_queue: [2, Concurrent.processor_count].max * 512,
       fallback_policy: :abort
     )
+
     def self.watcher(logger)
       Thread.new(TPOOL) do |pool|
-        while(pool.queue_length > 0) do
+        while pool.queue_length > 0
           sleep 2
           logger.info("#{pool.queue_length} tasks remaining for execution.")
         end
       end
     end
-    
+
     def self.shutdown(logger)
-      logger.fatal "Shutdown signal caught. Performing orderly shut down of thread pool. Press Ctrl+C again to forcibly shut down, but be warned, DATA LOSS MAY OCCUR."
+      logger.fatal 'Shutdown signal caught. Performing orderly shut down of thread pool. Press Ctrl+C again to forcibly shut down, but be warned, DATA LOSS MAY OCCUR.'
       TPOOL.shutdown
       TPOOL.wait_for_termination
     rescue SystemExit, Interrupt
-      logger.fatal "OK Nuking, DATA LOSS MAY OCCUR."
+      logger.fatal 'OK Nuking, DATA LOSS MAY OCCUR.'
       TPOOL.kill
     end
   end
