@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DatadogBackup
   class Monitors < Core
     def all_monitors
@@ -6,20 +8,18 @@ module DatadogBackup
 
     def backup
       all_monitors.map do |monitor|
-        Concurrent::Future.execute do
-          id = monitor['id']
-          write_file(dump(monitor), filename(id))
-        end
+        id = monitor['id']
+        write_file(dump(monitor), filename(id))
       end
     end
 
     def diff(id)
-      banlist = ['overall_state', 'overall_state_modified']
+      banlist = %w[overall_state overall_state_modified]
       super(id, banlist)
     end
 
     def get_by_id(id)
-      all_monitors.select {|monitor| monitor['id'].to_s == id.to_s }.first
+      all_monitors.select { |monitor| monitor['id'].to_s == id.to_s }.first
     end
 
     def restore!; end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module DatadogBackup
   module Options
     def action
@@ -7,9 +9,13 @@ module DatadogBackup
     def backup_dir
       @options[:backup_dir]
     end
-    
+
     def client
       @options[:client]
+    end
+
+    def concurrency_limit
+      @options[:concurrency_limit] | 2
     end
 
     def datadog_api_key
@@ -23,7 +29,7 @@ module DatadogBackup
     def logger
       @options[:logger]
     end
-    
+
     # Either :json or :yaml
     def output_format
       @options[:output_format]

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 describe DatadogBackup::Dashboards do
@@ -66,11 +68,11 @@ describe DatadogBackup::Dashboards do
 
     it 'is expected to create a file' do
       file = double('file')
-      allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return( file )
+      allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return(file)
       expect(file).to receive(:write).with(::JSON.pretty_generate(board_abc_123_def))
       allow(file).to receive(:close)
 
-      dashboards.backup.map(&:value!)
+      dashboards.backup
     end
   end
 
@@ -83,6 +85,14 @@ describe DatadogBackup::Dashboards do
     end
 
     it { is_expected.to eq [dashboard_description] }
+  end
+
+  describe '#diff' do
+    it 'calls the api only once' do
+      dashboards.write_file('{"a":"b"}', dashboards.filename('abc-123-def'))
+      dashboards.diff('abc-123-def')
+      expect(client_double).to have_received(:get_board).exactly(1).times
+    end
   end
 
   describe '#get_by_id' do
