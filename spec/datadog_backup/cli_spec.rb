@@ -55,8 +55,10 @@ describe DatadogBackup::Cli do
     example 'starts interactive restore' do
       allow($stdin).to receive(:gets).and_return('q')
       begin
-       expect{ subject }.to output(" ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n\n" + "(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?").to_stdout
-      rescue SystemExit
+        expect{ subject }.to(
+          output(/\(r\)estore to Datadog, overwrite local changes and \(d\)ownload, \(s\)kip, or \(q\)uit\?/).to_stdout
+          .and raise_error(SystemExit)
+        )
       end
     end
     
@@ -80,8 +82,7 @@ describe DatadogBackup::Cli do
       allow($stdin).to receive(:gets).and_return('q')
       expect(dashboards).to_not receive(:write_file)
       expect(dashboards).to_not receive(:update)
-      expect(Kernel).to receive(:exit)
-      subject
+      expect{ subject }.to raise_error(SystemExit)
     end
   end
 end
