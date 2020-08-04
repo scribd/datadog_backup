@@ -35,9 +35,9 @@ describe DatadogBackup::Cli do
     end
     subject { cli.diffs }
     it {
-      is_expected.to eq(
-        " ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n\n" + 
-        " ---\n id: diffs3\n ---\n-text: diff2\n+text: diff\n\n" +
+      is_expected.to include(
+        " ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n",
+        " ---\n id: diffs3\n ---\n-text: diff2\n+text: diff\n",
         " ---\n id: diffs2\n ---\n-text: diff2\n+text: diff\n"
       )
     }
