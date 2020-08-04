@@ -55,8 +55,8 @@ describe DatadogBackup::Cli do
     example 'starts interactive restore' do
       allow($stdin).to receive(:gets).and_return('q')
       begin
-       expect{ subject }.to output(" ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n\n" + "(r)estore to Datadog, overwrite local changes and (d)ownload, or (s)kip?").to_stdout
-      rescue SystemExit => e
+       expect{ subject }.to output(" ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n\n" + "(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?").to_stdout
+      rescue SystemExit
       end
     end
     

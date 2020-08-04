@@ -54,6 +54,8 @@ module DatadogBackup
     def getdiff(id)
       result = definitive_resource_instance(id).diff(id)
       case result
+      when ""
+        nil
       when "\n"
         nil
       when '<div class="diff"></div>'
@@ -99,13 +101,14 @@ module DatadogBackup
 
     def restore
       futures = all_diff_futures
-      ::DatadogBackup::ThreadPool.watcher(logger).join
+      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
 
       futures.each do |future|
         id, diff = *future.value!
         next unless diff
+        puts '--------------------------------------------------------------------------------'
         puts format_diff_output([id, diff])
-        puts '(r)estore to Datadog, overwrite local changes and (d)ownload, or (s)kip?'
+        puts '(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?'
         response = $stdin.gets().chomp()
         case response
         when 'q'
@@ -121,6 +124,9 @@ module DatadogBackup
           response = $stdin.gets().chomp()
         end
       end
+
+      watcher.join
+
     end
 
     def run!
