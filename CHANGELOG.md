@@ -1,3 +1,16 @@
+# [0.6.0-alpha.1](https://github.com/scribd/datadog_backup/compare/v0.5.0...v0.6.0-alpha.1) (2020-08-04)
+
+
+### Bug Fixes
+
+* enable datadog_backup executable to run restore ([5094813](https://github.com/scribd/datadog_backup/commit/50948132b154c30956b87b5ec1e9070d34a48a02))
+
+
+### Features
+
+* add restore flow ([8175a03](https://github.com/scribd/datadog_backup/commit/8175a033b34b268f4a9850d1629dfdb21e86d2fa))
+* use Diffy diffs rather than HashDiff:x ([e5529b8](https://github.com/scribd/datadog_backup/commit/e5529b8f8501c2534f26bd0d541afa20c076b5c0))
+
 # [0.5.0](https://github.com/scribd/datadog_backup/compare/v0.4.0...v0.5.0) (2020-07-30)
 
 
