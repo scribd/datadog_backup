@@ -21,8 +21,6 @@ module DatadogBackup
       Concurrent::Promises.zip(*futures).value!
     end
 
-
-
     def get_by_id(id)
       client_with_200(:get_board, id)
     end

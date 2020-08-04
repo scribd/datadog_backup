@@ -12,11 +12,11 @@ module DatadogBackup
       client.get_instance_variable("@#{myclass}_svc".to_sym)
     end
 
-    def api_version 
+    def api_version
       api_service.class::API_VERSION
     end
 
-    def api_resource_name 
+    def api_resource_name
       api_service.class::RESOURCE_NAME
     end
 
@@ -85,8 +85,6 @@ module DatadogBackup
     end
 
     def update(id, body)
-
-
       api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
     end
   end

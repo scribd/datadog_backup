@@ -29,7 +29,7 @@ module DatadogBackup
     def diff_format
       @options[:diff_format]
     end
-    
+
     def logger
       @options[:logger]
     end

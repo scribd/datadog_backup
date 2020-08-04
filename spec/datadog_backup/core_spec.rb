@@ -52,23 +52,25 @@ describe DatadogBackup::Core do
 
     context 'without banlist' do
       subject { core.diff('diff') }
-      it { is_expected.to eq <<~EOF
-         ---
-        -text: diff1
-        -extra: diff1
-        +text: diff2
-        +extra: diff2
-      EOF
+      it {
+        is_expected.to eq <<~EOF
+           ---
+          -text: diff1
+          -extra: diff1
+          +text: diff2
+          +extra: diff2
+        EOF
       }
     end
 
     context 'with banlist' do
       subject { core.diff('diff', ['extra']) }
-      it { is_expected.to eq <<~EOF
-         ---
-        -text: diff1
-        +text: diff2
-      EOF
+      it {
+        is_expected.to eq <<~EOF
+           ---
+          -text: diff1
+          +text: diff2
+        EOF
       }
     end
   end
@@ -94,10 +96,10 @@ describe DatadogBackup::Core do
   describe '#update' do
     subject { core.update('abc-123-def', '{"a": "b"}') }
     example 'it calls Dogapi::APIService.request' do
-      stub_const('Dogapi::APIService::API_VERSION', "v1")
+      stub_const('Dogapi::APIService::API_VERSION', 'v1')
       allow(client_double).to receive(:get_instance_variable).with(:@core_svc).and_return(api_service_double)
       allow(api_service_double).to receive(:class).and_return(Dogapi::V1::DashboardService)
-      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, "/api/v1/dashboard/abc-123-def", nil, '{"a": "b"}', true)
+      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, '/api/v1/dashboard/abc-123-def', nil, '{"a": "b"}', true)
       subject
     end
   end

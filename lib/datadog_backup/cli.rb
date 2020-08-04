@@ -11,8 +11,8 @@ module DatadogBackup
     def all_diff_futures
       logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
       any_resource_instance
-                .all_file_ids_for_selected_resources
-                .map do |id|
+        .all_file_ids_for_selected_resources
+        .map do |id|
         Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, id) do |id|
           [id, getdiff(id)]
         end
@@ -43,25 +43,25 @@ module DatadogBackup
       futures = all_diff_futures
       ::DatadogBackup::ThreadPool.watcher(logger).join
 
-      format_diff_output( 
+      format_diff_output(
         Concurrent::Promises
           .zip(*futures)
           .value!
-          .reject {|_k, v| v.nil? }
+          .reject { |_k, v| v.nil? }
       )
     end
 
     def getdiff(id)
       result = definitive_resource_instance(id).diff(id)
       case result
-      when ""
+      when ''
         nil
       when "\n"
         nil
       when '<div class="diff"></div>'
         nil
       else
-        return result
+        result
       end
     end
 
@@ -72,16 +72,16 @@ module DatadogBackup
           " ---\n id: #{id}\n#{diff}"
         end.join("\n")
       when :html
-        "<html><head><style>" +
-        Diffy::CSS +
-        '</style></head><body>' +
-        diff_output.map do |id, diff|
-          "<br><br> ---<br><strong> id: #{id}</strong><br>" + diff
-        end.join("<br>") +
-        "</body></html>"
+        '<html><head><style>' +
+          Diffy::CSS +
+          '</style></head><body>' +
+          diff_output.map do |id, diff|
+            "<br><br> ---<br><strong> id: #{id}</strong><br>" + diff
+          end.join('<br>') +
+          '</body></html>'
       else
-        raise "Unexpected diff_format."
-      end 
+        raise 'Unexpected diff_format.'
+      end
     end
 
     def initialize(options)
@@ -106,10 +106,11 @@ module DatadogBackup
       futures.each do |future|
         id, diff = *future.value!
         next unless diff
+
         puts '--------------------------------------------------------------------------------'
         puts format_diff_output([id, diff])
         puts '(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?'
-        response = $stdin.gets().chomp()
+        response = $stdin.gets.chomp
         case response
         when 'q'
           exit
@@ -121,16 +122,15 @@ module DatadogBackup
           next
         else
           puts 'Invalid response, please try again.'
-          response = $stdin.gets().chomp()
+          response = $stdin.gets.chomp
         end
       end
 
       watcher.join
-
     end
 
     def run!
-      puts(send(action.to_sym))#, index: false)
+      puts(send(action.to_sym))
     rescue SystemExit, Interrupt
       ::DatadogBackup::ThreadPool.shutdown(logger)
     end

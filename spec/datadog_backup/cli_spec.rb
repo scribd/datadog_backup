@@ -20,11 +20,11 @@ describe DatadogBackup::Cli do
   end
   let(:cli) { DatadogBackup::Cli.new(options) }
   let(:dashboards) { DatadogBackup::Dashboards.new(options) }
-  
+
   before(:example) do
     allow(cli).to receive(:resource_instances).and_return([dashboards])
   end
-  
+
   describe '#diffs' do
     before(:example) do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
@@ -42,26 +42,26 @@ describe DatadogBackup::Cli do
       )
     }
   end
-  
+
   describe '#restore' do
     before(:example) do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
       allow(cli).to receive(:initialize_client).and_return(client_double)
     end
-    
+
     subject { cli.restore }
-    
+
     example 'starts interactive restore' do
       allow($stdin).to receive(:gets).and_return('q')
       begin
-        expect{ subject }.to(
+        expect { subject }.to(
           output(/\(r\)estore to Datadog, overwrite local changes and \(d\)ownload, \(s\)kip, or \(q\)uit\?/).to_stdout
-          .and raise_error(SystemExit)
+          .and(raise_error(SystemExit))
         )
       end
     end
-    
+
     example 'restore' do
       allow($stdin).to receive(:gets).and_return('r')
       expect(dashboards).to receive(:update).with('diffs1', '{"text":"diff"}')
@@ -69,7 +69,7 @@ describe DatadogBackup::Cli do
     end
     example 'download' do
       allow($stdin).to receive(:gets).and_return('d')
-      expect(dashboards).to receive(:write_file).with(%Q[{\n  "text": "diff2"\n}], "#{tempdir}/dashboards/diffs1.json")
+      expect(dashboards).to receive(:write_file).with(%({\n  "text": "diff2"\n}), "#{tempdir}/dashboards/diffs1.json")
       subject
     end
     example 'skip' do
@@ -82,7 +82,7 @@ describe DatadogBackup::Cli do
       allow($stdin).to receive(:gets).and_return('q')
       expect(dashboards).to_not receive(:write_file)
       expect(dashboards).to_not receive(:update)
-      expect{ subject }.to raise_error(SystemExit)
+      expect { subject }.to raise_error(SystemExit)
     end
   end
 end
