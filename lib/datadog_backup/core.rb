@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require 'hashdiff'
+require 'diffy'
 
 module DatadogBackup
   class Core
@@ -31,12 +31,12 @@ module DatadogBackup
       end
     end
 
-    # Returns the Hashdiff diff.
+    # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
     def diff(id, banlist = [])
-      current = except(get_by_id(id), banlist)
-      filesystem = except(load_from_file_by_id(id), banlist)
-      result = Hashdiff.diff(current, filesystem)
+      current = except(get_by_id(id), banlist).to_yaml
+      filesystem = except(load_from_file_by_id(id), banlist).to_yaml
+      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
       logger.debug("Compared ID #{id} and found #{result}")
       result
     end

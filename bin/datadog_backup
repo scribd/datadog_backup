@@ -20,6 +20,7 @@ LOGGER.level = Logger::INFO
   datadog_api_key: ENV.fetch('DATADOG_API_KEY'),
   datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
+  diff_format: nil,
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   output_format: :json,
   logger: LOGGER
@@ -49,6 +50,9 @@ def prereqs
     end
     opts.on('--yaml') do
       @options[:output_format] = :yaml
+    end
+    opts.on('--diff-format FORMAT', 'one of "color", "html_simple", "html"') do |format|
+      @options[:diff_format] = format.to_sym
     end
   end
   options.parse!

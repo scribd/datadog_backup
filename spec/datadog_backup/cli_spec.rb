@@ -12,6 +12,7 @@ describe DatadogBackup::Cli do
       client: client_double,
       datadog_api_key: 1,
       datadog_app_key: 1,
+      diff_format: nil,
       logger: Logger.new('/dev/null'),
       output_format: :json,
       resources: [DatadogBackup::Dashboards]
@@ -19,11 +20,11 @@ describe DatadogBackup::Cli do
   end
   let(:cli) { DatadogBackup::Cli.new(options) }
   let(:dashboards) { DatadogBackup::Dashboards.new(options) }
-
+  
   before(:example) do
     allow(cli).to receive(:resource_instances).and_return([dashboards])
   end
-
+  
   describe '#diffs' do
     before(:example) do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
@@ -34,11 +35,11 @@ describe DatadogBackup::Cli do
     end
     subject { cli.diffs }
     it {
-      is_expected.to eq({
-                          'diffs1' => [['~', 'text', 'diff2', 'diff']],
-                          'diffs2' => [['~', 'text', 'diff2', 'diff']],
-                          'diffs3' => [['~', 'text', 'diff2', 'diff']]
-                        })
+      is_expected.to eq(
+        " ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n\n" + 
+        " ---\n id: diffs3\n ---\n-text: diff2\n+text: diff\n\n" +
+        " ---\n id: diffs2\n ---\n-text: diff2\n+text: diff\n"
+      )
     }
   end
 end

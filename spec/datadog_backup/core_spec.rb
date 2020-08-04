@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 require 'spec_helper'
 
 describe DatadogBackup::Core do
@@ -10,6 +8,7 @@ describe DatadogBackup::Core do
       action: 'backup',
       client: client_double,
       backup_dir: tempdir,
+      diff_format: nil,
       resources: [],
       output_format: :json,
       logger: Logger.new('/dev/null')
@@ -44,6 +43,8 @@ describe DatadogBackup::Core do
   end
 
   describe '#diff' do
+
+
     before(:example) do
       allow(core).to receive(:get_by_id).and_return({ 'text' => 'diff1', 'extra' => 'diff1' })
       core.write_file('{"text": "diff2", "extra": "diff2"}', "#{tempdir}/core/diff.json")
@@ -51,12 +52,24 @@ describe DatadogBackup::Core do
 
     context 'without banlist' do
       subject { core.diff('diff') }
-      it { is_expected.to eq [['~', 'extra', 'diff1', 'diff2'], ['~', 'text', 'diff1', 'diff2']] }
+      it { is_expected.to eq <<~EOF
+         ---
+        -text: diff1
+        -extra: diff1
+        +text: diff2
+        +extra: diff2
+      EOF
+      }
     end
 
     context 'with banlist' do
       subject { core.diff('diff', ['extra']) }
-      it { is_expected.to eq [['~', 'text', 'diff1', 'diff2']] }
+      it { is_expected.to eq <<~EOF
+         ---
+        -text: diff1
+        +text: diff2
+      EOF
+      }
     end
   end
 

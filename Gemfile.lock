@@ -5,8 +5,8 @@ PATH
       amazing_print (= 1.2.1)
       concurrent-ruby (= 1.1.6)
       concurrent-ruby-edge (= 0.6.0)
+      diffy (= 3.3.0)
       dogapi (= 1.41.0)
-      hashdiff (= 1.0.1)
 
 GEM
   remote: https://rubygems.org/
@@ -19,6 +19,7 @@ GEM
     concurrent-ruby-edge (0.6.0)
       concurrent-ruby (~> 1.1.6)
     diff-lcs (1.4.4)
+    diffy (3.3.0)
     dogapi (1.41.0)
       multi_json
     ffi (1.13.1)
@@ -37,7 +38,6 @@ GEM
       guard (~> 2.1)
       guard-compat (~> 1.1)
       rspec (>= 2.99.0, < 4.0)
-    hashdiff (1.0.1)
     listen (3.2.1)
       rb-fsevent (~> 0.10, >= 0.10.3)
       rb-inotify (~> 0.9, >= 0.9.10)

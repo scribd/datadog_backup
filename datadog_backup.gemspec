@@ -23,7 +23,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'concurrent-ruby', '1.1.6'
   spec.add_dependency 'concurrent-ruby-edge', '0.6.0'
   spec.add_dependency 'dogapi', '1.41.0'
-  spec.add_dependency 'hashdiff', '1.0.1'
+  spec.add_dependency 'diffy', '3.3.0'
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'pry'

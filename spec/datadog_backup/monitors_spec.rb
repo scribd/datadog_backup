@@ -87,7 +87,7 @@ describe DatadogBackup::Monitors do
         ]
       )
 
-      expect(monitors.diff(123_455)).to eq []
+      expect(monitors.diff(123_455)).to eq ""
 
       FileUtils.rm monitors.filename(123_455)
     end
