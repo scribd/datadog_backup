@@ -7,6 +7,19 @@ module DatadogBackup
     include ::DatadogBackup::LocalFilesystem
     include ::DatadogBackup::Options
 
+    def api_service
+      # The underlying class from Dogapi that talks to datadog
+      client.get_instance_variable("@#{myclass}_svc".to_sym)
+    end
+
+    def api_version 
+      api_service.class::API_VERSION
+    end
+
+    def api_resource_name 
+      api_service.class::RESOURCE_NAME
+    end
+
     def backup
       raise 'subclass is expected to implement #backup'
     end
@@ -50,6 +63,10 @@ module DatadogBackup
       end
     end
 
+    def get_and_write_file(id)
+      write_file(dump(get_by_id(id)), filename(id))
+    end
+
     def get_by_id(_id)
       raise 'subclass is expected to implement #get_by_id(id)'
     end
@@ -65,6 +82,12 @@ module DatadogBackup
 
     def restore
       raise 'subclass is expected to implement #restore'
+    end
+
+    def update(id, body)
+
+
+      api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
     end
   end
 end

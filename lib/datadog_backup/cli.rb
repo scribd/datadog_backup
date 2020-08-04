@@ -8,6 +8,17 @@ module DatadogBackup
   class Cli
     include ::DatadogBackup::Options
 
+    def all_diff_futures
+      logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
+      any_resource_instance
+                .all_file_ids_for_selected_resources
+                .map do |id|
+        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, id) do |id|
+          [id, getdiff(id)]
+        end
+      end
+    end
+
     def any_resource_instance
       resource_instances.first
     end
@@ -24,17 +35,12 @@ module DatadogBackup
       )
     end
 
+    def definitive_resource_instance(id)
+      matching_resource_instance(any_resource_instance.class_from_id(id))
+    end
+
     def diffs
-      logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
-
-      futures = any_resource_instance
-                .all_file_ids_for_selected_resources
-                .map do |id|
-        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, id) do |id|
-          [id, getdiff(id)]
-        end
-      end
-
+      futures = all_diff_futures
       ::DatadogBackup::ThreadPool.watcher(logger).join
 
       format_diff_output( 
@@ -46,8 +52,7 @@ module DatadogBackup
     end
 
     def getdiff(id)
-      definitive_resource_instance = matching_resource_instance(any_resource_instance.class_from_id(id))
-      result = definitive_resource_instance.diff(id)
+      result = definitive_resource_instance(id).diff(id)
       case result
       when "\n"
         nil
@@ -62,7 +67,7 @@ module DatadogBackup
       case diff_format
       when nil, :color
         diff_output.map do |id, diff|
-          " ---\n id: #{id}\n" + diff
+          " ---\n id: #{id}\n#{diff}"
         end.join("\n")
       when :html
         "<html><head><style>" +
@@ -89,6 +94,32 @@ module DatadogBackup
     def resource_instances
       @resource_instances ||= resources.map do |resource|
         resource.new(@options)
+      end
+    end
+
+    def restore
+      futures = all_diff_futures
+      ::DatadogBackup::ThreadPool.watcher(logger).join
+
+      futures.each do |future|
+        id, diff = *future.value!
+        next unless diff
+        puts format_diff_output([id, diff])
+        puts '(r)estore to Datadog, overwrite local changes and (d)ownload, or (s)kip?'
+        response = $stdin.gets().chomp()
+        case response
+        when 'q'
+          exit
+        when 'r'
+          definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id).to_json)
+        when 'd'
+          definitive_resource_instance(id).get_and_write_file(id)
+        when 's'
+          next
+        else
+          puts 'Invalid response, please try again.'
+          response = $stdin.gets().chomp()
+        end
       end
     end
 

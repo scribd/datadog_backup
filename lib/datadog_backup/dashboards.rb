@@ -21,9 +21,7 @@ module DatadogBackup
       Concurrent::Promises.zip(*futures).value!
     end
 
-    def get_and_write_file(id)
-      write_file(dump(get_by_id(id)), filename(id))
-    end
+
 
     def get_by_id(id)
       client_with_200(:get_board, id)

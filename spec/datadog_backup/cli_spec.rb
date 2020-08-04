@@ -42,4 +42,46 @@ describe DatadogBackup::Cli do
       )
     }
   end
+  
+  describe '#restore' do
+    before(:example) do
+      dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
+      allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
+      allow(cli).to receive(:initialize_client).and_return(client_double)
+    end
+    
+    subject { cli.restore }
+    
+    example 'starts interactive restore' do
+      allow($stdin).to receive(:gets).and_return('q')
+      begin
+       expect{ subject }.to output(" ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n\n" + "(r)estore to Datadog, overwrite local changes and (d)ownload, or (s)kip?").to_stdout
+      rescue SystemExit => e
+      end
+    end
+    
+    example 'restore' do
+      allow($stdin).to receive(:gets).and_return('r')
+      expect(dashboards).to receive(:update).with('diffs1', '{"text":"diff"}')
+      subject
+    end
+    example 'download' do
+      allow($stdin).to receive(:gets).and_return('d')
+      expect(dashboards).to receive(:write_file).with(%Q[{\n  "text": "diff2"\n}], "#{tempdir}/dashboards/diffs1.json")
+      subject
+    end
+    example 'skip' do
+      allow($stdin).to receive(:gets).and_return('s')
+      expect(dashboards).to_not receive(:write_file)
+      expect(dashboards).to_not receive(:update)
+      subject
+    end
+    example 'quit' do
+      allow($stdin).to receive(:gets).and_return('q')
+      expect(dashboards).to_not receive(:write_file)
+      expect(dashboards).to_not receive(:update)
+      expect(Kernel).to receive(:exit)
+      subject
+    end
+  end
 end

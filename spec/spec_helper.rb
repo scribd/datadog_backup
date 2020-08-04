@@ -8,6 +8,7 @@ require 'dogapi'
 $stdout.sync = $stderr.sync = true
 LOGGER = Logger.new($stderr) unless defined?(LOGGER)
 LOGGER.level = Logger::INFO
+$stdout = File.new('/dev/null', 'w+')
 
 SPEC_ROOT = __dir__
 WORK_ROOT = File.expand_path(File.join(SPEC_ROOT, '..'))

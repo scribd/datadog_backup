@@ -1,11 +1,13 @@
 require 'spec_helper'
 
 describe DatadogBackup::Core do
+  let(:api_service_double) { double(Dogapi::APIService) }
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:core) do
     DatadogBackup::Core.new(
       action: 'backup',
+      api_service: api_service_double,
       client: client_double,
       backup_dir: tempdir,
       diff_format: nil,
@@ -43,8 +45,6 @@ describe DatadogBackup::Core do
   end
 
   describe '#diff' do
-
-
     before(:example) do
       allow(core).to receive(:get_by_id).and_return({ 'text' => 'diff1', 'extra' => 'diff1' })
       core.write_file('{"text": "diff2", "extra": "diff2"}', "#{tempdir}/core/diff.json")
@@ -89,5 +89,16 @@ describe DatadogBackup::Core do
   describe '#myclass' do
     subject { core.myclass }
     it { is_expected.to eq 'core' }
+  end
+
+  describe '#update' do
+    subject { core.update('abc-123-def', '{"a": "b"}') }
+    example 'it calls Dogapi::APIService.request' do
+      stub_const('Dogapi::APIService::API_VERSION', "v1")
+      allow(client_double).to receive(:get_instance_variable).with(:@core_svc).and_return(api_service_double)
+      allow(api_service_double).to receive(:class).and_return(Dogapi::V1::DashboardService)
+      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, "/api/v1/dashboard/abc-123-def", nil, '{"a": "b"}', true)
+      subject
+    end
   end
 end
