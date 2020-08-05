@@ -1,3 +1,21 @@
+# [0.6.0](https://github.com/scribd/datadog_backup/compare/v0.5.0...v0.6.0) (2020-08-05)
+
+
+### Bug Fixes
+
+* enable datadog_backup executable to run restore ([5094813](https://github.com/scribd/datadog_backup/commit/50948132b154c30956b87b5ec1e9070d34a48a02))
+* order is not guaranteed ([d65b9a8](https://github.com/scribd/datadog_backup/commit/d65b9a872c268bcd91384f9f0215b88bdc5e9544))
+* restore actually restores ([0e80999](https://github.com/scribd/datadog_backup/commit/0e80999b9d90cecb7c04c639d593987d89c35616))
+* rspec properly handles SystemExit ([cf26bfb](https://github.com/scribd/datadog_backup/commit/cf26bfb7dd28d4b14c2126487848cab4d9af2bf9))
+
+
+### Features
+
+* add restore flow ([8175a03](https://github.com/scribd/datadog_backup/commit/8175a033b34b268f4a9850d1629dfdb21e86d2fa))
+* Change defaults to YAML(backups) and color(diffs) ([d9ed708](https://github.com/scribd/datadog_backup/commit/d9ed7084f4cb8a5357ce0ab2927df770f0b841ed))
+* ignore key ordering changes ([47e6e9f](https://github.com/scribd/datadog_backup/commit/47e6e9f7f5ac7824a57f8cee45bfe68867bba760))
+* use Diffy diffs rather than HashDiff:x ([e5529b8](https://github.com/scribd/datadog_backup/commit/e5529b8f8501c2534f26bd0d541afa20c076b5c0))
+
 # [0.5.0](https://github.com/scribd/datadog_backup/compare/v0.4.0...v0.5.0) (2020-07-30)
 
 
