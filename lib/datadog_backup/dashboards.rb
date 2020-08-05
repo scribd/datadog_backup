@@ -6,6 +6,19 @@ module DatadogBackup
       client_with_200(:get_all_boards).fetch('dashboards')
     end
 
+    def api_service
+      # The underlying class from Dogapi that talks to datadog
+      client.instance_variable_get(:@dashboard_service)
+    end
+
+    def api_version
+      'v1'
+    end
+
+    def api_resource_name
+      'dashboard'
+    end
+
     def backup
       logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
 
@@ -16,13 +29,15 @@ module DatadogBackup
         end
       end
 
-      ::DatadogBackup::ThreadPool.watcher(logger).join
+      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
+      watcher.join if watcher.status
 
       Concurrent::Promises.zip(*futures).value!
     end
 
-    def get_and_write_file(id)
-      write_file(dump(get_by_id(id)), filename(id))
+    def diff(id)
+      banlist = %w[modified_at url]
+      super(id, banlist)
     end
 
     def get_by_id(id)

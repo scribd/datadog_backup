@@ -8,6 +8,17 @@ module DatadogBackup
   class Cli
     include ::DatadogBackup::Options
 
+    def all_diff_futures
+      logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
+      any_resource_instance
+        .all_file_ids_for_selected_resources
+        .map do |id|
+        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, id) do |id|
+          [id, getdiff(id)]
+        end
+      end
+    end
+
     def any_resource_instance
       resource_instances.first
     end
@@ -24,29 +35,53 @@ module DatadogBackup
       )
     end
 
+    def definitive_resource_instance(id)
+      matching_resource_instance(any_resource_instance.class_from_id(id))
+    end
+
     def diffs
-      logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
-
-      futures = any_resource_instance
-                .all_file_ids_for_selected_resources
-                .map do |id|
-        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, id) do |id|
-          [id, getdiff(id)]
-        end
-      end
-
+      futures = all_diff_futures
       ::DatadogBackup::ThreadPool.watcher(logger).join
 
-      Concurrent::Promises
-        .zip(*futures)
-        .value!
-        .to_h
-        .reject { |_k, v| v == [] }
+      format_diff_output(
+        Concurrent::Promises
+          .zip(*futures)
+          .value!
+          .reject { |_k, v| v.nil? }
+      )
     end
 
     def getdiff(id)
-      definitive_resource_instance = matching_resource_instance(any_resource_instance.class_from_id(id))
-      definitive_resource_instance.diff(id)
+      result = definitive_resource_instance(id).diff(id)
+      case result
+      when ''
+        nil
+      when "\n"
+        nil
+      when '<div class="diff"></div>'
+        nil
+      else
+        result
+      end
+    end
+
+    def format_diff_output(diff_output)
+      case diff_format
+      when nil, :color
+        diff_output.map do |id, diff|
+          " ---\n id: #{id}\n#{diff}"
+        end.join("\n")
+      when :html
+        '<html><head><style>' +
+          Diffy::CSS +
+          '</style></head><body>' +
+          diff_output.map do |id, diff|
+            "<br><br> ---<br><strong> id: #{id}</strong><br>" + diff
+          end.join('<br>') +
+          '</body></html>'
+      else
+        raise 'Unexpected diff_format.'
+      end
     end
 
     def initialize(options)
@@ -64,8 +99,40 @@ module DatadogBackup
       end
     end
 
+    def restore
+      futures = all_diff_futures
+      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
+
+      futures.each do |future|
+        id, diff = *future.value!
+        next unless diff
+
+        puts '--------------------------------------------------------------------------------'
+        puts format_diff_output([id, diff])
+        puts '(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?'
+        response = $stdin.gets.chomp
+        case response
+        when 'q'
+          exit
+        when 'r'
+          puts "Restoring #{id} to Datadog."
+          definitive_resource_instance(id).update_with_200(id, definitive_resource_instance(id).load_from_file_by_id(id))
+        when 'd'
+          puts "Downloading #{id} from Datadog."
+          definitive_resource_instance(id).get_and_write_file(id)
+        when 's'
+          next
+        else
+          puts 'Invalid response, please try again.'
+          response = $stdin.gets.chomp
+        end
+      end
+
+      watcher.join if watcher.status
+    end
+
     def run!
-      ap(send(action.to_sym), index: false)
+      puts(send(action.to_sym))
     rescue SystemExit, Interrupt
       ::DatadogBackup::ThreadPool.shutdown(logger)
     end

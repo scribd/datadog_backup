@@ -20,8 +20,9 @@ LOGGER.level = Logger::INFO
   datadog_api_key: ENV.fetch('DATADOG_API_KEY'),
   datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
+  diff_format: :color,
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
-  output_format: :json,
+  output_format: :yaml,
   logger: LOGGER
 }
 
@@ -35,10 +36,10 @@ def prereqs
       puts opts
       exit 0
     end
-    opts.on('--debug', 'debug logging enabled') do
+    opts.on('--debug', 'debug logging') do
       LOGGER.level = Logger::DEBUG
     end
-    opts.on('--backup-dir PATH; backup by default') do |path|
+    opts.on('--backup-dir PATH', '`backup` by default') do |path|
       @options[:backup_dir] = path
     end
     opts.on('--monitors-only') do
@@ -47,14 +48,20 @@ def prereqs
     opts.on('--dashboards-only') do
       @options[:resources] = [DatadogBackup::Dashboards]
     end
-    opts.on('--yaml') do
-      @options[:output_format] = :yaml
+    opts.on('--json', 'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix.') do
+      @options[:output_format] = :json
+    end
+    opts.on('--no-color', 'removes colored output from diff format') do
+      @options[:diff_format] = nil
+    end
+    opts.on('--diff-format FORMAT', 'one of `color`, `html_simple`, `html`') do |format|
+      @options[:diff_format] = format.to_sym
     end
   end
   options.parse!
 
   @options[:action] = ARGV.first
-  if %w[backup diffs].include?(@options[:action])
+  if %w[backup diffs restore].include?(@options[:action])
   else
     puts options
     exit 0

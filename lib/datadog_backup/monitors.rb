@@ -2,8 +2,22 @@
 
 module DatadogBackup
   class Monitors < Core
+    API_SERVICE_NAME = :@monitor_svc
     def all_monitors
       @all_monitors ||= client_with_200(:get_all_monitors)
+    end
+
+    def api_service
+      # The underlying class from Dogapi that talks to datadog
+      client.instance_variable_get(:@monitor_svc)
+    end
+
+    def api_version
+      'v1'
+    end
+
+    def api_resource_name
+      'monitor'
     end
 
     def backup
@@ -14,7 +28,7 @@ module DatadogBackup
     end
 
     def diff(id)
-      banlist = %w[overall_state overall_state_modified]
+      banlist = %w[overall_state overall_state_modified matching_downtimes modified]
       super(id, banlist)
     end
 

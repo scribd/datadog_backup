@@ -26,6 +26,10 @@ module DatadogBackup
       @options[:datadog_app_key]
     end
 
+    def diff_format
+      @options[:diff_format]
+    end
+
     def logger
       @options[:logger]
     end
