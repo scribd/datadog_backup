@@ -28,7 +28,7 @@ module DatadogBackup
     end
 
     def diff(id)
-      banlist = %w[overall_state overall_state_modified matching_downtimes]
+      banlist = %w[overall_state overall_state_modified matching_downtimes modified]
       super(id, banlist)
     end
 

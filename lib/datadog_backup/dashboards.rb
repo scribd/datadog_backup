@@ -29,7 +29,8 @@ module DatadogBackup
         end
       end
 
-      ::DatadogBackup::ThreadPool.watcher(logger).join
+      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
+      watcher.join if watcher.status
 
       Concurrent::Promises.zip(*futures).value!
     end
