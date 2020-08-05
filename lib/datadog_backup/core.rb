@@ -8,16 +8,15 @@ module DatadogBackup
     include ::DatadogBackup::Options
 
     def api_service
-      # The underlying class from Dogapi that talks to datadog
-      client.get_instance_variable("@#{myclass}_svc".to_sym)
+      raise 'subclass is expected to implement #api_service'
     end
 
     def api_version
-      api_service.class::API_VERSION
+      raise 'subclass is expected to implement #api_version'
     end
 
     def api_resource_name
-      api_service.class::RESOURCE_NAME
+      raise 'subclass is expected to implement #api_resource_name'
     end
 
     def backup
@@ -31,7 +30,7 @@ module DatadogBackup
 
       response = client.send(method, *id)
 
-      logger.debug response
+      # logger.debug response
       raise "Method #{method} failed with error #{response}" unless response[0] == '200'
 
       response[1]
@@ -86,6 +85,28 @@ module DatadogBackup
 
     def update(id, body)
       api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
+    end
+
+    # Calls out to Datadog and checks for a '200' response
+    def update_with_200(id, body)
+      max_retries = 6
+      retries ||= 0
+
+      response = update(id, body)
+
+      # logger.debug response
+      raise "Update failed with error #{response}" unless response[0] == '200'
+
+      logger.warn "Successfully restored #{id} to datadog."
+
+      response[1]
+    rescue ::Net::OpenTimeout => e
+      if (retries += 1) <= max_retries
+        sleep(0.1 * retries**5) # 0.1, 3.2, 24.3, 102.4 seconds per retry
+        retry
+      else
+        raise "Update failed with error #{e.message}"
+      end
     end
   end
 end

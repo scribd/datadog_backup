@@ -115,8 +115,10 @@ module DatadogBackup
         when 'q'
           exit
         when 'r'
-          definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id).to_json)
+          puts "Restoring #{id} to Datadog."
+          definitive_resource_instance(id).update_with_200(id, definitive_resource_instance(id).load_from_file_by_id(id))
         when 'd'
+          puts "Downloading #{id} from Datadog."
           definitive_resource_instance(id).get_and_write_file(id)
         when 's'
           next
@@ -126,7 +128,7 @@ module DatadogBackup
         end
       end
 
-      watcher.join
+      watcher.join if watcher.status
     end
 
     def run!

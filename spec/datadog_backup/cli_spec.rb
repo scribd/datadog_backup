@@ -64,7 +64,7 @@ describe DatadogBackup::Cli do
 
     example 'restore' do
       allow($stdin).to receive(:gets).and_return('r')
-      expect(dashboards).to receive(:update).with('diffs1', '{"text":"diff"}')
+      expect(dashboards).to receive(:update_with_200).with('diffs1', { 'text' => 'diff' })
       subject
     end
     example 'download' do

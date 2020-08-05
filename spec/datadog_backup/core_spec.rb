@@ -94,12 +94,13 @@ describe DatadogBackup::Core do
   end
 
   describe '#update' do
-    subject { core.update('abc-123-def', '{"a": "b"}') }
+    subject { core.update_with_200('abc-123-def', '{"a": "b"}') }
     example 'it calls Dogapi::APIService.request' do
       stub_const('Dogapi::APIService::API_VERSION', 'v1')
-      allow(client_double).to receive(:get_instance_variable).with(:@core_svc).and_return(api_service_double)
-      allow(api_service_double).to receive(:class).and_return(Dogapi::V1::DashboardService)
-      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, '/api/v1/dashboard/abc-123-def', nil, '{"a": "b"}', true)
+      allow(core).to receive(:api_service).and_return(api_service_double)
+      allow(core).to receive(:api_version).and_return('v1')
+      allow(core).to receive(:api_resource_name).and_return('dashboard')
+      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, '/api/v1/dashboard/abc-123-def', nil, '{"a": "b"}', true).and_return(%w[200 Created])
       subject
     end
   end
