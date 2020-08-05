@@ -5,6 +5,7 @@ PATH
       amazing_print (= 1.2.1)
       concurrent-ruby (= 1.1.6)
       concurrent-ruby-edge (= 0.6.0)
+      deepsort (= 0.4.5)
       diffy (= 3.3.0)
       dogapi (= 1.41.0)
 
@@ -18,6 +19,7 @@ GEM
     concurrent-ruby (1.1.6)
     concurrent-ruby-edge (0.6.0)
       concurrent-ruby (~> 1.1.6)
+    deepsort (0.4.5)
     diff-lcs (1.4.4)
     diffy (3.3.0)
     dogapi (1.41.0)

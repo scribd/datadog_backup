@@ -55,10 +55,10 @@ describe DatadogBackup::Core do
       it {
         is_expected.to eq <<~EOF
            ---
-          -text: diff1
           -extra: diff1
-          +text: diff2
+          -text: diff1
           +extra: diff2
+          +text: diff2
         EOF
       }
     end
