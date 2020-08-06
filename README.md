@@ -20,13 +20,19 @@ gem install datadog_backup-*.gem
 ## Usage
 
 ```
-DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync <backup|diffs> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only] [--diff-format color|html|html_simple]
+DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync <backup|diffs|restore> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only] [--diff-format color|html|html_simple] [--no-color] [--json]
 ```
 
 Example diffs with html output: 
 
 ```
 DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync diffs --diff-format html
+```
+
+Example restore:
+
+```
+DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync restore
 ```
 
 # Development
