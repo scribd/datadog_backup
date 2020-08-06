@@ -9,15 +9,10 @@ module.exports = {
       }
     ],
     [
-      "@semantic-release/github",
+      "semantic-release-rubygem",
       {
-        "assets": [
-          {
-            "path": "datadog_backup.zip",
-            "name": "datadog_backup.${nextRelease.version}.zip",
-            "label": "Full zip distribution"
-          }
-        ]
+        "gemHost": "https://scribd.jfrog.io/artifactory/api/gems/gems-local",
+        "gemFileDir": "."
       }
     ],
     [
@@ -28,6 +23,22 @@ module.exports = {
         ],
         "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
       }
-    ]
+    ],
+    [
+      "@semantic-release/github",
+      {
+        "assets": [
+          {
+            "path": "datadog_backup.zip",
+            "name": "datadog_backup.${nextRelease.version}.zip",
+            "label": "Full zip distribution"
+          },
+          {
+            "path": "datadog_backup-*.gem",
+            "label": "Gemfile"
+          }
+        ]
+      }
+    ],
   ]
 };
