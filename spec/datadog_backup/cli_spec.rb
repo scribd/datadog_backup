@@ -25,6 +25,35 @@ describe DatadogBackup::Cli do
     allow(cli).to receive(:resource_instances).and_return([dashboards])
   end
 
+  describe '#backup' do
+    context 'when dashboards are deleted in datadog' do
+      let(:all_boards) do
+        [
+          '200',
+          {
+            'dashboards' => [
+              { 'id' => 'stillthere' },
+              { 'id' => 'alsostillthere' }
+            ]
+          }
+        ]
+      end
+      before(:example) do
+        dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/stillthere.json")
+        dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/alsostillthere.json")
+        dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/deleted.json")
+
+        allow(client_double).to receive(:get_all_boards).and_return(all_boards)
+        allow(client_double).to receive(:get_board).and_return(['200', {}])
+      end
+
+      it 'deletes the file locally as well' do
+        cli.backup
+        expect { File.open("#{tempdir}/dashboards/deleted.json", 'r') }.to raise_error(Errno::ENOENT)
+      end
+    end
+  end
+
   describe '#diffs' do
     before(:example) do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")

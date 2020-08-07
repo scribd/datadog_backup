@@ -24,6 +24,7 @@ module DatadogBackup
     end
 
     def backup
+      resource_instances.each(&:purge)
       resource_instances.each(&:backup)
       any_resource_instance.all_files
     end

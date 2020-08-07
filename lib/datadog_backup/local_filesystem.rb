@@ -70,6 +70,10 @@ module DatadogBackup
       ::File.join(backup_dir, myclass)
     end
 
+    def purge
+      ::FileUtils.rm(::Dir.glob(File.join(mydir, '*')))
+    end
+
     def write_file(data, filename)
       logger.info "Backing up #{filename}"
       file = ::File.open(filename, 'w')
