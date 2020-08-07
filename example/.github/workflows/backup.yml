@@ -29,4 +29,3 @@ jobs:
         commit_message: "Changes as of run: ${{ github.run_id }}"
         file_pattern: backup/
         repository: .
-        skip_dirty_check: true
