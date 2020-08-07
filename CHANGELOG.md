@@ -1,3 +1,10 @@
+# [0.7.0](https://github.com/scribd/datadog_backup/compare/v0.6.0...v0.7.0) (2020-08-07)
+
+
+### Features
+
+* Purge before backup, so that deletions can be detected. ([bdcb2b0](https://github.com/scribd/datadog_backup/commit/bdcb2b08a2e2e908f8b85359d0a43c392c5253ab))
+
 # [0.6.0](https://github.com/scribd/datadog_backup/compare/v0.5.0...v0.6.0) (2020-08-05)
 
 
