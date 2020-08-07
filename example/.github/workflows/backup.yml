@@ -27,7 +27,6 @@ jobs:
       uses: stefanzweifel/git-auto-commit-action@v4
       with:
         commit_message: "Changes as of run: ${{ github.run_id }}"
-        file_pattern: backup/**/*.yaml
+        file_pattern: backup/
         repository: .
         skip_dirty_check: true
-

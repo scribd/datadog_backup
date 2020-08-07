@@ -35,6 +35,10 @@ Example restore:
 DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync restore
 ```
 
+### Usage in a Github repo
+
+See [example/](https://github.com/scribd/datadog_backup/tree/master/example) for an example implementation as a repo that backs up your Datadog dashboards hourly.
+
 # Development
 
 Releases are cut using [semantic-release](https://github.com/semantic-release/semantic-release).
