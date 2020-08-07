@@ -3,6 +3,7 @@
 require 'fileutils'
 require 'json'
 require 'yaml'
+require 'deepsort'
 
 module DatadogBackup
   module LocalFilesystem
@@ -31,9 +32,9 @@ module DatadogBackup
 
     def dump(object)
       if output_format == :json
-        JSON.pretty_generate(object)
+        JSON.pretty_generate(object.deep_sort)
       elsif output_format == :yaml
-        YAML.dump(object)
+        YAML.dump(object.deep_sort)
       else
         raise 'invalid output_format specified or not specified'
       end

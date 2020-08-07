@@ -2,6 +2,8 @@
 
 module DatadogBackup
   class Dashboards < Core
+    BANLIST = %w[modified_at url]
+
     def all_boards
       client_with_200(:get_all_boards).fetch('dashboards')
     end
@@ -36,12 +38,11 @@ module DatadogBackup
     end
 
     def diff(id)
-      banlist = %w[modified_at url]
-      super(id, banlist)
+      super(id, BANLIST)
     end
 
     def get_by_id(id)
-      client_with_200(:get_board, id)
+      except(client_with_200(:get_board, id), BANLIST)
     end
 
     def restore!; end

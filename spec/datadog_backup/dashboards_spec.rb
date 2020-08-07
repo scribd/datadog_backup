@@ -69,7 +69,7 @@ describe DatadogBackup::Dashboards do
     it 'is expected to create a file' do
       file = double('file')
       allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return(file)
-      expect(file).to receive(:write).with(::JSON.pretty_generate(board_abc_123_def))
+      expect(file).to receive(:write).with(::JSON.pretty_generate(board_abc_123_def.deep_sort))
       allow(file).to receive(:close)
 
       dashboards.backup

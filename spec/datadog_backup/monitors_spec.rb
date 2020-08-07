@@ -25,6 +25,14 @@ describe DatadogBackup::Monitors do
       'overall_state_modified' => '2020-07-27T22:00:00+00:00'
     }
   end
+  let(:clean_monitor_description) do
+    {
+      'id' => 123_455,
+      'message' => 'foo',
+      'name' => 'foo',
+      'query' => 'bar'
+    }
+  end
   let(:all_monitors) do
     [
       '200',
@@ -61,7 +69,7 @@ describe DatadogBackup::Monitors do
     it 'is expected to create a file' do
       file = double('file')
       allow(File).to receive(:open).with(monitors.filename(123_455), 'w').and_return(file)
-      expect(file).to receive(:write).with(::JSON.pretty_generate(monitor_description))
+      expect(file).to receive(:write).with(::JSON.pretty_generate(clean_monitor_description))
       allow(file).to receive(:close)
 
       monitors.backup
