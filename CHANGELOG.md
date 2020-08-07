@@ -1,3 +1,10 @@
+# [0.8.0](https://github.com/scribd/datadog_backup/compare/v0.7.0...v0.8.0) (2020-08-07)
+
+
+### Features
+
+* sort keys and ignore banlist for consistency ([ca683a6](https://github.com/scribd/datadog_backup/commit/ca683a63d58eeefee98b5909f830baa0e0bfa426))
+
 # [0.7.0](https://github.com/scribd/datadog_backup/compare/v0.6.0...v0.7.0) (2020-08-07)
 
 
