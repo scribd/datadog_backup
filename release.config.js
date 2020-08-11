@@ -11,7 +11,6 @@ module.exports = {
     [
       "semantic-release-rubygem",
       {
-        "gemHost": "https://scribd.jfrog.io/artifactory/api/gems/gems-local",
         "gemFileDir": "."
       }
     ],
@@ -35,7 +34,7 @@ module.exports = {
           },
           {
             "path": "datadog_backup-*.gem",
-            "label": "Gemfile"
+            "label": "Gem distribution"
           }
         ]
       }

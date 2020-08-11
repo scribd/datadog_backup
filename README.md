@@ -13,6 +13,11 @@ Additional features may be built out over time.
 ## Installation
 
 ```
+gem install datadog_backup
+```
+or
+
+```
 gem build datadog_backup.gemspec
 gem install datadog_backup-*.gem
 ```
@@ -23,16 +28,22 @@ gem install datadog_backup-*.gem
 DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync <backup|diffs|restore> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only] [--diff-format color|html|html_simple] [--no-color] [--json]
 ```
 
-Example diffs with html output: 
-
 ```
-DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync diffs --diff-format html
-```
+gem install datadog_backup
+export DATADOG_API_KEY=abc123
+export DATADOG_APP_KEY=abc123
 
-Example restore:
+# Perform backup to optional/path/to/backupdir using YAML encoding
+datadog_backup backup --backup-dir optional/path/to/backupdir
 
-```
-DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_sync restore
+# Make some changes
+
+# Just review the changes since last backup
+datadog_backup diffs --backup-dir optional/path/to/backupdir
+
+# Review and apply local changes to datadog
+
+datadog_backup restore --backup-dir optional/path/to/backupdir
 ```
 
 ### Usage in a Github repo
