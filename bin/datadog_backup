@@ -30,14 +30,20 @@ def prereqs
   ARGV << '--help' if ARGV.empty?
 
   options = OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} <backup|diffs>"
+    opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} <backup|diffs|restore>"
     opts.separator ''
     opts.on_tail('-h', '--help', 'Show this message') do
       puts opts
       exit 0
     end
-    opts.on('--debug', 'debug logging') do
+    opts.on('--debug', 'log debug and above') do
       LOGGER.level = Logger::DEBUG
+    end
+    opts.on('--shh', 'log warnings and above') do
+      LOGGER.level = Logger::WARN
+    end
+    opts.on('--shhh', 'log errors and above') do
+      LOGGER.level = Logger::ERROR
     end
     opts.on('--backup-dir PATH', '`backup` by default') do |path|
       @options[:backup_dir] = path
@@ -48,7 +54,7 @@ def prereqs
     opts.on('--dashboards-only') do
       @options[:resources] = [DatadogBackup::Dashboards]
     end
-    opts.on('--json', 'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix.') do
+    opts.on('--json', 'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.') do
       @options[:output_format] = :json
     end
     opts.on('--no-color', 'removes colored output from diff format') do
