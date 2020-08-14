@@ -1,3 +1,10 @@
+# [0.10.0](https://github.com/scribd/datadog_backup/compare/v0.9.0...v0.10.0) (2020-08-14)
+
+
+### Features
+
+* select log levels ([0272d27](https://github.com/scribd/datadog_backup/commit/0272d27530188b36c2b56da6dc075e7507635ecd))
+
 # [0.9.0](https://github.com/scribd/datadog_backup/compare/v0.8.0...v0.9.0) (2020-08-11)
 
 
