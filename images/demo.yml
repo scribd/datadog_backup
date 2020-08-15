@@ -1,0 +1,563 @@
+# The configurations that used for the recording, feel free to edit them
+config:
+
+  # Specify a command to be executed
+  # like `/bin/bash -l`, `ls`, or any other commands
+  # the default is bash for Linux
+  # or powershell.exe for Windows
+  command: bash -l
+
+  # Specify the current working directory path
+  # the default is the current working directory path
+  cwd: /Users/jimp/demo
+
+  # Export additional ENV variables
+  env:
+    recording: true
+
+  # Explicitly set the number of columns
+  # or use `auto` to take the current
+  # number of columns of your shell
+  cols: 164
+
+  # Explicitly set the number of rows
+  # or use `auto` to take the current
+  # number of rows of your shell
+  rows: 43
+
+  # Amount of times to repeat GIF
+  # If value is -1, play once
+  # If value is 0, loop indefinitely
+  # If value is a positive number, loop n times
+  repeat: 0
+
+  # Quality
+  # 1 - 100
+  quality: 100
+
+  # Delay between frames in ms
+  # If the value is `auto` use the actual recording delays
+  frameDelay: auto
+
+  # Maximum delay between frames in ms
+  # Ignored if the `frameDelay` isn't set to `auto`
+  # Set to `auto` to prevent limiting the max idle time
+  maxIdleTime: 2000
+
+  # The surrounding frame box
+  # The `type` can be null, window, floating, or solid`
+  # To hide the title use the value null
+  # Don't forget to add a backgroundColor style with a null as type
+  frameBox:
+    type: floating
+    title: Datadog Backup
+    style:
+      border: 0px black solid
+      # boxShadow: none
+      # margin: 0px
+
+  # Add a watermark image to the rendered gif
+  # You need to specify an absolute path for
+  # the image on your machine or a URL, and you can also
+  # add your own CSS styles
+  watermark:
+    imagePath: null
+    style:
+      position: absolute
+      right: 15px
+      bottom: 15px
+      width: 100px
+      opacity: 0.9
+
+  # Cursor style can be one of
+  # `block`, `underline`, or `bar`
+  cursorStyle: block
+
+  # Font family
+  # You can use any font that is installed on your machine
+  # in CSS-like syntax
+  fontFamily: "Monaco, Lucida Console, Ubuntu Mono, Monospace"
+
+  # The size of the font
+  fontSize: 12
+
+  # The height of lines
+  lineHeight: 1
+
+  # The spacing between letters
+  letterSpacing: 0
+
+  # Theme
+  theme:
+    background: "transparent"
+    foreground: "#afafaf"
+    cursor: "#c7c7c7"
+    black: "#232628"
+    red: "#fc4384"
+    green: "#b3e33b"
+    yellow: "#ffa727"
+    blue: "#75dff2"
+    magenta: "#ae89fe"
+    cyan: "#708387"
+    white: "#d5d5d0"
+    brightBlack: "#626566"
+    brightRed: "#ff7fac"
+    brightGreen: "#c8ed71"
+    brightYellow: "#ebdf86"
+    brightBlue: "#75dff2"
+    brightMagenta: "#ae89fe"
+    brightCyan: "#b1c6ca"
+    brightWhite: "#f9f9f4"
+
+# Records, feel free to edit them
+records:
+  - delay: 1000
+    content: "\e[?1034h\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "
+  - delay: 40
+    content: g
+  - delay: 40
+    content: e
+  - delay: 40
+    content: m
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: i
+  - delay: 40
+    content: n
+  - delay: 40
+    content: s
+  - delay: 40
+    content: t
+  - delay: 40
+    content: a
+  - delay: 40
+    content: l
+  - delay: 40
+    content: l
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: d
+  - delay: 40
+    content: a
+  - delay: 40
+    content: t
+  - delay: 40
+    content: a
+  - delay: 40
+    content: d
+  - delay: 40
+    content: o
+  - delay: 40
+    content: g
+  - delay: 40
+    content: _
+  - delay: 40
+    content: b
+  - delay: 40
+    content: a
+  - delay: 40
+    content: c
+  - delay: 40
+    content: k
+  - delay: 40
+    content: u
+  - delay: 40
+    content: p
+  - delay: 40
+    content: "\r\n"
+  - delay: 400
+    content: "Fetching datadog_backup-0.10.0.gem\r\n"
+  - delay: 40
+    content: "Successfully installed datadog_backup-0.10.0\r\n"
+  - delay: 40
+    content: "Parsing documentation for datadog_backup-0.10.0\r\n"
+  - delay: 40
+    content: "Installing ri documentation for datadog_backup-0.10.0\r\n"
+  - delay: 40
+    content: "Done installing documentation for datadog_backup after 0 seconds\r\n1 gem installed\r\n"
+  - delay: 40
+    content: "\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "
+  - delay: 400
+    content: d
+  - delay: 40
+    content: a
+  - delay: 40
+    content: t
+  - delay: 40
+    content: a
+  - delay: 40
+    content: d
+  - delay: 40
+    content: o
+  - delay: 40
+    content: g
+  - delay: 40
+    content: _
+  - delay: 40
+    content: b
+  - delay: 40
+    content: a
+  - delay: 40
+    content: c
+  - delay: 40
+    content: k
+  - delay: 40
+    content: u
+  - delay: 40
+    content: p
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: h
+  - delay: 40
+    content: e
+  - delay: 40
+    content: l
+  - delay: 40
+    content: p
+  - delay: 40
+    content: "\r\n"
+  - delay: 400
+    content: "Usage: datadog_backup <backup|diffs|restore>\r\n\r\n        --debug                      log debug and above\r\n        --shh                        log warnings and above\r\n        --shhh                       log errors and above\r\n        --backup-dir PATH            `backup` by default\r\n        --monitors-only\r\n        --dashboards-only\r\n        --json                       format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.\r\n        --no-color                   removes colored output from diff format\r\n        --diff-format FORMAT         one of `color`, `html_simple`, `html`\r\n    -h, --help                       Show this message\r\n"
+  - delay: 400
+    content: "\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "
+  - delay: 40
+    content: d
+  - delay: 40
+    content: a
+  - delay: 40
+    content: t
+  - delay: 40
+    content: a
+  - delay: 40
+    content: d
+  - delay: 40
+    content: o
+  - delay: 40
+    content: g
+  - delay: 40
+    content: _
+  - delay: 40
+    content: b
+  - delay: 40
+    content: a
+  - delay: 40
+    content: c
+  - delay: 40
+    content: k
+  - delay: 40
+    content: u
+  - delay: 40
+    content: p
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: s
+  - delay: 40
+    content: h
+  - delay: 40
+    content: h
+  - delay: 40
+    content: h
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: b
+  - delay: 40
+    content: a
+  - delay: 40
+    content: c
+  - delay: 40
+    content: k
+  - delay: 40
+    content: u
+  - delay: 40
+    content: p
+  - delay: 40
+    content: "\r\n"
+  - delay: 400
+    content: "/Users/jimp/demo/backup/dashboards/s2s-uyz-74d.yaml\r\n"
+  - delay: 400
+    content: "\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "
+  - delay: 400
+    content: v
+  - delay: 40
+    content: i
+  - delay: 40
+    content: m
+  - delay: 40
+    content: ' '
+  - delay: 400
+    content: "/Users/jimp/demo/backup/dashboards/s2s-uyz-74d.yaml"
+  - delay: 400
+    content: "\r\n"
+  - delay: 400
+    content: "\e[?1000h\e]50;CursorShape=0\a\e[?1004h\e[?1049h\e[?1049h\e[>4;2m\e[?1h\e=\e[?2004h\e[1;42r\e[?12h\e[?12l\e[22;2t\e[22;1t\e[27m\e[29m\e[m\e[38;5;250m\e[48;5;235m\e[H\e[2J\e[?25l\e[42;1H\"backup/dashboards/s2s-uyz-74d.yaml\" 20L, 542B"
+  - delay: 40
+    content: "\e[?1000l\e[?2004l\e[>4;m"
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[?1000h"
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[?1000l\e[?2004l\e[>4;m"
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[?1006h\e[?1002h\e[?1006l\e[?1002l\e[?2004l\e[>4;m"
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[?1006h\e[?1002h\e[?1006l\e[?1002l\e[?2004l\e[>4;m"
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[?1006h\e[?1002h\e[?1006l\e[?1002l\e[?2004l\e[>4;m"
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[?1006h\e[?1002h\e[1;1H\e[38;5;239m  1 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;139m---\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m  2 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mauthor_handle\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m jimp@scribd.com\r\n\e[38;5;239m  3 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mauthor_name\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m Sung Park\r\n\e[38;5;239m  4 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mcreated_at\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;143m'2020-06-22T00:45:23.876622+00:00'\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m  5 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mdescription\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m This timeboard just got an additional upgrade.\r\n\e[38;5;239m  6 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mid\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m s2s-uyz-74d\r\n\e[38;5;239m  7 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mis_read_only\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;173mfalse\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m  8 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mlayout_type\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m ordered\r\n\e[38;5;239m  9 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mnotify_list\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;250m[]\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 10 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mtemplate_variables\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;250m[]\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 11 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mtitle\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m Jim's Exceptionally Acceptably Average Timeboard\r\n\e[38;5;239m 12 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mwidgets\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 13 \e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m- \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mdefinition\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 14 \e[m\e[38;5;250m\e[48;5;235m    \e[38;5;167mlegend_size\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;143m'0'\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 15 \e[m\e[38;5;250m\e[48;5;235m    \e[38;5;167mrequests\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 16 \e[m\e[38;5;250m\e[48;5;235m    \e[38;5;250m- \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167mq\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m avg:system.disk.in_use{role:conversion}\r\n\e[38;5;239m 17 \e[m\e[38;5;250m\e[48;5;235m    \e[38;5;167mshow_legend\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;173mfalse\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m 18 \e[m\e[38;5;250m\e[48;5;235m    \e[38;5;167mtitle\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m system.disk.in_use with role:conversion\r\n\e[38;5;239m 19 \e[m\e[38;5;250m\e[48;5;235m    \e[38;5;167mtype\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m timeseries\r\n\e[38;5;239m 20 \e[m\e[38;5;250m\e[48;5;235m  \e[38;5;167mid\e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m:\e[m\e[38;5;250m\e[48;5;235m \e[38;5;173m3954182908525150\e[m\e[38;5;250m\e[48;5;235m\r\n\e[38;5;239m~                                                                                                                                                                   \e[22;1H~                                                                                                                                                                   \e[23;1H~                                                                                                                                                                   \e[24;1H~                                                                                                                                                                   \e[25;1H~                                                                                                                                                                   \e[26;1H~                                                                                                                                                                   \e[27;1H~                                                                                                                                                                   \e[28;1H~                                                                                                                                                                   \e[29;1H~                                                                                                                                                                   \e[30;1H~                                                                                                                                                                   \e[31;1H~                                                                                                                                                                   \e[32;1H~                                                                                                                                                                   \e[33;1H~                                                                                                                                                                   \e[34;1H~                                                                                                                                                                   \e[35;1H~                                                                                                                                                                   \e[36;1H~                                                                                                                                                                   \e[37;1H~                                                                                                                                                              "
+  - delay: 40
+    content: "     \e[38;1H~                                                                                                                                                                   \e[39;1H~                                                                                                                                                                   \e[40;1H~                                                                                                                                                                   "
+  - delay: 40
+    content: "\e[?2004h\e[>4;2m\e[m\e[38;5;250m\e[48;5;235m\e[41;1H\e[1m\e[38;5;235m\e[48;5;109m NORMAL \e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m\e[48;5;236m backup/dashboards/s2s-uyz-74d.yaml                                                                               yaml \e[m\e[38;5;250m\e[48;5;235m\e[38;5;250m\e[48;5;239m utf-8[unix] \e[m\e[38;5;250m\e[48;5;235m\e[38;5;235m\e[48;5;109m   5% \e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;109m☰    1/20 ㏑\e[m\e[38;5;250m\e[48;5;235m\e[38;5;235m\e[48;5;109m :  1 \e[1;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[1;5H"
+  - delay: 40
+    content: "\e[42;154H \e[2;5H\e[41;143H\e[38;5;235m\e[48;5;109m10\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m2/\e[2;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[2;5H\e[42;154H \e[3;5H\e[41;144H\e[38;5;235m\e[48;5;109m5\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m3/\e[3;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[3;5H\e[42;154H \e[4;5H\e[41;143H\e[38;5;235m\e[48;5;109m20\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m4/\e[4;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[4;5H\e[42;154H \e[5;5H\e[41;144H\e[38;5;235m\e[48;5;109m5\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m5/\e[5;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[5;5H\e[42;154H \e[6;5H\e[41;143H\e[38;5;235m\e[48;5;109m30\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m6/\e[6;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[6;5H\e[42;154H \e[7;5H\e[41;144H\e[38;5;235m\e[48;5;109m5\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m7/\e[7;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[7;5H\e[42;154H \e[8;5H\e[41;143H\e[38;5;235m\e[48;5;109m40\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m8/\e[8;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[8;5H\e[42;154H \e[9;5H\e[41;144H\e[38;5;235m\e[48;5;109m5\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m9/\e[9;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[9;5H\e[42;154H \e[10;5H\e[41;143H\e[38;5;235m\e[48;5;109m50\e[m\e[38;5;250m\e[48;5;235m\e[6C\e[1m\e[38;5;235m\e[48;5;109m10/\e[10;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hj\e[10;5H\e[42;154H \e[11;5H\e[41;144H\e[38;5;235m\e[48;5;109m5\e[m\e[38;5;250m\e[48;5;235m\e[7C\e[1m\e[38;5;235m\e[48;5;109m1/\e[11;5H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;5H\e[42;154H \e[11;6H\e[41;163H\e[38;5;235m\e[48;5;109m2\e[11;6H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;6H\e[42;154H \e[11;7H\e[41;163H\e[38;5;235m\e[48;5;109m3\e[11;7H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;7H\e[42;154H \e[11;8H\e[41;163H\e[38;5;235m\e[48;5;109m4\e[11;8H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;8H\e[42;154H \e[11;9H\e[41;163H\e[38;5;235m\e[48;5;109m5\e[11;9H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;9H\e[42;154H \e[11;10H\e[41;163H\e[38;5;235m\e[48;5;109m6\e[11;10H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;10H\e[42;154H \e[11;11H\e[41;163H\e[38;5;235m\e[48;5;109m7\e[11;11H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;11H\e[42;154H \e[11;12H\e[41;163H\e[38;5;235m\e[48;5;109m8\e[11;12H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;12H\e[42;154H \e[11;13H\e[41;163H\e[38;5;235m\e[48;5;109m9\e[11;13H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;13H\e[42;154H \e[11;14H\e[41;162H\e[38;5;235m\e[48;5;109m10\e[11;14H\e[?25h\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;14H\e[42;154H \e[11;15H\e[41;163H\e[38;5;235m\e[48;5;109m1\e[11;15H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;15H\e[42;154H \e[11;16H\e[41;163H\e[38;5;235m\e[48;5;109m2\e[11;16H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;16H\e[42;154H \e[11;17H\e[41;163H\e[38;5;235m\e[48;5;109m3\e[11;17H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;17H\e[42;154H \e[11;18H\e[41;163H\e[38;5;235m\e[48;5;109m4\e[11;18H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;18H\e[42;154H \e[11;19H\e[41;163H\e[38;5;235m\e[48;5;109m5\e[11;19H\e[?25h\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;19H\e[42;154H \e[11;20H\e[41;163H\e[38;5;235m\e[48;5;109m6\e[11;20H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;20H\e[42;154H \e[11;21H\e[41;163H\e[38;5;235m\e[48;5;109m7\e[11;21H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;21H\e[42;154H \e[11;22H\e[41;163H\e[38;5;235m\e[48;5;109m8\e[11;22H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;22H\e[42;154H \e[11;23H\e[41;163H\e[38;5;235m\e[48;5;109m9\e[11;23H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;23H\e[42;154H \e[11;24H\e[41;162H\e[38;5;235m\e[48;5;109m20\e[11;24H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;24H\e[42;154H \e[11;25H\e[41;163H\e[38;5;235m\e[48;5;109m1\e[11;25H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;25H\e[42;154H \e[11;26H\e[41;163H\e[38;5;235m\e[48;5;109m2\e[11;26H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;26H\e[42;154H \e[11;27H\e[41;163H\e[38;5;235m\e[48;5;109m3\e[11;27H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;27H\e[42;154H \e[11;28H\e[41;163H\e[38;5;235m\e[48;5;109m4\e[11;28H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;28H\e[42;154H \e[11;29H\e[41;163H\e[38;5;235m\e[48;5;109m5\e[11;29H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;29H\e[42;154H \e[11;30H\e[41;163H\e[38;5;235m\e[48;5;109m6\e[11;30H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;30H\e[42;154H \e[11;31H\e[41;163H\e[38;5;235m\e[48;5;109m7\e[11;31H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;31H\e[42;154H \e[11;32H\e[41;163H\e[38;5;235m\e[48;5;109m8\e[11;32H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hl\e[11;32H\e[42;154H \e[11;33H\e[41;163H\e[38;5;235m\e[48;5;109m9\e[11;33H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154Hc\e[11;33H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[42;154H \e[11;33H\e[?25h\e]50;CursorShape=0\a\e[?25l\e[42;154Hcw\e[11;33H"
+  - delay: 40
+    content: "\e[42;154H  \e[11;33H\e[42;1H\e[1m\e[38;5;143m-- INSERT --\e[m\e[38;5;250m\e[48;5;235m\e[42;13H\e[K\e]50;CursorShape=1\a\e[11;33H Average Timeboard\e[11;51H\e[K\e[41;1H\e[1m\e[38;5;235m\e[48;5;143m INSERT\e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;109m \e[m\e[38;5;250m\e[48;5;235m\b\e[1m\e[38;5;235m\e[48;5;143m \e[m\e[38;5;250m\e[48;5;235m\e[38;5;167m\e[48;5;236m backup/dashboards/s2s-uyz-74d.yaml[+]                                                                           \e[m\e[38;5;250m\e[48;5;235m\e[6C\e[38;5;143m\e[48;5;235m utf-8[unix] \e[m\e[38;5;250m\e[48;5;235m\e[38;5;235m\e[48;5;143m  55% \e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;143m☰   11\e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;109m/\e[m\e[38;5;250m\e[48;5;235m\b\e[1m\e[38;5;235m\e[48;5;143m/20 ㏑\e[m\e[38;5;250m\e[48;5;235m\e[38;5;235m\e[48;5;109m \e[m\e[38;5;250m\e[48;5;235m\b\e[38;5;235m\e[48;5;143m : 29 \e[11;33H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235mb Average Timeboard\e[41;162H\e[38;5;235m\e[48;5;143m30\e[11;34H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235mo Average Timeboard\e[41;163H\e[38;5;235m\e[48;5;143m1\e[11;35H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235mv Average Timeboard\e[41;163H\e[38;5;235m\e[48;5;143m2\e[11;36H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235me Average Timeboard\e[41;163H\e[38;5;235m\e[48;5;143m3\e[11;37H\e[?25h"
+  - delay: 40
+    content: "\e[m\e[38;5;250m\e[48;5;235m\e[42;1H\e[K\e[11;36H\e[?25l\e[42;154H^[\e[11;36H"
+  - delay: 40
+    content: "\e[42;154H  \e[11;37H\e]50;CursorShape=0\a"
+  - delay: 40
+    content: "\e[41;1H\e[1m\e[38;5;235m\e[48;5;109m NORMAL\e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;143m \e[m\e[38;5;250m\e[48;5;235m\b\e[1m\e[38;5;235m\e[48;5;109m \e[m\e[38;5;250m\e[48;5;235m\e[119C\e[38;5;250m\e[48;5;239m utf-8[unix] \e[m\e[38;5;250m\e[48;5;235m\e[38;5;235m\e[48;5;109m  55% \e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;109m☰   11\e[m\e[38;5;250m\e[48;5;235m\e[1m\e[38;5;235m\e[48;5;143m/\e[m\e[38;5;250m\e[48;5;235m\b\e[1m\e[38;5;235m\e[48;5;109m/20 ㏑\e[m\e[38;5;250m\e[48;5;235m\e[38;5;235m\e[48;5;143m \e[m\e[38;5;250m\e[48;5;235m\b\e[38;5;235m\e[48;5;109m : 32 \e[11;36H\e[?25h"
+  - delay: 40
+    content: "\e[?25l\e[m\e[38;5;250m\e[48;5;235m\e[42;154H:\e[11;36H\e[42;154H\e[K\e[42;1H:\e[?25h"
+  - delay: 40
+    content: x
+  - delay: 400
+    content: "\r\e[?25l\e[?1006l\e[?1002l\e[?2004l\e[>4;m\"backup/dashboards/s2s-uyz-74d.yaml\""
+  - delay: 400
+    content: ' 20L, 537B written'
+  - delay: 400
+    content: "\r"
+  - delay: 400
+    content: "\e[23;2t\e[23;1t\r\r\n\e[39;49m\e[?2004l\e[?1l\e>\e[?25h\e[>4;m\e[?1004l\e[?1049l"
+  - delay: 400
+    content: "\e[?1034h\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "
+  - delay: 400
+    content: d
+  - delay: 40
+    content: a
+  - delay: 40
+    content: t
+  - delay: 40
+    content: a
+  - delay: 40
+    content: d
+  - delay: 40
+    content: o
+  - delay: 40
+    content: g
+  - delay: 40
+    content: _
+  - delay: 40
+    content: b
+  - delay: 40
+    content: a
+  - delay: 40
+    content: c
+  - delay: 40
+    content: k
+  - delay: 40
+    content: u
+  - delay: 40
+    content: p
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: s
+  - delay: 40
+    content: h
+  - delay: 40
+    content: h
+  - delay: 40
+    content: h
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: d
+  - delay: 40
+    content: i
+  - delay: 40
+    content: f
+  - delay: 40
+    content: f
+  - delay: 40
+    content: s
+  - delay: 40
+    content: "\r\n"
+  - delay: 400
+    content: " ---\r\n id: s2s-uyz-74d\r\n ---\r\n author_handle: jimp@scribd.com\r\n author_name: Sung Park\r\n created_at: '2020-06-22T00:45:23.876622+00:00'\r\n description: This timeboard just got an additional upgrade.\r\n id: s2s-uyz-74d\r\n is_read_only: false\r\n layout_type: ordered\r\n notify_list: []\r\n template_variables: []\r\n\e[31m-title: Jim's Exceptionally Acceptably Average Timeboard\e[0m\r\n\e[32m+title: Jim's Exceptionally Above Average Timeboard\e[0m\r\n widgets:\r\n - definition:\r\n     legend_size: '0'\r\n     requests:\r\n     - q: avg:system.disk.in_use{role:conversion}\r\n     show_legend: false\r\n     title: system.disk.in_use with role:conversion\r\n     type: timeseries\r\n   id: 3954182908525150\r\n"
+  - delay: 400
+    content: "\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "
+  - delay: 400
+    content: d
+  - delay: 40
+    content: a
+  - delay: 40
+    content: t
+  - delay: 40
+    content: a
+  - delay: 40
+    content: d
+  - delay: 40
+    content: o
+  - delay: 40
+    content: g
+  - delay: 40
+    content: _
+  - delay: 40
+    content: b
+  - delay: 40
+    content: a
+  - delay: 40
+    content: c
+  - delay: 40
+    content: k
+  - delay: 40
+    content: u
+  - delay: 40
+    content: p
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: '-'
+  - delay: 40
+    content: s
+  - delay: 40
+    content: h
+  - delay: 40
+    content: h
+  - delay: 40
+    content: h
+  - delay: 40
+    content: ' '
+  - delay: 40
+    content: r
+  - delay: 40
+    content: e
+  - delay: 40
+    content: s
+  - delay: 40
+    content: t
+  - delay: 40
+    content: o
+  - delay: 40
+    content: r
+  - delay: 40
+    content: e
+  - delay: 400
+    content: "\r\n"
+  - delay: 400
+    content: "--------------------------------------------------------------------------------\r\n ---\r\n id: s2s-uyz-74d\r\n\r\n ---\r\n id:  ---\r\n author_handle: jimp@scribd.com\r\n author_name: Sung Park\r\n created_at: '2020-06-22T00:45:23.876622+00:00'\r\n description: This timeboard just got an additional upgrade.\r\n id: s2s-uyz-74d\r\n is_read_only: false\r\n layout_type: ordered\r\n notify_list: []\r\n template_variables: []\r\n\e[31m-title: Jim's Exceptionally Acceptably Average Timeboard\e[0m\r\n\e[32m+title: Jim's Exceptionally Above Average Timeboard\e[0m\r\n widgets:\r\n - definition:\r\n     legend_size: '0'\r\n     requests:\r\n     - q: avg:system.disk.in_use{role:conversion}\r\n     show_legend: false\r\n     title: system.disk.in_use with role:conversion\r\n     type: timeseries\r\n   id: 3954182908525150\r\n\r\n(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?\r\n"
+  - delay: 400
+    content: r
+  - delay: 400
+    content: "\r\n"
+  - delay: 400
+    content: "Restoring s2s-uyz-74d to Datadog.\r\n"
+  - delay: 400
+    content: "\r\n"
+  - delay: 400
+    content: "\r\r\n\e[36;1m\e[0;33m|ruby-2.6.3| \e[0; \e[39min \e[0;32m~/demo\r\r\n\e[36;1m○\e[0;32m \e[0;32m→\e[39m "

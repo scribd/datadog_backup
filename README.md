@@ -24,6 +24,8 @@ gem install datadog_backup-*.gem
 
 ## Usage
 
+![demo](images/demo.gif)
+
 ```
 DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_backup <backup|diffs|restore> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only] [--diff-format color|html|html_simple] [--no-color] [--json]
 ```
