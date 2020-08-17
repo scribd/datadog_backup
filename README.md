@@ -1,6 +1,7 @@
 # Datadog Backup
 
 ![Rspec and Release](https://github.com/scribd/datadog_backup/workflows/Rspec%20and%20Release/badge.svg)
+[![Gem Version](https://badge.fury.io/rb/datadog_backup.svg)](https://badge.fury.io/rb/datadog_backup)
 
 Use `datadog_backup` to backup your datadog account.
 Currently supports
