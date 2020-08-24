@@ -6,7 +6,7 @@ PATH
       concurrent-ruby (= 1.1.6)
       concurrent-ruby-edge (= 0.6.0)
       deepsort (= 0.4.5)
-      diffy (= 3.3.0)
+      diffy (= 3.4.0)
       dogapi (= 1.41.0)
 
 GEM
@@ -21,7 +21,7 @@ GEM
       concurrent-ruby (~> 1.1.6)
     deepsort (0.4.5)
     diff-lcs (1.4.4)
-    diffy (3.3.0)
+    diffy (3.4.0)
     dogapi (1.41.0)
       multi_json
     ffi (1.13.1)
