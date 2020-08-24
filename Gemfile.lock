@@ -3,7 +3,7 @@ PATH
   specs:
     datadog_backup (0.6.0)
       amazing_print (= 1.2.1)
-      concurrent-ruby (= 1.1.6)
+      concurrent-ruby (= 1.1.7)
       concurrent-ruby-edge (= 0.6.0)
       deepsort (= 0.4.5)
       diffy (= 3.3.0)
@@ -16,7 +16,7 @@ GEM
     ast (2.4.1)
     climate_control (0.2.0)
     coderay (1.1.3)
-    concurrent-ruby (1.1.6)
+    concurrent-ruby (1.1.7)
     concurrent-ruby-edge (0.6.0)
       concurrent-ruby (~> 1.1.6)
     deepsort (0.4.5)
