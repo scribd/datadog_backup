@@ -1,3 +1,10 @@
+## [0.10.1](https://github.com/scribd/datadog_backup/compare/v0.10.0...v0.10.1) (2020-09-08)
+
+
+### Bug Fixes
+
+* update dependencies ([939ddc7](https://github.com/scribd/datadog_backup/commit/939ddc766eaccc2428eae6486979b919f3bd1c1e))
+
 # [0.10.0](https://github.com/scribd/datadog_backup/compare/v0.9.0...v0.10.0) (2020-08-14)
 
 
