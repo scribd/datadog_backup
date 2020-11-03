@@ -1,3 +1,10 @@
+## [0.10.2](https://github.com/scribd/datadog_backup/compare/v0.10.1...v0.10.2) (2020-11-03)
+
+
+### Bug Fixes
+
+* virtual environment updates ruby 2.7.1 -> 2.7.2  ([f950dd6](https://github.com/scribd/datadog_backup/commit/f950dd67ce989bb12de5f2dbf69c6449b91f2542))
+
 ## [0.10.1](https://github.com/scribd/datadog_backup/compare/v0.10.0...v0.10.1) (2020-09-08)
 
 
