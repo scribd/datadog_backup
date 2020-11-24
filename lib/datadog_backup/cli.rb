@@ -117,7 +117,7 @@ module DatadogBackup
           exit
         when 'r'
           puts "Restoring #{id} to Datadog."
-          definitive_resource_instance(id).update_with_200(id, definitive_resource_instance(id).load_from_file_by_id(id))
+          definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id))
         when 'd'
           puts "Downloading #{id} from Datadog."
           definitive_resource_instance(id).get_and_write_file(id)

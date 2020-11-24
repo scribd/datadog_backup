@@ -2,10 +2,8 @@
 
 module DatadogBackup
   class Dashboards < Core
-    BANLIST = %w[modified_at url]
-
     def all_boards
-      client_with_200(:get_all_boards).fetch('dashboards')
+      get_all.fetch('dashboards')
     end
 
     def api_service
@@ -37,14 +35,9 @@ module DatadogBackup
       Concurrent::Promises.zip(*futures).value!
     end
 
-    def diff(id)
-      super(id, BANLIST)
+    def initialize(options)
+      super(options)
+      @banlist = %w[modified_at url].freeze
     end
-
-    def get_by_id(id)
-      except(client_with_200(:get_board, id), BANLIST)
-    end
-
-    def restore!; end
   end
 end

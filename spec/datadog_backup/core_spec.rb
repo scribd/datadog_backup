@@ -22,21 +22,15 @@ describe DatadogBackup::Core do
     it { is_expected.to eq client_double }
   end
 
-  describe '#client_with_200' do
-    subject { core.client_with_200(:get_all_boards) }
-
+  describe '#with_200' do
     context 'with 200' do
-      before(:example) do
-        allow(client_double).to receive(:get_all_boards).and_return(['200', { foo: :bar }])
-      end
+      subject { core.with_200 {['200', { foo: :bar }]} }
 
       it { is_expected.to eq({ foo: :bar }) }
     end
 
     context 'with not 200' do
-      before(:example) do
-        allow(client_double).to receive(:get_all_boards).and_return(['401', {}])
-      end
+      subject { core.with_200 {['400', "Error message"]} }
 
       it 'raises an error' do
         expect { subject }.to raise_error(RuntimeError)
@@ -50,34 +44,21 @@ describe DatadogBackup::Core do
       core.write_file('{"text": "diff2", "extra": "diff2"}', "#{tempdir}/core/diff.json")
     end
 
-    context 'without banlist' do
-      subject { core.diff('diff') }
-      it {
-        is_expected.to eq <<~EOF
-           ---
-          -extra: diff1
-          -text: diff1
-          +extra: diff2
-          +text: diff2
-        EOF
-      }
-    end
-
-    context 'with banlist' do
-      subject { core.diff('diff', ['extra']) }
-      it {
-        is_expected.to eq <<~EOF
-           ---
-          -text: diff1
-          +text: diff2
-        EOF
-      }
-    end
+    subject { core.diff('diff') }
+    it {
+      is_expected.to eq <<~EOF
+         ---
+        -extra: diff1
+        -text: diff1
+        +extra: diff2
+        +text: diff2
+      EOF
+    }
   end
 
   describe '#except' do
-    subject { core.except({ a: :b, b: :c }, [:b]) }
-    it { is_expected.to eq({ a: :b }) }
+    subject { core.except({ a: :b, b: :c }) }
+    it { is_expected.to eq({ a: :b, b: :c }) }
   end
 
   describe '#initialize' do
@@ -94,7 +75,7 @@ describe DatadogBackup::Core do
   end
 
   describe '#update' do
-    subject { core.update_with_200('abc-123-def', '{"a": "b"}') }
+    subject { core.update('abc-123-def', '{"a": "b"}') }
     example 'it calls Dogapi::APIService.request' do
       stub_const('Dogapi::APIService::API_VERSION', 'v1')
       allow(core).to receive(:api_service).and_return(api_service_double)

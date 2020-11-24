@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 describe DatadogBackup::Cli do
+  let(:api_service_double) { double(Dogapi::APIService) }
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:options) do
@@ -43,8 +44,10 @@ describe DatadogBackup::Cli do
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/alsostillthere.json")
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/deleted.json")
 
-        allow(client_double).to receive(:get_all_boards).and_return(all_boards)
-        allow(client_double).to receive(:get_board).and_return(['200', {}])
+        allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
+        allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard", nil, nil, false).and_return(all_boards)
+        allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard/stillthere", nil, nil, false).and_return(['200', {}])
+        allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard/alsostillthere", nil, nil, false).and_return(['200', {}])
       end
 
       it 'deletes the file locally as well' do
@@ -83,17 +86,16 @@ describe DatadogBackup::Cli do
 
     example 'starts interactive restore' do
       allow($stdin).to receive(:gets).and_return('q')
-      begin
-        expect { subject }.to(
-          output(/\(r\)estore to Datadog, overwrite local changes and \(d\)ownload, \(s\)kip, or \(q\)uit\?/).to_stdout
-          .and(raise_error(SystemExit))
-        )
-      end
+
+      expect { subject }.to(
+        output(/\(r\)estore to Datadog, overwrite local changes and \(d\)ownload, \(s\)kip, or \(q\)uit\?/).to_stdout
+        .and(raise_error(SystemExit))
+      )
     end
 
     example 'restore' do
       allow($stdin).to receive(:gets).and_return('r')
-      expect(dashboards).to receive(:update_with_200).with('diffs1', { 'text' => 'diff' })
+      expect(dashboards).to receive(:update).with('diffs1', { 'text' => 'diff' })
       subject
     end
     example 'download' do

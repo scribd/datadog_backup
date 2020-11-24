@@ -1,12 +1,9 @@
 # frozen_string_literal: true
 
 module DatadogBackup
-  class Monitors < Core
-    API_SERVICE_NAME = :@monitor_svc
-    BANLIST = %w[overall_state overall_state_modified matching_downtimes modified]
-
+  class Monitors < Core    
     def all_monitors
-      @all_monitors ||= client_with_200(:get_all_monitors)
+      @all_monitors ||= get_all
     end
 
     def api_service
@@ -29,14 +26,13 @@ module DatadogBackup
       end
     end
 
-    def diff(id)
-      super(id, BANLIST)
-    end
-
     def get_by_id(id)
-      except(all_monitors.select { |monitor| monitor['id'].to_s == id.to_s }.first, BANLIST)
+      except(all_monitors.select { |monitor| monitor['id'].to_s == id.to_s }.first)
     end
 
-    def restore!; end
+    def initialize(options)
+      super(options)
+      @banlist = %w[overall_state overall_state_modified matching_downtimes modified].freeze
+    end
   end
 end
