@@ -31,9 +31,10 @@ module DatadogBackup
     end
 
     def dump(object)
-      if output_format == :json
+      case output_format
+      when :json
         JSON.pretty_generate(object.deep_sort)
-      elsif output_format == :yaml
+      when :yaml
         YAML.dump(object.deep_sort)
       else
         raise 'invalid output_format specified or not specified'
@@ -45,7 +46,7 @@ module DatadogBackup
     end
 
     def file_type(filepath)
-      ::File.extname(filepath).strip.downcase[1..-1].to_sym
+      ::File.extname(filepath).strip.downcase[1..].to_sym
     end
 
     def find_file_by_id(id)
@@ -53,9 +54,10 @@ module DatadogBackup
     end
 
     def load_from_file(string, output_format)
-      if output_format == :json
+      case output_format
+      when :json
         JSON.parse(string)
-      elsif output_format == :yaml
+      when :yaml
         YAML.safe_load(string)
       else
         raise 'invalid output_format specified or not specified'

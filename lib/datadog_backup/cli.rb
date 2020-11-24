@@ -91,7 +91,7 @@ module DatadogBackup
     end
 
     def matching_resource_instance(klass)
-      resource_instances.select { |resource_instance| resource_instance.class == klass }.first
+      resource_instances.select { |resource_instance| resource_instance.instance_of?(klass) }.first
     end
 
     def resource_instances

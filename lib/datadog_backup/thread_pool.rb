@@ -11,7 +11,7 @@ module DatadogBackup
 
     def self.watcher(logger)
       Thread.new(TPOOL) do |pool|
-        while pool.queue_length > 0
+        while pool.queue_length.positive?
           sleep 2
           logger.info("#{pool.queue_length} tasks remaining for execution.")
         end
