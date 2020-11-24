@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 describe DatadogBackup::Monitors do
+  let(:api_service_double) { double(Dogapi::APIService) }
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:monitors) do
@@ -47,19 +48,15 @@ describe DatadogBackup::Monitors do
       monitor_description
     ]
   end
+
   before(:example) do
-    allow(client_double).to receive(:get_all_monitors).and_return(all_monitors)
-    allow(client_double).to receive(:get_monitor).and_return(example_monitor)
+    allow(client_double).to receive(:instance_variable_get).with(:@monitor_svc).and_return(api_service_double)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/monitor", nil, nil, false).and_return(all_monitors)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard/123455", nil, nil, false).and_return(example_monitor)
   end
 
   describe '#all_monitors' do
     subject { monitors.all_monitors }
-
-    it 'calls get_all_monitors' do
-      subject
-      expect(client_double).to have_received(:get_all_monitors)
-    end
-
     it { is_expected.to eq [monitor_description] }
   end
 
@@ -76,10 +73,10 @@ describe DatadogBackup::Monitors do
     end
   end
 
-  describe '#diff' do
+  describe '#diff and #except' do
     example 'it ignores `overall_state` and `overall_state_modified`' do
       monitors.write_file(monitors.dump(monitor_description), monitors.filename(123_455))
-      allow(client_double).to receive(:get_all_monitors).and_return(
+      allow(api_service_double).to receive(:request).and_return(
         [
           '200',
           [
@@ -88,8 +85,8 @@ describe DatadogBackup::Monitors do
               'message' => 'foo',
               'id' => 123_455,
               'name' => 'foo',
-              'overall_state' => 'NO DATA',
-              'overall_state_modified' => '2020-07-27T22:55:55+00:00'
+              'overall_state' => 'ZZZZZZZZZZZZZZZZZZZZZZZZZZZ',
+              'overall_state_modified' => '9999-07-27T22:55:55+00:00'
             }
           ]
         ]

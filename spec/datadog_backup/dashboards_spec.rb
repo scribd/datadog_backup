@@ -3,6 +3,7 @@
 require 'spec_helper'
 
 describe DatadogBackup::Dashboards do
+  let(:api_service_double) { double(Dogapi::APIService) }
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:dashboards) do
@@ -59,8 +60,9 @@ describe DatadogBackup::Dashboards do
     }
   end
   before(:example) do
-    allow(client_double).to receive(:get_all_boards).and_return(all_boards)
-    allow(client_double).to receive(:get_board).and_return(example_dashboard)
+    allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard", nil, nil, false).and_return(all_boards)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard/abc-123-def", nil, nil, false).and_return(example_dashboard)
   end
 
   describe '#backup' do
@@ -79,20 +81,32 @@ describe DatadogBackup::Dashboards do
   describe '#all_boards' do
     subject { dashboards.all_boards }
 
-    it 'calls get_all_boards' do
-      subject
-      expect(client_double).to have_received(:get_all_boards)
-    end
-
     it { is_expected.to eq [dashboard_description] }
   end
 
   describe '#diff' do
     it 'calls the api only once' do
       dashboards.write_file('{"a":"b"}', dashboards.filename('abc-123-def'))
-      dashboards.diff('abc-123-def')
-      expect(client_double).to have_received(:get_board).exactly(1).times
+      expect(dashboards.diff('abc-123-def')).to eq(<<~EOF
+         ---
+        -description: example dashboard
+        -graphs:
+        -- definition:
+        -    requests:
+        -    - q: min:foo.bar{a:b}
+        -      stacked: false
+        -    viz: timeseries
+        -  title: example graph
+        -title: example dashboard
+        +a: b
+      EOF
+    )
     end
+  end
+
+  describe '#except' do
+    subject { dashboards.except({ :a => :b, 'modified_at' => :c, 'url' => :d }) }
+    it { is_expected.to eq({ a: :b }) }
   end
 
   describe '#get_by_id' do
