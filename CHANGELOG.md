@@ -1,3 +1,10 @@
+# [0.11.0-alpha.1](https://github.com/scribd/datadog_backup/compare/v0.10.2...v0.11.0-alpha.1) (2020-11-24)
+
+
+### Features
+
+* trigger release ([8865cad](https://github.com/scribd/datadog_backup/commit/8865cad798e2b8665a451ba76f62220b4dd2030f))
+
 ## [0.10.2](https://github.com/scribd/datadog_backup/compare/v0.10.1...v0.10.2) (2020-11-03)
 
 
