@@ -117,3 +117,5 @@ Gemfile.lock
 
 spec/helpers/failures.txt
 backup/
+
+.envrc
