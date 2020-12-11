@@ -1,3 +1,10 @@
+## [0.10.3](https://github.com/scribd/datadog_backup/compare/v0.10.2...v0.10.3) (2020-12-11)
+
+
+### Performance Improvements
+
+* coerce patch release ([bc86649](https://github.com/scribd/datadog_backup/commit/bc86649b874cd5be1da2f6bc0d1b1ecd0728676c))
+
 ## [0.10.2](https://github.com/scribd/datadog_backup/compare/v0.10.1...v0.10.2) (2020-11-03)
 
 
