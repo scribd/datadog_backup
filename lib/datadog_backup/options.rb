@@ -42,5 +42,9 @@ module DatadogBackup
     def resources
       @options[:resources]
     end
+
+    def force_restore
+      @options[:force_restore]
+    end
   end
 end

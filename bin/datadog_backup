@@ -23,6 +23,7 @@ LOGGER.level = Logger::INFO
   diff_format: :color,
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   output_format: :yaml,
+  force_restore: false,
   logger: LOGGER
 }
 
@@ -62,6 +63,9 @@ def prereqs
     end
     opts.on('--diff-format FORMAT', 'one of `color`, `html_simple`, `html`') do |format|
       @options[:diff_format] = format.to_sym
+    end
+    opts.on('--force-restore', 'force restore to Datadog') do
+      @options[:force_restore] = true
     end
   end
   options.parse!
