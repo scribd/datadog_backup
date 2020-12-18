@@ -74,18 +74,44 @@ module DatadogBackup
     end
 
     # Calls out to Datadog and checks for a '200' response
-    def update(id, body)
+    def create(body)
       with_200 do
-        api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
+        api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
       end
-      logger.warn 'Successfully restored to datadog.'
+      logger.warn 'Successfully recreated to datadog.'
     end
+
+    def update(id, body)
+      max_retries = 6
+      retries ||= 0
+
+      response = api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
+      return create(body) if response[0] == '404'
+      logger.warn 'Successfully restored to datadog.'
+      response[1]
+    rescue ::Net::OpenTimeout => e
+      if (retries += 1) <= max_retries
+        sleep(0.1 * retries**5) # 0.1, 3.2, 24.3, 102.4 seconds per retry
+        retry
+      else
+        raise "Request failed with error #{e.message}"
+      end
+    end
+
+    # Calls out to Datadog and checks for a '200' response
+    # def update(id, body)
+    #   with_200 do
+    #     api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
+    #   end
+    #   logger.warn 'Successfully restored to datadog.'
+    # end
 
     def with_200
       max_retries = 6
       retries ||= 0
 
       response = yield
+      return {} if response[0] == '404'
       raise "Request failed with error #{response}" unless response[0] == '200'
 
       response[1]
