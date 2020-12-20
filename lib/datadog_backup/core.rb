@@ -76,8 +76,7 @@ module DatadogBackup
 
     def create(body)
       with_200 do
-        r = api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
-        3
+        api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
       end
       logger.warn 'Successfully recreated to datadog.'
     end
