@@ -27,9 +27,10 @@ module DatadogBackup
     # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
     def diff(id)
-      current = except(get_by_id(id)).deep_sort.to_yaml
+      current = except(get_by_id(id))
+      current_yaml = current ? current.deep_sort.to_yaml : {}.to_yaml
       filesystem = except(load_from_file_by_id(id)).deep_sort.to_yaml
-      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
+      result = ::Diffy::Diff.new(current_yaml, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
       logger.debug("Compared ID #{id} and found #{result}")
       result
     end
@@ -38,7 +39,7 @@ module DatadogBackup
     def except(hash)
       hash.tap do # tap returns self
         @banlist.each do |key|
-          hash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
+          hash ? hash.delete(key) : {} # delete returns the value at the deleted key, hence the tap wrapper
         end
       end
     end
@@ -75,7 +76,8 @@ module DatadogBackup
 
     def create(body)
       with_200 do
-        api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
+        r = api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
+        3
       end
       logger.warn 'Successfully recreated to datadog.'
     end
