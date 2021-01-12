@@ -108,27 +108,30 @@ module DatadogBackup
         id, diff = *future.value!
         next unless diff
 
-        puts '--------------------------------------------------------------------------------'
-        puts format_diff_output([id, diff])
-        puts '(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?'
-        response = $stdin.gets.chomp
-        case response
-        when 'q'
-          exit
-        when 'r'
-          puts "Restoring #{id} to Datadog."
+        if @options[:force_restore]
           definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id))
-        when 'd'
-          puts "Downloading #{id} from Datadog."
-          definitive_resource_instance(id).get_and_write_file(id)
-        when 's'
-          next
         else
-          puts 'Invalid response, please try again.'
+          puts '--------------------------------------------------------------------------------'
+          puts format_diff_output([id, diff])
+          puts '(r)estore to Datadog, overwrite local changes and (d)ownload, (s)kip, or (q)uit?'
           response = $stdin.gets.chomp
+          case response
+          when 'q'
+            exit
+          when 'r'
+            puts "Restoring #{id} to Datadog."
+            definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id))
+          when 'd'
+            puts "Downloading #{id} from Datadog."
+            definitive_resource_instance(id).get_and_write_file(id)
+          when 's'
+            next
+          else
+            puts 'Invalid response, please try again.'
+            response = $stdin.gets.chomp
+          end
         end
       end
-
       watcher.join if watcher.status
     end
 
