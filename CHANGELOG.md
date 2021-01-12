@@ -1,3 +1,10 @@
+# [0.11.0](https://github.com/scribd/datadog_backup/compare/v0.10.3...v0.11.0) (2021-01-12)
+
+
+### Features
+
+* Add force-restore flag to allow running in automation ([#46](https://github.com/scribd/datadog_backup/issues/46)) ([e067386](https://github.com/scribd/datadog_backup/commit/e0673862b6f6d86297e1352faaee872f2c4884c8))
+
 ## [0.10.3](https://github.com/scribd/datadog_backup/compare/v0.10.2...v0.10.3) (2020-12-11)
 
 
