@@ -61,8 +61,10 @@ describe DatadogBackup::Dashboards do
   end
   before(:example) do
     allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard", nil, nil, false).and_return(all_boards)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard/abc-123-def", nil, nil, false).and_return(example_dashboard)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard', nil, nil,
+                                                        false).and_return(all_boards)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard/abc-123-def', nil, nil,
+                                                        false).and_return(example_dashboard)
   end
 
   describe '#backup' do
@@ -100,7 +102,7 @@ describe DatadogBackup::Dashboards do
         -title: example dashboard
         +a: b
       EOF
-    )
+                                                  )
     end
   end
 

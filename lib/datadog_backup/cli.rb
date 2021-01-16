@@ -109,7 +109,7 @@ module DatadogBackup
         next unless diff
 
         if @options[:force_restore]
-          definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id))
+          definitive_resource_instance(id).restore(id)
         else
           puts '--------------------------------------------------------------------------------'
           puts format_diff_output([id, diff])
@@ -120,7 +120,7 @@ module DatadogBackup
             exit
           when 'r'
             puts "Restoring #{id} to Datadog."
-            definitive_resource_instance(id).update(id, definitive_resource_instance(id).load_from_file_by_id(id))
+            definitive_resource_instance(id).restore(id)
           when 'd'
             puts "Downloading #{id} from Datadog."
             definitive_resource_instance(id).get_and_write_file(id)

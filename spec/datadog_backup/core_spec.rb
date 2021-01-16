@@ -26,13 +26,13 @@ describe DatadogBackup::Core do
 
   describe '#with_200' do
     context 'with 200' do
-      subject { core.with_200 {['200', { foo: :bar }]} }
+      subject { core.with_200 { ['200', { foo: :bar }] } }
 
       it { is_expected.to eq({ foo: :bar }) }
     end
 
     context 'with not 200' do
-      subject { core.with_200 {['400', "Error message"]} }
+      subject { core.with_200 { ['400', 'Error message'] } }
 
       it 'raises an error' do
         expect { subject }.to raise_error(RuntimeError)
@@ -76,15 +76,92 @@ describe DatadogBackup::Core do
     it { is_expected.to eq 'core' }
   end
 
-  describe '#update' do
-    subject { core.update('abc-123-def', '{"a": "b"}') }
+  describe '#create' do
+    subject { core.create({ 'a' => 'b' }) }
     example 'it calls Dogapi::APIService.request' do
       stub_const('Dogapi::APIService::API_VERSION', 'v1')
       allow(core).to receive(:api_service).and_return(api_service_double)
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, '/api/v1/dashboard/abc-123-def', nil, '{"a": "b"}', true).and_return(%w[200 Created])
+      expect(api_service_double).to receive(:request).with(Net::HTTP::Post, '/api/v1/dashboard', nil, { 'a' => 'b' },
+        true).and_return(['200', { 'id' => 'whatever-id-abc' }])
       subject
+    end
+  end
+
+  describe '#update' do
+    subject { core.update('abc-123-def', { 'a' => 'b' }) }
+    example 'it calls Dogapi::APIService.request' do
+      stub_const('Dogapi::APIService::API_VERSION', 'v1')
+      allow(core).to receive(:api_service).and_return(api_service_double)
+      allow(core).to receive(:api_version).and_return('v1')
+      allow(core).to receive(:api_resource_name).and_return('dashboard')
+      expect(api_service_double).to receive(:request).with(Net::HTTP::Put, '/api/v1/dashboard/abc-123-def', nil,
+        { 'a' => 'b' }, true).and_return(['200',
+        { 'id' => 'whataver-man-thats-like-your-opinion' }])
+      subject
+    end
+  end
+
+  describe '#restore' do
+    before(:each) do
+      allow(core).to receive(:api_service).and_return(api_service_double)
+      allow(core).to receive(:api_version).and_return('api-version-string')
+      allow(core).to receive(:api_resource_name).and_return('api-resource-name-string')
+      allow(api_service_double).to receive(:request).with(
+        Net::HTTP::Get,
+        '/api/api-version-string/api-resource-name-string/abc-123-def',
+        nil,
+        nil,
+        false
+      ).and_return(['200', { test: :ok }])
+      allow(api_service_double).to receive(:request).with(
+        Net::HTTP::Get,
+        '/api/api-version-string/api-resource-name-string/bad-123-id',
+        nil,
+        nil,
+        false
+      ).and_return(['404', { error: :blahblah_not_found }])
+      allow(core).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
+    end
+
+    context 'when id exists' do
+      subject { core.restore('abc-123-def') }
+      example 'it calls out to update' do
+        expect(core).to receive(:update).with('abc-123-def', { 'load' => 'ok' })
+        subject
+      end
+    end
+
+    context 'when id does not exist' do
+      before(:each) do
+        allow(api_service_double).to receive(:request).with(
+          Net::HTTP::Put,
+          '/api/api-version-string/api-resource-name-string/bad-123-id',
+          nil, { 'load' => 'ok' },
+          true
+        ).and_return(
+          ['404', { 'Error' => 'my not found' }]
+        )
+        allow(api_service_double).to receive(:request).with(
+          Net::HTTP::Post,
+          '/api/api-version-string/api-resource-name-string',
+          nil,
+          { 'load' => 'ok' },
+          true
+        ).and_return(
+          ['200', { 'id' => 'my-new-id' }]
+        )
+      end
+
+      subject { core.restore('bad-123-id') }
+      example 'it calls out to create then saves the new file and deletes the new file' do
+        expect(core).to receive(:create).with({ 'load' => 'ok' }).and_return({ 'id' => 'my-new-id' })
+        expect(core).to receive(:get_and_write_file).with('my-new-id')
+        allow(core).to receive(:find_file_by_id).with('bad-123-id').and_return('/path/to/bad-123-id.json')
+        expect(FileUtils).to receive(:rm).with('/path/to/bad-123-id.json')
+        subject
+      end
     end
   end
 end

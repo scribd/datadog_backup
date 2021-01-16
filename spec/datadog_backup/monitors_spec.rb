@@ -51,8 +51,10 @@ describe DatadogBackup::Monitors do
 
   before(:example) do
     allow(client_double).to receive(:instance_variable_get).with(:@monitor_svc).and_return(api_service_double)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/monitor", nil, nil, false).and_return(all_monitors)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, "/api/v1/dashboard/123455", nil, nil, false).and_return(example_monitor)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/monitor', nil, nil,
+                                                        false).and_return(all_monitors)
+    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard/123455', nil, nil,
+                                                        false).and_return(example_monitor)
   end
 
   describe '#all_monitors' do

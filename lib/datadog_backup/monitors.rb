@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module DatadogBackup
-  class Monitors < Core    
+  class Monitors < Core
     def all_monitors
       @all_monitors ||= get_all
     end
