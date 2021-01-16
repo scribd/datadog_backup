@@ -39,7 +39,7 @@ module DatadogBackup
     def except(hash)
       hash.tap do # tap returns self
         @banlist.each do |key|
-          hash ? hash.delete(key) : {} # delete returns the value at the deleted key, hence the tap wrapper
+          hash.delete(key) if hash
         end
       end
     end
