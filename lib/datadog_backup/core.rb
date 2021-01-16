@@ -74,11 +74,37 @@ module DatadogBackup
     end
 
     # Calls out to Datadog and checks for a '200' response
+    def create(body)
+      result = with_200 do
+        api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
+      end
+      logger.warn 'Successfully created in datadog.'
+      result
+    end
+
+    # Calls out to Datadog and checks for a '200' response
     def update(id, body)
-      with_200 do
+      result = with_200 do
         api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
       end
       logger.warn 'Successfully restored to datadog.'
+      result
+    end
+
+    def restore(id)
+      body = load_from_file_by_id(id)
+      begin
+        update(id, body)
+      rescue RuntimeError => e
+        if e.message.include?('Request failed with error ["404"')
+          new_id = create(body).fetch('id')
+
+          FileUtils.rm(find_file_by_id(id))
+          get_and_write_file(new_id)
+        else
+          raise e.message
+        end
+      end
     end
 
     def with_200
@@ -94,9 +120,8 @@ module DatadogBackup
         sleep(0.1 * retries**5) # 0.1, 3.2, 24.3, 102.4 seconds per retry
         retry
       else
-        raise "Request failed with error #{e.message}"
+        raise "Net::OpenTimeout: #{e.message}"
       end
     end
-
   end
 end
