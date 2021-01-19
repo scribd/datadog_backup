@@ -1,3 +1,16 @@
+# [1.0.0-alpha.2](https://github.com/scribd/datadog_backup/compare/v1.0.0-alpha.1...v1.0.0-alpha.2) (2021-01-19)
+
+
+### Features
+
+* If resource doesn't exist in Datadog, the resource is recreated. ([f2f9e1f](https://github.com/scribd/datadog_backup/commit/f2f9e1f7b244eb3eeaaf121025769f9f327f4e1e))
+
+
+### BREAKING CHANGES
+
+* `datadog-backup` used to exit with an error if a resource
+wasn't found in Datadog.
+
 # [1.0.0-alpha.1](https://github.com/scribd/datadog_backup/compare/v0.11.0...v1.0.0-alpha.1) (2021-01-17)
 
 
