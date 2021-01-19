@@ -99,8 +99,8 @@ module DatadogBackup
         if e.message.include?('Request failed with error ["404"')
           new_id = create(body).fetch('id')
 
-          get_and_write_file(new_id)
           FileUtils.rm(find_file_by_id(id))
+          get_and_write_file(new_id)
         else
           raise e.message
         end

@@ -55,8 +55,10 @@ def prereqs
     opts.on('--dashboards-only') do
       @options[:resources] = [DatadogBackup::Dashboards]
     end
-    opts.on('--json',
-            'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.') do
+    opts.on(
+      '--json',
+      'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.'
+    ) do
       @options[:output_format] = :json
     end
     opts.on('--no-color', 'removes colored output from diff format') do

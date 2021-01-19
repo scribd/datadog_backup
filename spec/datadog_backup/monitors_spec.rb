@@ -7,7 +7,7 @@ describe DatadogBackup::Monitors do
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:monitors) do
-    DatadogBackup::Monitors.new(
+    described_class.new(
       action: 'backup',
       client: client_double,
       backup_dir: tempdir,
@@ -49,7 +49,7 @@ describe DatadogBackup::Monitors do
     ]
   end
 
-  before(:example) do
+  before do
     allow(client_double).to receive(:instance_variable_get).with(:@monitor_svc).and_return(api_service_double)
     allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/monitor', nil, nil,
                                                         false).and_return(all_monitors)
@@ -59,6 +59,7 @@ describe DatadogBackup::Monitors do
 
   describe '#all_monitors' do
     subject { monitors.all_monitors }
+
     it { is_expected.to eq [monitor_description] }
   end
 
@@ -102,16 +103,20 @@ describe DatadogBackup::Monitors do
 
   describe '#filename' do
     subject { monitors.filename(123_455) }
+
     it { is_expected.to eq("#{tempdir}/monitors/123455.json") }
   end
 
   describe '#get_by_id' do
     context 'Integer' do
       subject { monitors.get_by_id(123_455) }
+
       it { is_expected.to eq monitor_description }
     end
+
     context 'String' do
       subject { monitors.get_by_id('123455') }
+
       it { is_expected.to eq monitor_description }
     end
   end

@@ -19,10 +19,10 @@ describe DatadogBackup::Cli do
       resources: [DatadogBackup::Dashboards]
     }
   end
-  let(:cli) { DatadogBackup::Cli.new(options) }
+  let(:cli) { described_class.new(options) }
   let(:dashboards) { DatadogBackup::Dashboards.new(options) }
 
-  before(:example) do
+  before do
     allow(cli).to receive(:resource_instances).and_return([dashboards])
   end
 
@@ -39,18 +39,28 @@ describe DatadogBackup::Cli do
           }
         ]
       end
-      before(:example) do
+
+      before do
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/stillthere.json")
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/alsostillthere.json")
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/deleted.json")
 
         allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard', nil, nil,
+        allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
+                                                            '/api/v1/dashboard',
+                                                            nil,
+                                                            nil,
                                                             false).and_return(all_boards)
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard/stillthere', nil, nil,
+        allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
+                                                            '/api/v1/dashboard/stillthere',
+                                                            nil,
+                                                            nil,
                                                             false).and_return(['200', {}])
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard/alsostillthere', nil,
-                                                            nil, false).and_return(['200', {}])
+        allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
+                                                            '/api/v1/dashboard/alsostillthere',
+                                                            nil,
+                                                            nil,
+                                                            false).and_return(['200', {}])
       end
 
       it 'deletes the file locally as well' do
@@ -61,16 +71,18 @@ describe DatadogBackup::Cli do
   end
 
   describe '#diffs' do
-    before(:example) do
+    subject { cli.diffs }
+
+    before do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs2.json")
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs3.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
       allow(cli).to receive(:initialize_client).and_return(client_double)
     end
-    subject { cli.diffs }
+
     it {
-      is_expected.to include(
+      expect(subject).to include(
         " ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n",
         " ---\n id: diffs3\n ---\n-text: diff2\n+text: diff\n",
         " ---\n id: diffs2\n ---\n-text: diff2\n+text: diff\n"
@@ -79,13 +91,13 @@ describe DatadogBackup::Cli do
   end
 
   describe '#restore' do
-    before(:example) do
+    subject { cli.restore }
+
+    before do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
       allow(cli).to receive(:initialize_client).and_return(client_double)
     end
-
-    subject { cli.restore }
 
     example 'starts interactive restore' do
       allow($stdin).to receive(:gets).and_return('q')
@@ -101,21 +113,24 @@ describe DatadogBackup::Cli do
       expect(dashboards).to receive(:update).with('diffs1', { 'text' => 'diff' })
       subject
     end
+
     example 'download' do
       allow($stdin).to receive(:gets).and_return('d')
       expect(dashboards).to receive(:write_file).with(%({\n  "text": "diff2"\n}), "#{tempdir}/dashboards/diffs1.json")
       subject
     end
+
     example 'skip' do
       allow($stdin).to receive(:gets).and_return('s')
-      expect(dashboards).to_not receive(:write_file)
-      expect(dashboards).to_not receive(:update)
+      expect(dashboards).not_to receive(:write_file)
+      expect(dashboards).not_to receive(:update)
       subject
     end
+
     example 'quit' do
       allow($stdin).to receive(:gets).and_return('q')
-      expect(dashboards).to_not receive(:write_file)
-      expect(dashboards).to_not receive(:update)
+      expect(dashboards).not_to receive(:write_file)
+      expect(dashboards).not_to receive(:update)
       expect { subject }.to raise_error(SystemExit)
     end
   end

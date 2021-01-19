@@ -7,7 +7,7 @@ describe DatadogBackup::Dashboards do
   let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:dashboards) do
-    DatadogBackup::Dashboards.new(
+    described_class.new(
       action: 'backup',
       client: client_double,
       backup_dir: tempdir,
@@ -59,7 +59,8 @@ describe DatadogBackup::Dashboards do
       'title' => 'example dashboard'
     }
   end
-  before(:example) do
+
+  before do
     allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
     allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard', nil, nil,
                                                         false).and_return(all_boards)
@@ -108,11 +109,13 @@ describe DatadogBackup::Dashboards do
 
   describe '#except' do
     subject { dashboards.except({ :a => :b, 'modified_at' => :c, 'url' => :d }) }
+
     it { is_expected.to eq({ a: :b }) }
   end
 
   describe '#get_by_id' do
     subject { dashboards.get_by_id('abc-123-def') }
+
     it { is_expected.to eq board_abc_123_def }
   end
 end
