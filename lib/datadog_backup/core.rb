@@ -47,6 +47,9 @@ module DatadogBackup
       with_200 do
         api_service.request(Net::HTTP::Get, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, nil, false)
       end
+    rescue RuntimeError => e
+      return {} if e.message.include?('Request failed with error ["404"')
+      raise e.message
     end
 
     def get_all

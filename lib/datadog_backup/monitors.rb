@@ -27,7 +27,8 @@ module DatadogBackup
     end
 
     def get_by_id(id)
-      except(all_monitors.select { |monitor| monitor['id'].to_s == id.to_s }.first)
+      monitor = all_monitors.select { |monitor| monitor['id'].to_s == id.to_s }.first
+      monitor.nil? ? {} : except(monitor)
     end
 
     def initialize(options)
