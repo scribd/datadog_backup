@@ -19,7 +19,7 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'amazing_print', '1.2.2'
+  spec.add_dependency 'amazing_print', '1.3.0'
   spec.add_dependency 'concurrent-ruby', '1.1.7'
   spec.add_dependency 'concurrent-ruby-edge', '0.6.0'
   spec.add_dependency 'deepsort', '0.4.5'
