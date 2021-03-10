@@ -1,3 +1,5 @@
+## [1.0.1-alpha.1](https://github.com/scribd/datadog_backup/compare/v1.0.0...v1.0.1-alpha.1) (2021-03-10)
+
 # [1.0.0](https://github.com/scribd/datadog_backup/compare/v0.11.0...v1.0.0) (2021-03-02)
 
 
