@@ -9,6 +9,10 @@ updates:
     directory: "/" # Location of package manifests
     schedule:
       interval: "daily"
+    commit_message:
+      prefix: "fix"
+      prefix_development: "chore"
+      include_scope: true
   - package-ecosystem: "github-actions"
     directory: "/" # Location of package manifests
     schedule:
