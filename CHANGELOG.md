@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/scribd/datadog_backup/compare/v1.0.0...v1.0.1) (2021-03-26)
+
+
+### Bug Fixes
+
+* dependabot syntax for github ([4214001](https://github.com/scribd/datadog_backup/commit/42140015976ec2d0f4d2fce6e4c3214bb590c967))
+
 # [1.0.0](https://github.com/scribd/datadog_backup/compare/v0.11.0...v1.0.0) (2021-03-02)
 
 
