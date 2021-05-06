@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/scribd/datadog_backup/compare/v1.0.1...v1.0.2) (2021-05-06)
+
+
+### Bug Fixes
+
+* **deps:** bump rexml from 3.2.4 to 3.2.5 ([15efa8c](https://github.com/scribd/datadog_backup/commit/15efa8c58953d450311fc8e5f125bf7e12401af4))
+
 ## [1.0.1](https://github.com/scribd/datadog_backup/compare/v1.0.0...v1.0.1) (2021-03-26)
 
 
