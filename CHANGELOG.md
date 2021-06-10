@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/scribd/datadog_backup/compare/v1.0.2...v1.0.3) (2021-06-10)
+
+
+### Bug Fixes
+
+* **deps:** update concurrent-ruby requirement from = 1.1.8 to = 1.1.9 ([31ccccb](https://github.com/scribd/datadog_backup/commit/31ccccbc890792670946923f51e5b883f4cf3e87))
+
 ## [1.0.2](https://github.com/scribd/datadog_backup/compare/v1.0.1...v1.0.2) (2021-05-06)
 
 
