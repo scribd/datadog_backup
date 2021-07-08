@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/scribd/datadog_backup/compare/v1.0.3...v1.0.4) (2021-07-08)
+
+
+### Bug Fixes
+
+* remove max queue size limit ([b5ee79c](https://github.com/scribd/datadog_backup/commit/b5ee79cc587ef95cebf89bbd8efe9d829af63c8a))
+
 ## [1.0.3](https://github.com/scribd/datadog_backup/compare/v1.0.2...v1.0.3) (2021-06-10)
 
 
