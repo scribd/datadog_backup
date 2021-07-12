@@ -13,25 +13,24 @@ $stdout.sync = $stderr.sync = true
 LOGGER = Logger.new($stderr) unless defined?(LOGGER)
 LOGGER.level = Logger::INFO
 
-##
-# Default parameters
-@options = {
-  action: nil,
-  datadog_api_key: ENV.fetch('DATADOG_API_KEY'),
-  datadog_app_key: ENV.fetch('DATADOG_APP_KEY'),
-  backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
-  diff_format: :color,
-  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
-  output_format: :yaml,
-  force_restore: false,
-  logger: LOGGER
-}
+def fatal(message)
+  LOGGER.fatal(message)
+  exit 1
+end
 
-def prereqs
+def options_valid?(options)
+  %w[backup diffs restore].include?(options[:action]) &&
+    options[:datadog_api_key] &&
+    options[:datadog_app_key]
+end
+
+def prereqs(defaults)
   ARGV << '--help' if ARGV.empty?
 
+  result = defaults.dup
+
   options = OptionParser.new do |opts|
-    opts.banner = "Usage: #{File.basename($PROGRAM_NAME)} <backup|diffs|restore>"
+    opts.banner = "Usage: DATADOG_API_KEY=abc123 DATADOG_APP_KEY=abc123 #{File.basename($PROGRAM_NAME)} <backup|diffs|restore>"
     opts.separator ''
     opts.on_tail('-h', '--help', 'Show this message') do
       puts opts
@@ -47,40 +46,49 @@ def prereqs
       LOGGER.level = Logger::ERROR
     end
     opts.on('--backup-dir PATH', '`backup` by default') do |path|
-      @options[:backup_dir] = path
+      result[:backup_dir] = path
     end
     opts.on('--monitors-only') do
-      @options[:resources] = [DatadogBackup::Monitors]
+      result[:resources] = [DatadogBackup::Monitors]
     end
     opts.on('--dashboards-only') do
-      @options[:resources] = [DatadogBackup::Dashboards]
+      result[:resources] = [DatadogBackup::Dashboards]
     end
     opts.on(
       '--json',
       'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.'
     ) do
-      @options[:output_format] = :json
+      result[:output_format] = :json
     end
     opts.on('--no-color', 'removes colored output from diff format') do
-      @options[:diff_format] = nil
+      result[:diff_format] = nil
     end
     opts.on('--diff-format FORMAT', 'one of `color`, `html_simple`, `html`') do |format|
-      @options[:diff_format] = format.to_sym
+      result[:diff_format] = format.to_sym
     end
     opts.on('--force-restore', 'force restore to Datadog') do
-      @options[:force_restore] = true
+      result[:force_restore] = true
     end
   end
   options.parse!
 
-  @options[:action] = ARGV.first
-  if %w[backup diffs restore].include?(@options[:action])
-  else
-    puts options
-    exit 0
-  end
+  result[:action] = ARGV.first
+  fatal(options) unless options_valid?(result)
+  result
 end
 
-prereqs
+##
+# Default parameters
+defaults = {
+  action: nil,
+  datadog_api_key: ENV.fetch('DATADOG_API_KEY', nil),
+  datadog_app_key: ENV.fetch('DATADOG_APP_KEY', nil),
+  backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
+  diff_format: :color,
+  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
+  output_format: :yaml,
+  force_restore: false,
+  logger: LOGGER
+}
 
-DatadogBackup::Cli.new(@options).run!
+DatadogBackup::Cli.new(prereqs(defaults)).run!

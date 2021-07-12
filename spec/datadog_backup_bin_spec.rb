@@ -37,12 +37,10 @@ describe 'bin/datadog_backup' do
   ]
 
   env = {}
-
-  before do
-    required_vars.each do |v|
-      env[v] = v.downcase
-    end
+  required_vars.each do |v|
+    env[v] = v.downcase
   end
+
 
   required_vars.map do |v|
     it "dies unless given ENV[#{v}]" do
@@ -53,8 +51,9 @@ describe 'bin/datadog_backup' do
   end
 
   it 'supplies help' do
+    stub_const('ENV', env)
     out_err, status = run_bin('--help')
-    expect(out_err).to match(/Usage: datadog_backup/)
+    expect(out_err).to match(/Usage: DATADOG_API_KEY=/)
     expect(status).to be_success
   end
 end
