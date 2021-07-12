@@ -49,6 +49,18 @@ datadog_backup diffs --backup-dir optional/path/to/backupdir
 datadog_backup restore --backup-dir optional/path/to/backupdir
 ```
 
+## Environment variables
+
+The following environment variables can be set in order to further customize datadog_backup:
+
+environment variable | description                                                                    | default
+---------------------|--------------------------------------------------------------------------------|--------------------------
+DATADOG_HOST         | Describe the API endpoint to connect to (https://api.datadoghq.eu for example) | https://api.datadoghq.com
+http_proxy           | Instruct Dogapi to connect via a differnt proxy address                        | none
+https_proxy          | same as http_proxy                                                             | none
+dd_proxy_https       | same as http_proxy                                                             | none
+
+
 ### Usage in a Github repo
 
 See [example/](https://github.com/scribd/datadog_backup/tree/master/example) for an example implementation as a repo that backs up your Datadog dashboards hourly.

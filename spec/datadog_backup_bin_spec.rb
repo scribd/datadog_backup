@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'open3'
-require 'climate_control'
 require 'timeout'
 
 describe 'bin/datadog_backup' do
@@ -37,15 +36,17 @@ describe 'bin/datadog_backup' do
     DATADOG_APP_KEY
   ]
 
+  env = {}
+
   before do
     required_vars.each do |v|
-      ClimateControl.env[v] = v.downcase
+      env[v] = v.downcase
     end
   end
 
   required_vars.map do |v|
     it "dies unless given ENV[#{v}]" do
-      ClimateControl.env[v] = nil
+      stub_const('ENV', env.dup.tap { |h| h.delete(v) })
       _, status = run_bin('backup')
       expect(status).not_to be_success
     end

@@ -48,7 +48,7 @@ module DatadogBackup
         Concurrent::Promises
           .zip(*futures)
           .value!
-          .reject { |_k, v| v.nil? }
+          .compact
       )
     end
 

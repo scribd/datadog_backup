@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'concurrent'
-require 'concurrent-edge'
 
 require 'dogapi'
 

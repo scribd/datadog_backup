@@ -26,6 +26,36 @@ describe DatadogBackup::Cli do
     allow(cli).to receive(:resource_instances).and_return([dashboards])
   end
 
+  describe '#initialize_client' do
+    subject { described_class.new({ datadog_api_key: 1, datadog_app_key: 1 }).initialize_client }
+
+    it { is_expected.to be_a(Dogapi::Client) }
+
+    context 'when the environment variable DATADOG_HOST is set to a custom host like https://api.datadoghq.eu' do
+      before do
+        stub_const('ENV', 'DATADOG_HOST' => 'https://api.datadoghq.eu')
+      end
+
+      describe 'then #datadog_host is https://api.datadoghq.eu' do
+        subject { described_class.new({ datadog_api_key: 1, datadog_app_key: 1 }).initialize_client.datadog_host }
+
+        it { is_expected.to eq('https://api.datadoghq.eu') }
+      end
+    end
+
+    context 'when the environment variable DATADOG_HOST is not set' do
+      before do
+        stub_const('ENV', {})
+      end
+
+      describe 'then #datadog_host is https://api.datadoghq.eu' do
+        subject { described_class.new({ datadog_api_key: 1, datadog_app_key: 1 }).initialize_client.datadog_host }
+
+        it { is_expected.to eq('https://api.datadoghq.com') }
+      end
+    end
+  end
+
   describe '#backup' do
     context 'when dashboards are deleted in datadog' do
       let(:all_boards) do

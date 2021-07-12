@@ -119,3 +119,5 @@ spec/helpers/failures.txt
 backup/
 
 .envrc
+
+.vscode

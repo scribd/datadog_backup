@@ -5,7 +5,6 @@ source 'https://rubygems.org'
 gemspec
 
 group :development, :test do
-  gem 'climate_control'
   gem 'guard-rspec'
   gem 'rspec'
   gem 'rubocop'

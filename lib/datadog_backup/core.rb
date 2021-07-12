@@ -49,6 +49,7 @@ module DatadogBackup
       end
     rescue RuntimeError => e
       return {} if e.message.include?('Request failed with error ["404"')
+
       raise e.message
     end
 
