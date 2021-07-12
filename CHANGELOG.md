@@ -1,3 +1,10 @@
+## [1.0.5](https://github.com/scribd/datadog_backup/compare/v1.0.4...v1.0.5) (2021-07-12)
+
+
+### Bug Fixes
+
+* Add documentation for DATADOG_HOST usage ([69acc25](https://github.com/scribd/datadog_backup/commit/69acc2574d17310ee090486ec46cb06ab0f450db))
+
 ## [1.0.4](https://github.com/scribd/datadog_backup/compare/v1.0.3...v1.0.4) (2021-07-08)
 
 
