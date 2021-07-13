@@ -16,12 +16,6 @@ Additional features may be built out over time.
 ```
 gem install datadog_backup
 ```
-or
-
-```
-gem build datadog_backup.gemspec
-gem install datadog_backup-*.gem
-```
 
 ## Usage
 
@@ -36,21 +30,21 @@ gem install datadog_backup
 export DATADOG_API_KEY=abc123
 export DATADOG_APP_KEY=abc123
 
-# Perform backup to optional/path/to/backupdir using YAML encoding
-datadog_backup backup --backup-dir optional/path/to/backupdir
+# Perform backup to `./backup/` using YAML encoding
+datadog_backup backup
 
 # Make some changes
 
 # Just review the changes since last backup
-datadog_backup diffs --backup-dir optional/path/to/backupdir
+datadog_backup diffs
 
-# Review and apply local changes to datadog
+# Review the changes since last backup and apply local changes to datadog
 
-datadog_backup restore --backup-dir optional/path/to/backupdir
+datadog_backup restore
 ```
 ## Parameters
 
-The following environment variables can be set in order to further customize datadog_backup:
+Supply the following parameters in order to customize datadog_backup:
 
 parameter            | description                                                                                                                   | default
 ---------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------------------
