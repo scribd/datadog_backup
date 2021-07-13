@@ -48,17 +48,34 @@ datadog_backup diffs --backup-dir optional/path/to/backupdir
 
 datadog_backup restore --backup-dir optional/path/to/backupdir
 ```
+## Parameters
+
+The following environment variables can be set in order to further customize datadog_backup:
+
+parameter            | description                                                                                                                   | default
+---------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------------------
+--debug              | log debug and above                                                                                                           | info
+--shh                | log warnings and above                                                                                                        | info
+--shhh               | log errors and above                                                                                                          | info
+--backup-dir PATH    | path to the directory to backup to or restore from                                                                            | `./backup/`
+--monitors-only      | only backup monitors                                                                                                          | backup monitors and dashboards
+--dashboards-only    | only backup dashboards                                                                                                        | backup monitors and dashboards
+--json               | format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir. | YAML
+--no-color           | removes colored output from diff format
+--diff-format FORMAT | one of `color`, `html_simple`, `html`                                                                                         | `color`
+--force-restore      | Force restore to Datadog. Do not ask to validate. Non-interactive.
+--h, --help          | help
 
 ## Environment variables
 
 The following environment variables can be set in order to further customize datadog_backup:
 
-environment variable | description                                                                    | default
+environment variable | description                                                                      | default
 ---------------------|--------------------------------------------------------------------------------|--------------------------
-DATADOG_HOST         | Describe the API endpoint to connect to (https://api.datadoghq.eu for example) | https://api.datadoghq.com
-http_proxy           | Instruct Dogapi to connect via a differnt proxy address                        | none
-https_proxy          | same as http_proxy                                                             | none
-dd_proxy_https       | same as http_proxy                                                             | none
+DATADOG_HOST         | Describe the API endpoint to connect to (https://api.datadoghq.eu for example)   | https://api.datadoghq.com
+http_proxy           | Instruct Dogapi to connect via a differnt proxy address                          | none
+https_proxy          | Same as `http_proxy`                                                             | none
+dd_proxy_https       | Same as `http_proxy`                                                             | none
 
 
 ### Usage in a Github repo
