@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/scribd/datadog_backup/compare/v1.0.5...v1.1.0) (2021-07-14)
+
+
+### Features
+
+* Add support for ruby 2.5 and 3.0 ([#89](https://github.com/scribd/datadog_backup/issues/89)) ([a181dbc](https://github.com/scribd/datadog_backup/commit/a181dbcfd55220e2fd7ce92d384738f71c50baa8))
+
 ## [1.0.5](https://github.com/scribd/datadog_backup/compare/v1.0.4...v1.0.5) (2021-07-12)
 
 
