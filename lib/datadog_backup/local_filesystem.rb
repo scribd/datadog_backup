@@ -46,7 +46,7 @@ module DatadogBackup
     end
 
     def file_type(filepath)
-      ::File.extname(filepath).strip.downcase[1..].to_sym
+      ::File.extname(filepath).strip.downcase[1..-1].to_sym
     end
 
     def find_file_by_id(id)

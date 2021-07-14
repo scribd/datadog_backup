@@ -41,7 +41,6 @@ describe 'bin/datadog_backup' do
     env[v] = v.downcase
   end
 
-
   required_vars.map do |v|
     it "dies unless given ENV[#{v}]" do
       stub_const('ENV', env.dup.tap { |h| h.delete(v) })
