@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ['>= 2.5']
 
-  spec.add_dependency 'amazing_print', '1.3.0'
+  spec.add_dependency 'amazing_print', '1.4.0'
   spec.add_dependency 'concurrent-ruby', '1.1.9'
   spec.add_dependency 'deepsort', '0.4.5'
   spec.add_dependency 'diffy', '3.4.0'
