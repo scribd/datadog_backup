@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/scribd/datadog_backup/compare/v1.1.0...v1.1.1) (2021-10-26)
+
+
+### Bug Fixes
+
+* **deps:** update amazing_print requirement from = 1.3.0 to = 1.4.0 ([b7e0ca6](https://github.com/scribd/datadog_backup/commit/b7e0ca61f0fb5acbeb541d3b173aa526a0edcf3d))
+
 # [1.1.0](https://github.com/scribd/datadog_backup/compare/v1.0.5...v1.1.0) (2021-07-14)
 
 
