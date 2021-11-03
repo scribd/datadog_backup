@@ -15,7 +15,7 @@ jobs:
         ruby: [2.5, 2.6, 2.7, '3.0']
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2.3.5
+    - uses: actions/checkout@v2.4.0
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -31,7 +31,7 @@ jobs:
     env:
       BUNDLE_DEPLOYMENT: true
     steps:
-    - uses: actions/checkout@v2.3.5
+    - uses: actions/checkout@v2.4.0
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
       with:
