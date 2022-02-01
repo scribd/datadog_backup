@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/scribd/datadog_backup/compare/v1.1.1...v1.1.2) (2022-02-01)
+
+
+### Bug Fixes
+
+* pin semantic release plugins ([5e92303](https://github.com/scribd/datadog_backup/commit/5e9230362f0b112de190fb1458fc9a3f32423c63))
+
 ## [1.1.1](https://github.com/scribd/datadog_backup/compare/v1.1.0...v1.1.1) (2021-10-26)
 
 
