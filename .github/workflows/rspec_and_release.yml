@@ -47,8 +47,8 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_TOKEN }}
       with:
-        semantic_version: 17
+        semantic_version: 19
         extra_plugins: |
-          @semantic-release/changelog
-          @semantic-release/git
-          semantic-release-rubygem
+          @semantic-release/changelog@6
+          @semantic-release/git@10
+          semantic-release-rubygem@1
