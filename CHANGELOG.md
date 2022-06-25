@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/scribd/datadog_backup/compare/v1.1.3...v1.1.4) (2022-06-25)
+
+
+### Bug Fixes
+
+* **deps:** update diffy requirement from = 3.4.0 to = 3.4.2 ([d241631](https://github.com/scribd/datadog_backup/commit/d2416319c6285d5b499b8c00d7c430be8f05091d))
+
 ## [1.1.3](https://github.com/scribd/datadog_backup/compare/v1.1.2...v1.1.3) (2022-03-23)
 
 
