@@ -1,3 +1,18 @@
+# [2.0.0](https://github.com/scribd/datadog_backup/compare/v1.1.4...v2.0.0) (2022-08-09)
+
+
+### Bug Fixes
+
+* **deps:** bundle update 20220809 ([#129](https://github.com/scribd/datadog_backup/issues/129)) ([9050752](https://github.com/scribd/datadog_backup/commit/9050752070cfb66cdc9320f51e082d3ddee226c5))
+
+
+* chore!: drop support for ruby 2.5 and 2.6 (EOL) ([29332c3](https://github.com/scribd/datadog_backup/commit/29332c39f6bb829191e840bc24309651a0ff7f16))
+
+
+### BREAKING CHANGES
+
+* ruby 2.5 and 2.6 are no longer supported
+
 ## [1.1.4](https://github.com/scribd/datadog_backup/compare/v1.1.3...v1.1.4) (2022-06-25)
 
 
