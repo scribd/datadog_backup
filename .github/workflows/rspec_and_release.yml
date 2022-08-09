@@ -12,7 +12,7 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         # Due to https://github.com/actions/runner/issues/849, we have to use quotes for '3.0'
-        ruby: [2.5, 2.6, 2.7, '3.0']
+        ruby: [2.7, '3.0', '3.1']
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v3
@@ -42,7 +42,7 @@ jobs:
         zip -r datadog_backup.zip ./*
     - name: Semantic Release
       id: semantic
-      uses: cycjimmy/semantic-release-action@v2
+      uses: cycjimmy/semantic-release-action@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_TOKEN }}
