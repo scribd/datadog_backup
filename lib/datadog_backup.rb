@@ -2,7 +2,8 @@
 
 require 'concurrent'
 
-require 'dogapi'
+require 'pry' #TODO: remove this
+require 'pry-byebug' #TODO: remove this
 
 require_relative 'datadog_backup/local_filesystem'
 require_relative 'datadog_backup/options'

@@ -28,13 +28,6 @@ module DatadogBackup
       any_resource_instance.all_files
     end
 
-    def initialize_client
-      @options[:client] ||= Dogapi::Client.new(
-        datadog_api_key,
-        datadog_app_key
-      )
-    end
-
     def definitive_resource_instance(id)
       matching_resource_instance(any_resource_instance.class_from_id(id))
     end
@@ -86,7 +79,6 @@ module DatadogBackup
 
     def initialize(options)
       @options = options
-      initialize_client
     end
 
     def matching_resource_instance(klass)

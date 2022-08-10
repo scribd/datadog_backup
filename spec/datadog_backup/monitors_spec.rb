@@ -3,18 +3,20 @@
 require 'spec_helper'
 
 describe DatadogBackup::Monitors do
-  let(:api_service_double) { double(Dogapi::APIService) }
-  let(:client_double) { double }
+  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+  let(:api_client_double) { Faraday.new { |f| f.adapter :test, stubs } }
   let(:tempdir) { Dir.mktmpdir }
   let(:monitors) do
-    described_class.new(
+    monitors = described_class.new(
       action: 'backup',
-      client: client_double,
       backup_dir: tempdir,
       output_format: :json,
       resources: []
     )
+    allow(monitors).to receive(:api_service).and_return(api_client_double)
+    return monitors
   end
+
   let(:monitor_description) do
     {
       'query' => 'bar',
@@ -35,7 +37,8 @@ describe DatadogBackup::Monitors do
   end
   let(:all_monitors) do
     [
-      '200',
+      200,
+      {},
       [
         monitor_description
       ]
@@ -43,17 +46,15 @@ describe DatadogBackup::Monitors do
   end
   let(:example_monitor) do
     [
-      '200',
+      200,
+      {},
       monitor_description
     ]
   end
 
   before do
-    allow(client_double).to receive(:instance_variable_get).with(:@monitor_svc).and_return(api_service_double)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/monitor', nil, nil,
-                                                        false).and_return(all_monitors)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard/123455', nil, nil,
-                                                        false).and_return(example_monitor)
+    stubs.get('/api/v1/monitor') { all_monitors }
+    stubs.get('/api/v1/dashboard/123455') { example_monitor }
   end
 
   describe '#all_monitors' do
@@ -78,9 +79,10 @@ describe DatadogBackup::Monitors do
   describe '#diff and #except' do
     example 'it ignores `overall_state` and `overall_state_modified`' do
       monitors.write_file(monitors.dump(monitor_description), monitors.filename(123_455))
-      allow(api_service_double).to receive(:request).and_return(
+      stubs.get('/api/v1/dashboard/123455') {
         [
-          '200',
+          200,
+          {},
           [
             {
               'query' => 'bar',
@@ -92,7 +94,7 @@ describe DatadogBackup::Monitors do
             }
           ]
         ]
-      )
+      }
 
       expect(monitors.diff(123_455)).to eq ''
 

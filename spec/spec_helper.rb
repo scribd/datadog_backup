@@ -9,7 +9,6 @@ LOGGER.level = Logger::INFO
 $stdout = File.new('/dev/null', 'w+')
 
 require 'tmpdir'
-require 'dogapi'
 require 'datadog_backup'
 
 

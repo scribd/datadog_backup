@@ -3,63 +3,35 @@
 require 'spec_helper'
 
 describe DatadogBackup::Cli do
-  let(:api_service_double) { double(Dogapi::APIService) }
-  let(:client_double) { double }
+  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+  let(:api_client_double) { Faraday.new { |f| f.adapter :test, stubs } }
   let(:tempdir) { Dir.mktmpdir }
   let(:options) do
     {
       action: 'backup',
       backup_dir: tempdir,
-      client: client_double,
-      datadog_api_key: 1,
-      datadog_app_key: 1,
       diff_format: nil,
       output_format: :json,
       resources: [DatadogBackup::Dashboards]
     }
   end
   let(:cli) { described_class.new(options) }
-  let(:dashboards) { DatadogBackup::Dashboards.new(options) }
+  let(:dashboards) do
+    dashboards = DatadogBackup::Dashboards.new(options)
+    allow(dashboards).to receive(:api_service).and_return(api_client_double)
+    return dashboards
+  end
 
   before do
     allow(cli).to receive(:resource_instances).and_return([dashboards])
   end
 
-  describe '#initialize_client' do
-    subject { described_class.new({ datadog_api_key: 1, datadog_app_key: 1 }).initialize_client }
-
-    it { is_expected.to be_a(Dogapi::Client) }
-
-    context 'when the environment variable DATADOG_HOST is set to a custom host like https://api.datadoghq.eu' do
-      before do
-        stub_const('ENV', 'DATADOG_HOST' => 'https://api.datadoghq.eu')
-      end
-
-      describe 'then #datadog_host is https://api.datadoghq.eu' do
-        subject { described_class.new({ datadog_api_key: 1, datadog_app_key: 1 }).initialize_client.datadog_host }
-
-        it { is_expected.to eq('https://api.datadoghq.eu') }
-      end
-    end
-
-    context 'when the environment variable DATADOG_HOST is not set' do
-      before do
-        stub_const('ENV', {})
-      end
-
-      describe 'then #datadog_host is https://api.datadoghq.eu' do
-        subject { described_class.new({ datadog_api_key: 1, datadog_app_key: 1 }).initialize_client.datadog_host }
-
-        it { is_expected.to eq('https://api.datadoghq.com') }
-      end
-    end
-  end
-
   describe '#backup' do
     context 'when dashboards are deleted in datadog' do
-      let(:all_boards) do
+      let(:all_dashboards) do
         [
-          '200',
+          200,
+          {},
           {
             'dashboards' => [
               { 'id' => 'stillthere' },
@@ -74,22 +46,9 @@ describe DatadogBackup::Cli do
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/alsostillthere.json")
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/deleted.json")
 
-        allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
-                                                            '/api/v1/dashboard',
-                                                            nil,
-                                                            nil,
-                                                            false).and_return(all_boards)
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
-                                                            '/api/v1/dashboard/stillthere',
-                                                            nil,
-                                                            nil,
-                                                            false).and_return(['200', {}])
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
-                                                            '/api/v1/dashboard/alsostillthere',
-                                                            nil,
-                                                            nil,
-                                                            false).and_return(['200', {}])
+        stubs.get('/api/v1/dashboard') { all_dashboards }
+        stubs.get('/api/v1/dashboard/stillthere') {[200, {}, {}]}
+        stubs.get('/api/v1/dashboard/alsostillthere') {[200, {}, {}]}
       end
 
       it 'deletes the file locally as well' do
@@ -107,7 +66,6 @@ describe DatadogBackup::Cli do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs2.json")
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs3.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
-      allow(cli).to receive(:initialize_client).and_return(client_double)
     end
 
     it {
@@ -125,7 +83,6 @@ describe DatadogBackup::Cli do
     before do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
-      allow(cli).to receive(:initialize_client).and_return(client_double)
     end
 
     example 'starts interactive restore' do

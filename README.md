@@ -11,6 +11,15 @@ Currently supports
 
 Additional features may be built out over time.
 
+# v3 Migration
+
+v3 is a backwards incompatible change.
+
+- [] DATADOG_API_KEY and DATADOG_APP_KEY are no longer the environment variables used to authenticate to Datadog. Instead, set the environment variables DD_API_KEY and DD_APP_KEY.
+- [ ] ruby 2.6 is no longer supported. Please upgrade to ruby 2.7 or higher.
+- [ ] The options `--ssh` and `--ssshh` are no longer supported. Instead, please use `--quiet` to supress logging. `--debug` remains supported.
+- [ ] The environment variable `DATADOG_HOST` is no longer supported. Instead, please use `DD_SITE_URL`.
+
 ## Installation
 
 ```
@@ -22,13 +31,13 @@ gem install datadog_backup
 ![demo](images/demo.gif)
 
 ```
-DATADOG_API_KEY=example123 DATADOG_APP_KEY=example123 datadog_backup <backup|diffs|restore> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only] [--diff-format color|html|html_simple] [--no-color] [--json]
+DD_API_KEY=example123 DD_APP_KEY=example123 datadog_backup <backup|diffs|restore> [--backup-dir /path/to/backups] [--debug] [--monitors-only] [--dashboards-only] [--diff-format color|html|html_simple] [--no-color] [--json]
 ```
 
 ```
 gem install datadog_backup
-export DATADOG_API_KEY=abc123
-export DATADOG_APP_KEY=abc123
+export DD_API_KEY=abc123
+export DD_APP_KEY=abc123
 
 # Perform backup to `./backup/` using YAML encoding
 datadog_backup backup
@@ -49,8 +58,7 @@ Supply the following parameters in order to customize datadog_backup:
 parameter            | description                                                                                                                   | default
 ---------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------------------
 --debug              | log debug and above                                                                                                           | info
---shh                | log warnings and above                                                                                                        | info
---shhh               | log errors and above                                                                                                          | info
+--quiet              | only show errors and above                                                                                                    | info
 --backup-dir PATH    | path to the directory to backup to or restore from                                                                            | `./backup/`
 --monitors-only      | only backup monitors                                                                                                          | backup monitors and dashboards
 --dashboards-only    | only backup dashboards                                                                                                        | backup monitors and dashboards
@@ -66,10 +74,9 @@ The following environment variables can be set in order to further customize dat
 
 environment variable | description                                                                      | default
 ---------------------|--------------------------------------------------------------------------------|--------------------------
-DATADOG_HOST         | Describe the API endpoint to connect to (https://api.datadoghq.eu for example)   | https://api.datadoghq.com
-http_proxy           | Instruct Dogapi to connect via a differnt proxy address                          | none
-https_proxy          | Same as `http_proxy`                                                             | none
-dd_proxy_https       | Same as `http_proxy`                                                             | none
+DD_SITE_URL          | Describe the API endpoint to connect to (https://api.datadoghq.eu for example)   | https://api.datadoghq.com
+DD_API_KEY           | The API key for the Datadog account                                              | none
+DD_API_KEY           | The Application key for the Datadog account                                      | none
 
 
 ### Usage in a Github repo

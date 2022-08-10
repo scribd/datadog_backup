@@ -3,17 +3,18 @@
 require 'spec_helper'
 
 describe DatadogBackup::Dashboards do
-  let(:api_service_double) { double(Dogapi::APIService) }
-  let(:client_double) { double }
+  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+  let(:api_client_double) { Faraday.new { |f| f.adapter :test, stubs } }
   let(:tempdir) { Dir.mktmpdir }
   let(:dashboards) do
-    described_class.new(
+    dashboards = described_class.new(
       action: 'backup',
-      client: client_double,
       backup_dir: tempdir,
       output_format: :json,
       resources: []
     )
+    allow(dashboards).to receive(:api_service).and_return(api_client_double)
+    return dashboards
   end
   let(:dashboard_description) do
     {
@@ -22,9 +23,10 @@ describe DatadogBackup::Dashboards do
       'title' => 'foo'
     }
   end
-  let(:all_boards) do
+  let(:all_dashboards) do
     [
-      '200',
+      200,
+      {},
       {
         'dashboards' => [
           dashboard_description
@@ -34,7 +36,8 @@ describe DatadogBackup::Dashboards do
   end
   let(:example_dashboard) do
     [
-      '200',
+      200,
+      {},
       board_abc_123_def
     ]
   end
@@ -60,11 +63,8 @@ describe DatadogBackup::Dashboards do
   end
 
   before do
-    allow(client_double).to receive(:instance_variable_get).with(:@dashboard_service).and_return(api_service_double)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard', nil, nil,
-                                                        false).and_return(all_boards)
-    allow(api_service_double).to receive(:request).with(Net::HTTP::Get, '/api/v1/dashboard/abc-123-def', nil, nil,
-                                                        false).and_return(example_dashboard)
+    stubs.get('/api/v1/dashboard') { all_dashboards }
+    stubs.get('/api/v1/dashboard/abc-123-def') { example_dashboard }
   end
 
   describe '#backup' do
@@ -80,8 +80,8 @@ describe DatadogBackup::Dashboards do
     end
   end
 
-  describe '#all_boards' do
-    subject { dashboards.all_boards }
+  describe '#all_dashboards' do
+    subject { dashboards.all_dashboards }
 
     it { is_expected.to eq [dashboard_description] }
   end

@@ -19,16 +19,19 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = ['lib']
 
-  spec.required_ruby_version = ['>= 2.6']
+  spec.required_ruby_version = ['>= 2.7']
 
-  spec.add_dependency 'amazing_print', '~> 1.4.0'
-  spec.add_dependency 'concurrent-ruby', '~> 1.1.10'
-  spec.add_dependency 'deepsort', '~> 0.4.5'
-  spec.add_dependency 'diffy', '~> 3.4.2'
-  spec.add_dependency 'dogapi', '~> 1.45.0'
+  spec.add_dependency 'amazing_print'
+  spec.add_dependency 'concurrent-ruby'
+  spec.add_dependency 'deepsort'
+  spec.add_dependency 'diffy'
+  spec.add_dependency 'faraday'
+  spec.add_dependency 'faraday-retry'
+
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'pry'
+  spec.add_development_dependency 'pry-byebug'
   spec.add_development_dependency 'guard-rspec'
   spec.add_development_dependency 'rspec'
   spec.add_development_dependency 'rubocop'
