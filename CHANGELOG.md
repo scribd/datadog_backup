@@ -1,3 +1,10 @@
+## [2.0.2](https://github.com/scribd/datadog_backup/compare/v2.0.1...v2.0.2) (2022-08-11)
+
+
+### Bug Fixes
+
+* Deprecate Ruby 2.6 and Drop support for Ruby 2.5 ([#132](https://github.com/scribd/datadog_backup/issues/132)) ([432cb2c](https://github.com/scribd/datadog_backup/commit/432cb2c0d8b12d89aef81cf35597aa90f77407eb))
+
 ## [2.0.1](https://github.com/scribd/datadog_backup/compare/v2.0.0...v2.0.1) (2022-08-11)
 
 
