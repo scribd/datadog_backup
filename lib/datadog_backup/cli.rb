@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require 'logger'
 require 'amazing_print'
 
 module DatadogBackup
@@ -9,7 +8,7 @@ module DatadogBackup
     include ::DatadogBackup::Options
 
     def all_diff_futures
-      logger.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
+      LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
       any_resource_instance
         .all_file_ids_for_selected_resources
         .map do |id|
@@ -42,7 +41,7 @@ module DatadogBackup
 
     def diffs
       futures = all_diff_futures
-      ::DatadogBackup::ThreadPool.watcher(logger).join
+      ::DatadogBackup::ThreadPool.watcher.join
 
       format_diff_output(
         Concurrent::Promises
@@ -102,7 +101,7 @@ module DatadogBackup
 
     def restore
       futures = all_diff_futures
-      watcher = ::DatadogBackup::ThreadPool.watcher(logger)
+      watcher = ::DatadogBackup::ThreadPool.watcher
 
       futures.each do |future|
         id, diff = *future.value!
@@ -138,7 +137,7 @@ module DatadogBackup
     def run!
       puts(send(action.to_sym))
     rescue SystemExit, Interrupt
-      ::DatadogBackup::ThreadPool.shutdown(logger)
+      ::DatadogBackup::ThreadPool.shutdown
     end
   end
 end

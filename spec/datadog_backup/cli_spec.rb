@@ -14,7 +14,6 @@ describe DatadogBackup::Cli do
       datadog_api_key: 1,
       datadog_app_key: 1,
       diff_format: nil,
-      logger: Logger.new('/dev/null'),
       output_format: :json,
       resources: [DatadogBackup::Dashboards]
     }

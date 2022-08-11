@@ -5,13 +5,13 @@ $LOAD_PATH.unshift File.join(File.dirname(__FILE__), '../lib')
 
 require 'logger'
 require 'optparse'
+$stdout.sync = $stderr.sync = true
+LOGGER = Logger.new($stderr) unless defined?(LOGGER)
+LOGGER.level = Logger::INFO
 
 require 'datadog_backup'
 require 'dogapi'
 
-$stdout.sync = $stderr.sync = true
-LOGGER = Logger.new($stderr) unless defined?(LOGGER)
-LOGGER.level = Logger::INFO
 
 def fatal(message)
   LOGGER.fatal(message)
@@ -87,8 +87,7 @@ defaults = {
   diff_format: :color,
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
   output_format: :yaml,
-  force_restore: false,
-  logger: LOGGER
+  force_restore: false
 }
 
 DatadogBackup::Cli.new(prereqs(defaults)).run!

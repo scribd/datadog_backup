@@ -14,8 +14,7 @@ describe DatadogBackup::Core do
       backup_dir: tempdir,
       diff_format: nil,
       resources: [],
-      output_format: :json,
-      logger: Logger.new('/dev/null')
+      output_format: :json
     )
   end
 

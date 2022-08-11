@@ -12,8 +12,7 @@ describe DatadogBackup::Monitors do
       client: client_double,
       backup_dir: tempdir,
       output_format: :json,
-      resources: [],
-      logger: Logger.new('/dev/null')
+      resources: []
     )
   end
   let(:monitor_description) do

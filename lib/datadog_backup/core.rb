@@ -30,7 +30,7 @@ module DatadogBackup
       current = except(get_by_id(id)).deep_sort.to_yaml
       filesystem = except(load_from_file_by_id(id)).deep_sort.to_yaml
       result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
-      logger.debug("Compared ID #{id} and found #{result}")
+      LOGGER.debug("Compared ID #{id} and found #{result}")
       result
     end
 
@@ -82,7 +82,7 @@ module DatadogBackup
       result = with_200 do
         api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
       end
-      logger.warn 'Successfully created in datadog.'
+      LOGGER.warn 'Successfully created in datadog.'
       result
     end
 
@@ -91,7 +91,7 @@ module DatadogBackup
       result = with_200 do
         api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
       end
-      logger.warn 'Successfully restored to datadog.'
+      LOGGER.warn 'Successfully restored to datadog.'
       result
     end
 
