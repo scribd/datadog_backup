@@ -2,11 +2,11 @@ PATH
   remote: .
   specs:
     datadog_backup (2.0.1)
-      amazing_print (= 1.4.0)
-      concurrent-ruby (= 1.1.10)
-      deepsort (= 0.4.5)
-      diffy (= 3.4.2)
-      dogapi (= 1.45.0)
+      amazing_print (~> 1.4.0)
+      concurrent-ruby (~> 1.1.10)
+      deepsort (~> 0.4.5)
+      diffy (~> 3.4.2)
+      dogapi (~> 1.45.0)
 
 GEM
   remote: https://rubygems.org/
