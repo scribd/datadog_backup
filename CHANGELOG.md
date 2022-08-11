@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/scribd/datadog_backup/compare/v2.0.0...v2.0.1) (2022-08-11)
+
+
+### Bug Fixes
+
+* include version.rb in release commit ([#130](https://github.com/scribd/datadog_backup/issues/130)) ([f8df6cc](https://github.com/scribd/datadog_backup/commit/f8df6cc48ac9a3521c3c98dfa2c325f96801d001))
+
 # [2.0.0](https://github.com/scribd/datadog_backup/compare/v1.1.4...v2.0.0) (2022-08-09)
 
 
