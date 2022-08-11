@@ -11,8 +11,7 @@ describe DatadogBackup::LocalFilesystem do
       client: client_double,
       backup_dir: tempdir,
       resources: [DatadogBackup::Dashboards],
-      output_format: :json,
-      logger: Logger.new('/dev/null')
+      output_format: :json
     )
   end
   let(:core_yaml) do
@@ -21,8 +20,7 @@ describe DatadogBackup::LocalFilesystem do
       client: client_double,
       backup_dir: tempdir,
       resources: [],
-      output_format: :yaml,
-      logger: Logger.new('/dev/null')
+      output_format: :yaml
     )
   end
 

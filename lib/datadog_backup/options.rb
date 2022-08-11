@@ -30,10 +30,6 @@ module DatadogBackup
       @options[:diff_format]
     end
 
-    def logger
-      @options[:logger]
-    end
-
     # Either :json or :yaml
     def output_format
       @options[:output_format]

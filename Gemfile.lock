@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    datadog_backup (0.6.0)
+    datadog_backup (2.0.1)
       amazing_print (= 1.4.0)
       concurrent-ruby (= 1.1.10)
       deepsort (= 0.4.5)

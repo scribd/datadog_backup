@@ -78,7 +78,7 @@ module DatadogBackup
     end
 
     def write_file(data, filename)
-      logger.info "Backing up #{filename}"
+      LOGGER.info "Backing up #{filename}"
       file = ::File.open(filename, 'w')
       file.write(data)
     ensure
