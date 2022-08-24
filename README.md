@@ -13,12 +13,17 @@ Additional features may be built out over time.
 
 # v3 Migration
 
+## Breaking Changes
 v3 is a backwards incompatible change.
 
 - [] DATADOG_API_KEY and DATADOG_APP_KEY are no longer the environment variables used to authenticate to Datadog. Instead, set the environment variables DD_API_KEY and DD_APP_KEY.
 - [ ] ruby 2.6 is no longer supported. Please upgrade to ruby 2.7 or higher.
 - [ ] The options `--ssh` and `--ssshh` are no longer supported. Instead, please use `--quiet` to supress logging. `--debug` remains supported.
 - [ ] The environment variable `DATADOG_HOST` is no longer supported. Instead, please use `DD_SITE_URL`.
+
+## Misc
+- [ ] The legacy [dogapi-rb ](https://github.com/DataDog/dogapi-rb) gem is replaced with [faraday](https://lostisland.github.io/faraday/).  The [official client library](https://github.com/DataDog/datadog-api-client-ruby) was considered, but was not adopted as I had a hard time grok-ing it.
+
 
 ## Installation
 

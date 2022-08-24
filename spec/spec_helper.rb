@@ -4,8 +4,8 @@ $LOAD_PATH.unshift(File.expand_path('../lib', File.dirname(__FILE__)))
 
 require 'logger'
 $stdout.sync = $stderr.sync = true
-LOGGER = Logger.new('/dev/null')
-LOGGER.level = Logger::INFO
+LOGGER = Logger.new($stderr)
+LOGGER.level = Logger::ERROR
 $stdout = File.new('/dev/null', 'w+')
 
 require 'tmpdir'
