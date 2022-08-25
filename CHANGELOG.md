@@ -1,3 +1,22 @@
+# [3.0.0](https://github.com/scribd/datadog_backup/compare/v2.0.2...v3.0.0) (2022-08-25)
+
+
+* feat!: release 3.0 (#136) ([3d23b03](https://github.com/scribd/datadog_backup/commit/3d23b03668e888886f394de2fa4884aa1e3ca287)), closes [#136](https://github.com/scribd/datadog_backup/issues/136)
+
+
+### BREAKING CHANGES
+
+* DATADOG_API_KEY and DATADOG_APP_KEY are no longer the environment variables used to authenticate to Datadog. Instead, set the environment variables DD_API_KEY and DD_APP_KEY.
+* ruby 2.6 is no longer supported. Please upgrade to ruby 2.7 or higher.
+* The options `--ssh` and `--ssshh` are no longer supported. Instead, please use `--quiet` to supress logging. `--debug` remains supported.
+* The environment variable `DATADOG_HOST` is no longer supported. Instead, please use `DD_SITE_URL`.
+
+refactor: The legacy [dogapi-rb ](https://github.com/DataDog/dogapi-rb) gem is replaced with [faraday](https://lostisland.github.io/faraday/).  The [official client library](https://github.com/DataDog/datadog-api-client-ruby) was considered, but was not adopted as I had a hard time grok-ing it.
+
+* chore: permit logging from tests, but only error+
+
+Co-authored-by: semantic-release-bot <semantic-release-bot@martynus.net>
+
 # [3.0.0-alpha.2](https://github.com/scribd/datadog_backup/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2022-08-25)
 
 
