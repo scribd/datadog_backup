@@ -3,6 +3,10 @@
 module DatadogBackup
   class Dashboards < Core
 
+    def all_dashboards
+      get_all.fetch('dashboards')
+    end
+
     def api_version
       'v1'
     end
@@ -25,10 +29,6 @@ module DatadogBackup
       watcher.join if watcher.status
 
       Concurrent::Promises.zip(*futures).value!
-    end
-
-    def all_dashboards
-      get_all.fetch('dashboards')
     end
 
     def initialize(options)

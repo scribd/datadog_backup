@@ -57,8 +57,8 @@ describe DatadogBackup::Monitors do
     stubs.get('/api/v1/dashboard/123455') { example_monitor }
   end
 
-  describe '#all_monitors' do
-    subject { monitors.all_monitors }
+  describe '#get_all' do
+    subject { monitors.get_all }
 
     it { is_expected.to eq [monitor_description] }
   end

@@ -82,10 +82,11 @@ module DatadogBackup
     end
 
     def get_all
+      return @get_all if @get_all
       params = {}
       headers = {}
       response = api_service.get("/api/#{api_version}/#{api_resource_name}", params, headers)
-      body_with_2xx(response)
+      @get_all = body_with_2xx(response)
     end
 
     def get_and_write_file(id)
