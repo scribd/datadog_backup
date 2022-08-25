@@ -1,3 +1,10 @@
+# [3.0.0-alpha.2](https://github.com/scribd/datadog_backup/compare/v3.0.0-alpha.1...v3.0.0-alpha.2) (2022-08-25)
+
+
+### Bug Fixes
+
+* remove development pry ([611d0a6](https://github.com/scribd/datadog_backup/commit/611d0a6dd5899b0046fc00233cf679834b275089))
+
 # [3.0.0-alpha.1](https://github.com/scribd/datadog_backup/compare/v2.0.2...v3.0.0-alpha.1) (2022-08-24)
 
 
