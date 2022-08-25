@@ -86,7 +86,7 @@ DD_API_KEY           | The Application key for the Datadog account              
 
 ### Usage in a Github repo
 
-See [example/](https://github.com/scribd/datadog_backup/tree/master/example) for an example implementation as a repo that backs up your Datadog dashboards hourly.
+See [example/](https://github.com/scribd/datadog_backup/tree/main/example) for an example implementation as a repo that backs up your Datadog dashboards hourly.
 
 # Development
 
