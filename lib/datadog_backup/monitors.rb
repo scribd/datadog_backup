@@ -6,11 +6,6 @@ module DatadogBackup
       @all_monitors ||= get_all
     end
 
-    def api_service
-      # The underlying class from Dogapi that talks to datadog
-      client.instance_variable_get(:@monitor_svc)
-    end
-
     def api_version
       'v1'
     end

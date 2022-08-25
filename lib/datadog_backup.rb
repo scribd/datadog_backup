@@ -2,8 +2,6 @@
 
 require 'concurrent'
 
-require 'dogapi'
-
 require_relative 'datadog_backup/local_filesystem'
 require_relative 'datadog_backup/options'
 require_relative 'datadog_backup/cli'

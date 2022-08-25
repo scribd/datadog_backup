@@ -10,20 +10,8 @@ module DatadogBackup
       @options[:backup_dir]
     end
 
-    def client
-      @options[:client]
-    end
-
     def concurrency_limit
       @options[:concurrency_limit] | 2
-    end
-
-    def datadog_api_key
-      @options[:datadog_api_key]
-    end
-
-    def datadog_app_key
-      @options[:datadog_app_key]
     end
 
     def diff_format

@@ -3,12 +3,10 @@
 require 'spec_helper'
 
 describe DatadogBackup::LocalFilesystem do
-  let(:client_double) { double }
   let(:tempdir) { Dir.mktmpdir }
   let(:core) do
     DatadogBackup::Core.new(
       action: 'backup',
-      client: client_double,
       backup_dir: tempdir,
       resources: [DatadogBackup::Dashboards],
       output_format: :json
@@ -17,7 +15,6 @@ describe DatadogBackup::LocalFilesystem do
   let(:core_yaml) do
     DatadogBackup::Core.new(
       action: 'backup',
-      client: client_double,
       backup_dir: tempdir,
       resources: [],
       output_format: :yaml

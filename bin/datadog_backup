@@ -10,7 +10,6 @@ LOGGER = Logger.new($stderr) unless defined?(LOGGER)
 LOGGER.level = Logger::INFO
 
 require 'datadog_backup'
-require 'dogapi'
 
 
 def fatal(message)
@@ -19,9 +18,8 @@ def fatal(message)
 end
 
 def options_valid?(options)
-  %w[backup diffs restore].include?(options[:action]) &&
-    options[:datadog_api_key] &&
-    options[:datadog_app_key]
+  %w[backup diffs restore].include?(options[:action])
+  %w[DD_API_KEY DD_APP_KEY].all? { |key| ENV[key] }
 end
 
 def prereqs(defaults)
@@ -30,7 +28,7 @@ def prereqs(defaults)
   result = defaults.dup
 
   options = OptionParser.new do |opts|
-    opts.banner = "Usage: DATADOG_API_KEY=abc123 DATADOG_APP_KEY=abc123 #{File.basename($PROGRAM_NAME)} <backup|diffs|restore>"
+    opts.banner = "Usage: DD_API_KEY=abc123 DD_APP_KEY=abc123 #{File.basename($PROGRAM_NAME)} <backup|diffs|restore>"
     opts.separator ''
     opts.on_tail('-h', '--help', 'Show this message') do
       puts opts
@@ -39,10 +37,7 @@ def prereqs(defaults)
     opts.on('--debug', 'log debug and above') do
       LOGGER.level = Logger::DEBUG
     end
-    opts.on('--shh', 'log warnings and above') do
-      LOGGER.level = Logger::WARN
-    end
-    opts.on('--shhh', 'log errors and above') do
+    opts.on('--quiet', 'log errors and above') do
       LOGGER.level = Logger::ERROR
     end
     opts.on('--backup-dir PATH', '`backup` by default') do |path|
@@ -73,7 +68,7 @@ def prereqs(defaults)
   options.parse!
 
   result[:action] = ARGV.first
-  fatal(options) unless options_valid?(result)
+  fatal(options.banner) unless options_valid?(result)
   result
 end
 
@@ -81,8 +76,6 @@ end
 # Default parameters
 defaults = {
   action: nil,
-  datadog_api_key: ENV.fetch('DATADOG_API_KEY', nil),
-  datadog_app_key: ENV.fetch('DATADOG_APP_KEY', nil),
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   diff_format: :color,
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],

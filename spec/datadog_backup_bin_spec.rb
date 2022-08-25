@@ -17,13 +17,13 @@ describe 'bin/datadog_backup' do
         i.close
       end
 
-      Timeout.timeout(2.0) do
+      Timeout.timeout(4.0) do
         oe.each do |v|
           output += v
         end
       end
     rescue Timeout::Error
-      LOGGER.warn "Timing out #{t.inspect} after 2 second"
+      LOGGER.error "Timing out #{t.inspect} after 4 second"
       Process.kill(15, pid)
     ensure
       status = t.value
@@ -32,8 +32,8 @@ describe 'bin/datadog_backup' do
   end
 
   required_vars = %w[
-    DATADOG_API_KEY
-    DATADOG_APP_KEY
+    DD_API_KEY
+    DD_APP_KEY
   ]
 
   env = {}
@@ -52,7 +52,7 @@ describe 'bin/datadog_backup' do
   it 'supplies help' do
     stub_const('ENV', env)
     out_err, status = run_bin('--help')
-    expect(out_err).to match(/Usage: DATADOG_API_KEY=/)
+    expect(out_err).to match(/Usage: DD_API_KEY=/)
     expect(status).to be_success
   end
 end

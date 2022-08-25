@@ -2,14 +2,6 @@
 
 module DatadogBackup
   class Dashboards < Core
-    def all_boards
-      get_all.fetch('dashboards')
-    end
-
-    def api_service
-      # The underlying class from Dogapi that talks to datadog
-      client.instance_variable_get(:@dashboard_service)
-    end
 
     def api_version
       'v1'
@@ -22,7 +14,7 @@ module DatadogBackup
     def backup
       LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
 
-      futures = all_boards.map do |board|
+      futures = all_dashboards.map do |board|
         Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, board) do |board|
           id = board['id']
           get_and_write_file(id)
@@ -33,6 +25,10 @@ module DatadogBackup
       watcher.join if watcher.status
 
       Concurrent::Promises.zip(*futures).value!
+    end
+
+    def all_dashboards
+      get_all.fetch('dashboards')
     end
 
     def initialize(options)

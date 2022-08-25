@@ -3,42 +3,23 @@
 require 'spec_helper'
 
 describe DatadogBackup::Core do
-  let(:api_service_double) { double(Dogapi::APIService) }
-  let(:client_double) { double }
+  let(:stubs) { Faraday::Adapter::Test::Stubs.new }
+  let(:api_client_double) { Faraday.new { |f| f.adapter :test, stubs } }
   let(:tempdir) { Dir.mktmpdir }
   let(:core) do
-    described_class.new(
+    core = described_class.new(
       action: 'backup',
-      api_service: api_service_double,
-      client: client_double,
       backup_dir: tempdir,
       diff_format: nil,
       resources: [],
       output_format: :json
     )
+    allow(core).to receive(:api_service).and_return(api_client_double)
+    return core
   end
 
-  describe '#client' do
-    subject { core.client }
 
-    it { is_expected.to eq client_double }
-  end
 
-  describe '#with_200' do
-    context 'with 200' do
-      subject { core.with_200 { ['200', { foo: :bar }] } }
-
-      it { is_expected.to eq({ foo: :bar }) }
-    end
-
-    context 'with not 200' do
-      subject { core.with_200 { ['400', 'Error message'] } }
-
-      it 'raises an error' do
-        expect { subject }.to raise_error(RuntimeError)
-      end
-    end
-  end
 
   describe '#diff' do
     subject { core.diff('diff') }
@@ -83,52 +64,44 @@ describe DatadogBackup::Core do
   describe '#create' do
     subject { core.create({ 'a' => 'b' }) }
 
-    example 'it calls Dogapi::APIService.request' do
-      stub_const('Dogapi::APIService::API_VERSION', 'v1')
-      allow(core).to receive(:api_service).and_return(api_service_double)
+    example 'it will post /api/v1/dashboard' do
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      expect(api_service_double).to receive(:request).with(Net::HTTP::Post,
-                                                           '/api/v1/dashboard',
-                                                           nil,
-                                                           { 'a' => 'b' },
-                                                           true).and_return(['200', { 'id' => 'whatever-id-abc' }])
+      stubs.post('/api/v1/dashboard', {'a' => 'b'}) {[200, {},  {'id' => 'whatever-id-abc' }]}
       subject
+      stubs.verify_stubbed_calls
     end
   end
 
   describe '#update' do
     subject { core.update('abc-123-def', { 'a' => 'b' }) }
 
-    example 'it calls Dogapi::APIService.request' do
-      stub_const('Dogapi::APIService::API_VERSION', 'v1')
-      allow(core).to receive(:api_service).and_return(api_service_double)
+    example 'it puts /api/v1/dashboard' do
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      expect(api_service_double).to receive(:request).with(Net::HTTP::Put,
-                                                           '/api/v1/dashboard/abc-123-def',
-                                                           nil,
-                                                           { 'a' => 'b' },
-                                                           true).and_return(['200', { 'id' => 'whatever-id-abc' }])
+      stubs.put('/api/v1/dashboard/abc-123-def', {'a' => 'b'}) {[200, {},  {'id' => 'whatever-id-abc' }]}
       subject
+      stubs.verify_stubbed_calls
+    end
+
+    context 'when the id is not found' do
+      before do
+        allow(core).to receive(:api_version).and_return('v1')
+        allow(core).to receive(:api_resource_name).and_return('dashboard')
+        stubs.put('/api/v1/dashboard/abc-123-def', {'a' => 'b'}) {[404, {},  {'id' => 'whatever-id-abc' }]}
+      end
+      it 'raises an error' do
+        expect { subject }.to raise_error(RuntimeError, 'update failed with error 404')
+      end
     end
   end
 
   describe '#restore' do
     before do
-      allow(core).to receive(:api_service).and_return(api_service_double)
       allow(core).to receive(:api_version).and_return('api-version-string')
       allow(core).to receive(:api_resource_name).and_return('api-resource-name-string')
-      allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
-                                                          '/api/api-version-string/api-resource-name-string/abc-123-def',
-                                                          nil,
-                                                          nil,
-                                                          false).and_return(['200', { test: :ok }])
-      allow(api_service_double).to receive(:request).with(Net::HTTP::Get,
-                                                          '/api/api-version-string/api-resource-name-string/bad-123-id',
-                                                          nil,
-                                                          nil,
-                                                          false).and_return(['404', { error: :blahblah_not_found }])
+      stubs.get('/api/api-version-string/api-resource-name-string/abc-123-def') {[200, {},  {'test'  => 'ok' }]}
+      stubs.get('/api/api-version-string/api-resource-name-string/bad-123-id') {[404, {},  {'error'  => 'blahblah_not_found' }]}
       allow(core).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
     end
 
@@ -141,19 +114,13 @@ describe DatadogBackup::Core do
       end
     end
 
-    context 'when id does not exist' do
+    context 'when id does not exist on remote' do
       subject { core.restore('bad-123-id') }
 
       before do
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Put,
-                                                            '/api/api-version-string/api-resource-name-string/bad-123-id',
-                                                            nil, { 'load' => 'ok' },
-                                                            true).and_return(['404', { 'Error' => 'my not found' }])
-        allow(api_service_double).to receive(:request).with(Net::HTTP::Post,
-                                                            '/api/api-version-string/api-resource-name-string',
-                                                            nil,
-                                                            { 'load' => 'ok' },
-                                                            true).and_return(['200', { 'id' => 'my-new-id' }])
+        allow(core).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
+        stubs.put('/api/api-version-string/api-resource-name-string/bad-123-id') {[404, {},  {'error'  => 'id not found' }]}
+        stubs.post('/api/api-version-string/api-resource-name-string', {'load' => 'ok'}) {[200, {},  {'id' => 'my-new-id' }]}
       end
 
       example 'it calls out to create then saves the new file and deletes the new file' do

@@ -2,14 +2,45 @@
 
 require 'diffy'
 require 'deepsort'
+require 'faraday'
+require 'faraday/retry'
+
+
 
 module DatadogBackup
   class Core
     include ::DatadogBackup::LocalFilesystem
     include ::DatadogBackup::Options
 
+    @@retry_options = {
+      max: 5,
+      interval: 0.05,
+      interval_randomness: 0.5,
+      backoff_factor: 2
+    }
+
     def api_service
-      raise 'subclass is expected to implement #api_service'
+      conn ||= Faraday.new(
+          url: api_url,
+          headers: {
+            'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
+            'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
+          }
+        ) do |faraday|
+            faraday.request :json
+            faraday.request :retry, @@retry_options
+            faraday.response(:logger, LOGGER, {headers: true, bodies: LOGGER.debug?, log_level: :debug}) do | logger |
+              logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
+              logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
+            end
+            faraday.response :raise_error
+            faraday.response :json
+            faraday.adapter Faraday.default_adapter
+          end
+    end
+
+    def api_url
+      ENV.fetch('DD_SITE_URL', "https://api.datadoghq.com/")
     end
 
     def api_version
@@ -44,19 +75,17 @@ module DatadogBackup
     end
 
     def get(id)
-      with_200 do
-        api_service.request(Net::HTTP::Get, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, nil, false)
-      end
-    rescue RuntimeError => e
-      return {} if e.message.include?('Request failed with error ["404"')
-
-      raise e.message
+      params = {}
+      headers = {}
+      response = api_service.get("/api/#{api_version}/#{api_resource_name}/#{id}", params, headers)
+      body_with_2xx(response)
     end
 
     def get_all
-      with_200 do
-        api_service.request(Net::HTTP::Get, "/api/#{api_version}/#{api_resource_name}", nil, nil, false)
-      end
+      params = {}
+      headers = {}
+      response = api_service.get("/api/#{api_version}/#{api_resource_name}", params, headers)
+      body_with_2xx(response)
     end
 
     def get_and_write_file(id)
@@ -79,20 +108,20 @@ module DatadogBackup
 
     # Calls out to Datadog and checks for a '200' response
     def create(body)
-      result = with_200 do
-        api_service.request(Net::HTTP::Post, "/api/#{api_version}/#{api_resource_name}", nil, body, true)
-      end
-      LOGGER.warn 'Successfully created in datadog.'
-      result
+      headers = {}
+      response =  api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
+      body = body_with_2xx(response)
+      LOGGER.warn "Successfully created #{body.fetch('id')} in datadog."
+      body
     end
 
     # Calls out to Datadog and checks for a '200' response
     def update(id, body)
-      result = with_200 do
-        api_service.request(Net::HTTP::Put, "/api/#{api_version}/#{api_resource_name}/#{id}", nil, body, true)
-      end
-      LOGGER.warn 'Successfully restored to datadog.'
-      result
+      headers = {}
+      response = api_service.put("/api/#{api_version}/#{api_resource_name}/#{id}", body, headers)
+      body = body_with_2xx(response)
+      LOGGER.warn 'Successfully restored #{id} to datadog.'
+      body
     end
 
     def restore(id)
@@ -100,7 +129,7 @@ module DatadogBackup
       begin
         update(id, body)
       rescue RuntimeError => e
-        if e.message.include?('Request failed with error ["404"')
+        if e.message.include?('update failed with error 404')
           new_id = create(body).fetch('id')
 
           FileUtils.rm(find_file_by_id(id))
@@ -111,21 +140,9 @@ module DatadogBackup
       end
     end
 
-    def with_200
-      max_retries = 6
-      retries ||= 0
-
-      response = yield
-      raise "Request failed with error #{response}" unless response[0] == '200'
-
-      response[1]
-    rescue ::Net::OpenTimeout => e
-      if (retries += 1) <= max_retries
-        sleep(0.1 * retries**5) # 0.1, 3.2, 24.3, 102.4 seconds per retry
-        retry
-      else
-        raise "Net::OpenTimeout: #{e.message}"
-      end
+    def body_with_2xx(response)
+      raise "#{caller_locations(1,1)[0].label} failed with error #{response.status}" unless response.status.to_s =~ /^2/
+      response.body
     end
   end
 end
