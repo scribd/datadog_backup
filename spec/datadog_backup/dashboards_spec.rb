@@ -80,11 +80,6 @@ describe DatadogBackup::Dashboards do
     end
   end
 
-  describe '#all_dashboards' do
-    subject { dashboards.all_dashboards }
-
-    it { is_expected.to eq [dashboard_description] }
-  end
 
   describe '#diff' do
     it 'calls the api only once' do
