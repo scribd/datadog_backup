@@ -16,7 +16,7 @@ Additional features may be built out over time.
 ## Breaking Changes
 v3 is a backwards incompatible change.
 
-- [] DATADOG_API_KEY and DATADOG_APP_KEY are no longer the environment variables used to authenticate to Datadog. Instead, set the environment variables DD_API_KEY and DD_APP_KEY.
+- [ ] DATADOG_API_KEY and DATADOG_APP_KEY are no longer the environment variables used to authenticate to Datadog. Instead, set the environment variables DD_API_KEY and DD_APP_KEY.
 - [ ] ruby 2.6 is no longer supported. Please upgrade to ruby 2.7 or higher.
 - [ ] The options `--ssh` and `--ssshh` are no longer supported. Instead, please use `--quiet` to supress logging. `--debug` remains supported.
 - [ ] The environment variable `DATADOG_HOST` is no longer supported. Instead, please use `DD_SITE_URL`.
