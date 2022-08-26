@@ -5,17 +5,12 @@ require 'timeout'
 
 describe 'bin/datadog_backup' do
   # Contract Or[nil,String] => self
-  def run_bin(args = '', input = nil)
+  def run_bin(env = {}, args = '')
     status = nil
     output = ''
     cmd = "bin/datadog_backup #{args}"
-    Open3.popen2e(cmd) do |i, oe, t|
+    Open3.popen2e(env, cmd) do |i, oe, t|
       pid = t.pid
-
-      if input
-        i.puts input
-        i.close
-      end
 
       Timeout.timeout(4.0) do
         oe.each do |v|
@@ -43,15 +38,14 @@ describe 'bin/datadog_backup' do
 
   required_vars.map do |v|
     it "dies unless given ENV[#{v}]" do
-      stub_const('ENV', env.dup.tap { |h| h.delete(v) })
-      _, status = run_bin('backup')
+      myenv = env.dup.tap { |h| h.delete(v) }
+      _, status = run_bin(myenv, 'backup')
       expect(status).not_to be_success
     end
   end
 
   it 'supplies help' do
-    stub_const('ENV', env)
-    out_err, status = run_bin('--help')
+    out_err, status = run_bin(env, '--help')
     expect(out_err).to match(/Usage: DD_API_KEY=/)
     expect(status).to be_success
   end
