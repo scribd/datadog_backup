@@ -18,11 +18,8 @@ describe DatadogBackup::Core do
     return core
   end
 
-
-
-
   describe '#diff' do
-    subject { core.diff('diff') }
+    subject(:diff) { core.diff('diff') }
 
     before do
       allow(core).to receive(:get_by_id).and_return({ 'text' => 'diff1', 'extra' => 'diff1' })
@@ -30,13 +27,13 @@ describe DatadogBackup::Core do
     end
 
     it {
-      expect(subject).to eq <<~EOF
+      expect(diff).to eq <<~EODIFF
          ---
         -extra: diff1
         -text: diff1
         +extra: diff2
         +text: diff2
-      EOF
+      EODIFF
     }
   end
 
@@ -47,11 +44,13 @@ describe DatadogBackup::Core do
   end
 
   describe '#initialize' do
-    subject { core }
+    subject(:mycore) { core }
 
     it 'makes the subdirectories' do
-      expect(FileUtils).to receive(:mkdir_p).with("#{tempdir}/core")
-      subject
+      fileutils = class_double('FileUtils').as_stubbed_const
+      allow(fileutils).to receive(:mkdir_p)
+      mycore
+      expect(fileutils).to have_received(:mkdir_p).with("#{tempdir}/core")
     end
   end
 
@@ -62,25 +61,25 @@ describe DatadogBackup::Core do
   end
 
   describe '#create' do
-    subject { core.create({ 'a' => 'b' }) }
+    subject(:create) { core.create({ 'a' => 'b' }) }
 
     example 'it will post /api/v1/dashboard' do
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      stubs.post('/api/v1/dashboard', {'a' => 'b'}) {[200, {},  {'id' => 'whatever-id-abc' }]}
-      subject
+      stubs.post('/api/v1/dashboard', { 'a' => 'b' }) { [200, {}, { 'id' => 'whatever-id-abc' }] }
+      create
       stubs.verify_stubbed_calls
     end
   end
 
   describe '#update' do
-    subject { core.update('abc-123-def', { 'a' => 'b' }) }
+    subject(:update) { core.update('abc-123-def', { 'a' => 'b' }) }
 
     example 'it puts /api/v1/dashboard' do
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      stubs.put('/api/v1/dashboard/abc-123-def', {'a' => 'b'}) {[200, {},  {'id' => 'whatever-id-abc' }]}
-      subject
+      stubs.put('/api/v1/dashboard/abc-123-def', { 'a' => 'b' }) { [200, {}, { 'id' => 'whatever-id-abc' }] }
+      update
       stubs.verify_stubbed_calls
     end
 
@@ -88,10 +87,11 @@ describe DatadogBackup::Core do
       before do
         allow(core).to receive(:api_version).and_return('v1')
         allow(core).to receive(:api_resource_name).and_return('dashboard')
-        stubs.put('/api/v1/dashboard/abc-123-def', {'a' => 'b'}) {[404, {},  {'id' => 'whatever-id-abc' }]}
+        stubs.put('/api/v1/dashboard/abc-123-def', { 'a' => 'b' }) { [404, {}, { 'id' => 'whatever-id-abc' }] }
       end
+
       it 'raises an error' do
-        expect { subject }.to raise_error(RuntimeError, 'update failed with error 404')
+        expect { update }.to raise_error(RuntimeError, 'update failed with error 404')
       end
     end
   end
@@ -100,35 +100,55 @@ describe DatadogBackup::Core do
     before do
       allow(core).to receive(:api_version).and_return('api-version-string')
       allow(core).to receive(:api_resource_name).and_return('api-resource-name-string')
-      stubs.get('/api/api-version-string/api-resource-name-string/abc-123-def') {[200, {},  {'test'  => 'ok' }]}
-      stubs.get('/api/api-version-string/api-resource-name-string/bad-123-id') {[404, {},  {'error'  => 'blahblah_not_found' }]}
+      stubs.get('/api/api-version-string/api-resource-name-string/abc-123-def') { [200, {}, { 'test' => 'ok' }] }
+      stubs.get('/api/api-version-string/api-resource-name-string/bad-123-id') do
+        [404, {}, { 'error' => 'blahblah_not_found' }]
+      end
       allow(core).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
     end
 
     context 'when id exists' do
-      subject { core.restore('abc-123-def') }
+      subject(:restore) { core.restore('abc-123-def') }
 
       example 'it calls out to update' do
-        expect(core).to receive(:update).with('abc-123-def', { 'load' => 'ok' })
-        subject
+        allow(core).to receive(:update)
+        restore
+        expect(core).to have_received(:update).with('abc-123-def', { 'load' => 'ok' })
       end
     end
 
     context 'when id does not exist on remote' do
-      subject { core.restore('bad-123-id') }
+      subject(:restore_newly) { core.restore('bad-123-id') }
+
+      let(:fileutils) { class_double('FileUtils').as_stubbed_const }
 
       before do
         allow(core).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
-        stubs.put('/api/api-version-string/api-resource-name-string/bad-123-id') {[404, {},  {'error'  => 'id not found' }]}
-        stubs.post('/api/api-version-string/api-resource-name-string', {'load' => 'ok'}) {[200, {},  {'id' => 'my-new-id' }]}
+        stubs.put('/api/api-version-string/api-resource-name-string/bad-123-id') do
+          [404, {}, { 'error' => 'id not found' }]
+        end
+        stubs.post('/api/api-version-string/api-resource-name-string', { 'load' => 'ok' }) do
+          [200, {}, { 'id' => 'my-new-id' }]
+        end
+        allow(fileutils).to receive(:rm)
+        allow(core).to receive(:create).with({ 'load' => 'ok' }).and_return({ 'id' => 'my-new-id' })
+        allow(core).to receive(:get_and_write_file)
+        allow(core).to receive(:find_file_by_id).with('bad-123-id').and_return('/path/to/bad-123-id.json')
       end
 
-      example 'it calls out to create then saves the new file and deletes the new file' do
-        expect(core).to receive(:create).with({ 'load' => 'ok' }).and_return({ 'id' => 'my-new-id' })
-        expect(core).to receive(:get_and_write_file).with('my-new-id')
-        allow(core).to receive(:find_file_by_id).with('bad-123-id').and_return('/path/to/bad-123-id.json')
-        expect(FileUtils).to receive(:rm).with('/path/to/bad-123-id.json')
-        subject
+      example 'it calls out to create' do
+        restore_newly
+        expect(core).to have_received(:create).with({ 'load' => 'ok' })
+      end
+
+      example 'it  saves the new file' do
+        restore_newly
+        expect(core).to have_received(:get_and_write_file).with('my-new-id')
+      end
+
+      example 'it deletes the old file' do
+        restore_newly
+        expect(fileutils).to have_received(:rm).with('/path/to/bad-123-id.json')
       end
     end
   end

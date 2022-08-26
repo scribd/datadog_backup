@@ -47,8 +47,8 @@ describe DatadogBackup::Cli do
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/deleted.json")
 
         stubs.get('/api/v1/dashboard') { all_dashboards }
-        stubs.get('/api/v1/dashboard/stillthere') {[200, {}, {}]}
-        stubs.get('/api/v1/dashboard/alsostillthere') {[200, {}, {}]}
+        stubs.get('/api/v1/dashboard/stillthere') { [200, {}, {}] }
+        stubs.get('/api/v1/dashboard/alsostillthere') { [200, {}, {}] }
       end
 
       it 'deletes the file locally as well' do
@@ -59,7 +59,7 @@ describe DatadogBackup::Cli do
   end
 
   describe '#diffs' do
-    subject { cli.diffs }
+    subject(:diffs) { cli.diffs }
 
     before do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
@@ -69,7 +69,7 @@ describe DatadogBackup::Cli do
     end
 
     it {
-      expect(subject).to include(
+      expect(diffs).to include(
         " ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n",
         " ---\n id: diffs3\n ---\n-text: diff2\n+text: diff\n",
         " ---\n id: diffs2\n ---\n-text: diff2\n+text: diff\n"
@@ -78,46 +78,80 @@ describe DatadogBackup::Cli do
   end
 
   describe '#restore' do
-    subject { cli.restore }
+    subject(:restore) { cli.restore }
 
     before do
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
+      allow(dashboards).to receive(:write_file)
+      allow(dashboards).to receive(:update)
     end
 
     example 'starts interactive restore' do
       allow($stdin).to receive(:gets).and_return('q')
 
-      expect { subject }.to(
+      expect { restore }.to(
         output(/\(r\)estore to Datadog, overwrite local changes and \(d\)ownload, \(s\)kip, or \(q\)uit\?/).to_stdout
         .and(raise_error(SystemExit))
       )
     end
 
-    example 'restore' do
-      allow($stdin).to receive(:gets).and_return('r')
-      expect(dashboards).to receive(:update).with('diffs1', { 'text' => 'diff' })
-      subject
+    context 'when the user chooses to restore' do
+      before do
+        allow($stdin).to receive(:gets).and_return('r')
+      end
+
+      example 'it restores from disk to server' do
+        restore
+        expect(dashboards).to have_received(:update).with('diffs1', { 'text' => 'diff' })
+      end
     end
 
-    example 'download' do
-      allow($stdin).to receive(:gets).and_return('d')
-      expect(dashboards).to receive(:write_file).with(%({\n  "text": "diff2"\n}), "#{tempdir}/dashboards/diffs1.json")
-      subject
+    context 'when the user chooses to download' do
+      before do
+        allow($stdin).to receive(:gets).and_return('d')
+      end
+
+      example 'it writes from server to disk' do
+        restore
+        expect(dashboards).to have_received(:write_file).with(%({\n  "text": "diff2"\n}), "#{tempdir}/dashboards/diffs1.json")
+      end
     end
 
-    example 'skip' do
-      allow($stdin).to receive(:gets).and_return('s')
-      expect(dashboards).not_to receive(:write_file)
-      expect(dashboards).not_to receive(:update)
-      subject
+    context 'when the user chooses to skip' do
+      before do
+        allow($stdin).to receive(:gets).and_return('s')
+      end
+
+      example 'it does not write to disk' do
+        restore
+        expect(dashboards).not_to have_received(:write_file)
+      end
+
+      example 'it does not update the server' do
+        restore
+        expect(dashboards).not_to have_received(:update)
+      end
     end
 
-    example 'quit' do
-      allow($stdin).to receive(:gets).and_return('q')
-      expect(dashboards).not_to receive(:write_file)
-      expect(dashboards).not_to receive(:update)
-      expect { subject }.to raise_error(SystemExit)
+    context 'when the user chooses to quit' do
+      before do
+        allow($stdin).to receive(:gets).and_return('q')
+      end
+
+      example 'it exits' do
+        expect { restore }.to raise_error(SystemExit)
+      end
+
+      example 'it does not write to disk' do
+        restore
+        expect(dashboards).not_to have_received(:write_file)
+      end
+
+      example 'it does not update the server' do
+        restore
+        expect(dashboards).not_to have_received(:update)
+      end
     end
   end
 end

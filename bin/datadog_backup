@@ -11,7 +11,6 @@ LOGGER.level = Logger::INFO
 
 require 'datadog_backup'
 
-
 def fatal(message)
   LOGGER.fatal(message)
   exit 1
@@ -22,7 +21,7 @@ def options_valid?(options)
   %w[DD_API_KEY DD_APP_KEY].all? { |key| ENV[key] }
 end
 
-def prereqs(defaults)
+def prereqs(defaults) # rubocop:disable Metrics/AbcSize
   ARGV << '--help' if ARGV.empty?
 
   result = defaults.dup

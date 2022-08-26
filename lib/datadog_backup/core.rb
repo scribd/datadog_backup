@@ -5,14 +5,14 @@ require 'deepsort'
 require 'faraday'
 require 'faraday/retry'
 
-
-
 module DatadogBackup
+  # The default options for backing up and restores.
+  # This base class is meant to be extended by specific resources, such as Dashboards, Monitors, and so on.
   class Core
     include ::DatadogBackup::LocalFilesystem
     include ::DatadogBackup::Options
 
-    @@retry_options = {
+    @retry_options = {
       max: 5,
       interval: 0.05,
       interval_randomness: 0.5,
@@ -20,27 +20,27 @@ module DatadogBackup
     }
 
     def api_service
-      conn ||= Faraday.new(
-          url: api_url,
-          headers: {
-            'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
-            'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
-          }
-        ) do |faraday|
-            faraday.request :json
-            faraday.request :retry, @@retry_options
-            faraday.response(:logger, LOGGER, {headers: true, bodies: LOGGER.debug?, log_level: :debug}) do | logger |
-              logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
-              logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
-            end
-            faraday.response :raise_error
-            faraday.response :json
-            faraday.adapter Faraday.default_adapter
-          end
+      @api_service ||= Faraday.new(
+        url: api_url,
+        headers: {
+          'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
+          'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
+        }
+      ) do |faraday|
+        faraday.request :json
+        faraday.request :retry, @retry_options
+        faraday.response(:logger, LOGGER, { headers: true, bodies: LOGGER.debug?, log_level: :debug }) do |logger|
+          logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
+          logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
+        end
+        faraday.response :raise_error
+        faraday.response :json
+        faraday.adapter Faraday.default_adapter
+      end
     end
 
     def api_url
-      ENV.fetch('DD_SITE_URL', "https://api.datadoghq.com/")
+      ENV.fetch('DD_SITE_URL', 'https://api.datadoghq.com/')
     end
 
     def api_version
@@ -83,6 +83,7 @@ module DatadogBackup
 
     def get_all
       return @get_all if @get_all
+
       params = {}
       headers = {}
       response = api_service.get("/api/#{api_version}/#{api_resource_name}", params, headers)
@@ -110,7 +111,7 @@ module DatadogBackup
     # Calls out to Datadog and checks for a '200' response
     def create(body)
       headers = {}
-      response =  api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
+      response = api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
       body = body_with_2xx(response)
       LOGGER.warn "Successfully created #{body.fetch('id')} in datadog."
       body
@@ -121,7 +122,7 @@ module DatadogBackup
       headers = {}
       response = api_service.put("/api/#{api_version}/#{api_resource_name}/#{id}", body, headers)
       body = body_with_2xx(response)
-      LOGGER.warn 'Successfully restored #{id} to datadog.'
+      LOGGER.warn "Successfully restored #{id} to datadog."
       body
     end
 
@@ -130,19 +131,20 @@ module DatadogBackup
       begin
         update(id, body)
       rescue RuntimeError => e
-        if e.message.include?('update failed with error 404')
-          new_id = create(body).fetch('id')
+        raise e.message unless e.message.include?('update failed with error 404')
 
-          FileUtils.rm(find_file_by_id(id))
-          get_and_write_file(new_id)
-        else
-          raise e.message
-        end
+        new_id = create(body).fetch('id')
+        FileUtils.rm(find_file_by_id(id))
+        get_and_write_file(new_id)
       end
     end
 
     def body_with_2xx(response)
-      raise "#{caller_locations(1,1)[0].label} failed with error #{response.status}" unless response.status.to_s =~ /^2/
+      unless response.status.to_s =~ /^2/
+        raise "#{caller_locations(1,
+                                  1)[0].label} failed with error #{response.status}"
+      end
+
       response.body
     end
   end

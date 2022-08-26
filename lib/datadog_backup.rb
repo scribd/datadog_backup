@@ -13,7 +13,6 @@ require_relative 'datadog_backup/version'
 require_relative 'datadog_backup/deprecations'
 DatadogBackup::Deprecations.check
 
-
+# DatadogBackup is a gem for backing up and restoring Datadog monitors and dashboards.
 module DatadogBackup
 end
-

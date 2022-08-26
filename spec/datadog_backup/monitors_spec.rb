@@ -67,19 +67,20 @@ describe DatadogBackup::Monitors do
     subject { monitors.backup }
 
     it 'is expected to create a file' do
-      file = double('file')
+      file = instance_double('File')
       allow(File).to receive(:open).with(monitors.filename(123_455), 'w').and_return(file)
-      expect(file).to receive(:write).with(::JSON.pretty_generate(clean_monitor_description))
+      allow(file).to receive(:write)
       allow(file).to receive(:close)
 
       monitors.backup
+      expect(file).to have_received(:write).with(::JSON.pretty_generate(clean_monitor_description))
     end
   end
 
   describe '#diff and #except' do
     example 'it ignores `overall_state` and `overall_state_modified`' do
       monitors.write_file(monitors.dump(monitor_description), monitors.filename(123_455))
-      stubs.get('/api/v1/dashboard/123455') {
+      stubs.get('/api/v1/dashboard/123455') do
         [
           200,
           {},
@@ -94,7 +95,7 @@ describe DatadogBackup::Monitors do
             }
           ]
         ]
-      }
+      end
 
       expect(monitors.diff(123_455)).to eq ''
 
@@ -109,13 +110,13 @@ describe DatadogBackup::Monitors do
   end
 
   describe '#get_by_id' do
-    context 'Integer' do
+    context 'when Integer' do
       subject { monitors.get_by_id(123_455) }
 
       it { is_expected.to eq monitor_description }
     end
 
-    context 'String' do
+    context 'when String' do
       subject { monitors.get_by_id('123455') }
 
       it { is_expected.to eq monitor_description }

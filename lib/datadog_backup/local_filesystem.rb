@@ -6,11 +6,10 @@ require 'yaml'
 require 'deepsort'
 
 module DatadogBackup
+  ##
+  # Meant to be mixed into DatadogBackup::Core
+  # Relies on @options[:backup_dir] and @options[:output_format]
   module LocalFilesystem
-    ##
-    # Meant to be mixed into DatadogBackup::Core
-    # Relies on @options[:backup_dir] and @options[:output_format]
-
     def all_files
       ::Dir.glob(::File.join(backup_dir, '**', '*')).select { |f| ::File.file?(f) }
     end
@@ -46,7 +45,7 @@ module DatadogBackup
     end
 
     def file_type(filepath)
-      ::File.extname(filepath).strip.downcase[1..-1].to_sym
+      ::File.extname(filepath).strip.downcase[1..].to_sym
     end
 
     def find_file_by_id(id)

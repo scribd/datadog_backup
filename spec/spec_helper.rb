@@ -11,8 +11,6 @@ $stdout = File.new('/dev/null', 'w+')
 require 'tmpdir'
 require 'datadog_backup'
 
-
-
 SPEC_ROOT = __dir__
 WORK_ROOT = File.expand_path(File.join(SPEC_ROOT, '..'))
 

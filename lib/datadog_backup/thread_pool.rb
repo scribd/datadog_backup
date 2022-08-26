@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DatadogBackup
+  # Used by CLI and Dashboards to size thread pool according to available CPU cores.
   module ThreadPool
     TPOOL = ::Concurrent::ThreadPoolExecutor.new(
       min_threads: [2, Concurrent.processor_count].max,
