@@ -47,7 +47,7 @@ describe DatadogBackup::Core do
     subject(:mycore) { core }
 
     it 'makes the subdirectories' do
-      fileutils = class_double('FileUtils').as_stubbed_const
+      fileutils = class_double(FileUtils).as_stubbed_const
       allow(fileutils).to receive(:mkdir_p)
       mycore
       expect(fileutils).to have_received(:mkdir_p).with("#{tempdir}/core")
@@ -120,7 +120,7 @@ describe DatadogBackup::Core do
     context 'when id does not exist on remote' do
       subject(:restore_newly) { core.restore('bad-123-id') }
 
-      let(:fileutils) { class_double('FileUtils').as_stubbed_const }
+      let(:fileutils) { class_double(FileUtils).as_stubbed_const }
 
       before do
         allow(core).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
@@ -141,7 +141,7 @@ describe DatadogBackup::Core do
         expect(core).to have_received(:create).with({ 'load' => 'ok' })
       end
 
-      example 'it  saves the new file' do
+      example 'it saves the new file' do
         restore_newly
         expect(core).to have_received(:get_and_write_file).with('my-new-id')
       end

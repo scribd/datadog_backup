@@ -172,7 +172,7 @@ describe DatadogBackup::LocalFilesystem do
   describe '#write_file' do
     subject(:write_file) { core.write_file('abc123', "#{tempdir}/core/abc-123-def.json") }
 
-    let(:file_like_object) { instance_double('File') }
+    let(:file_like_object) { instance_double(File) }
 
     it 'writes a file to abc-123-def.json' do
       allow(File).to receive(:open).and_call_original

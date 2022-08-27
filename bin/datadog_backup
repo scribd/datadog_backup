@@ -18,7 +18,7 @@ end
 
 def options_valid?(options)
   %w[backup diffs restore].include?(options[:action])
-  %w[DD_API_KEY DD_APP_KEY].all? { |key| ENV[key] }
+  %w[DD_API_KEY DD_APP_KEY].all? { |key| ENV.fetch(key, nil) }
 end
 
 def prereqs(defaults) # rubocop:disable Metrics/AbcSize

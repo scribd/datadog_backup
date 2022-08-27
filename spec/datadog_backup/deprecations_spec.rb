@@ -5,7 +5,7 @@ require 'spec_helper'
 describe DatadogBackup::Deprecations do
   subject(:check) { described_class.check }
 
-  let(:logger) { instance_double('Logger') }
+  let(:logger) { instance_double(Logger) }
 
   before do
     stub_const('LOGGER', logger)

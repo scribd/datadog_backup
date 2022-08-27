@@ -48,11 +48,7 @@ module DatadogBackup
     def getdiff(id)
       result = definitive_resource_instance(id).diff(id)
       case result
-      when ''
-        nil
-      when "\n"
-        nil
-      when '<div class="diff"></div>'
+      when '' || "\n" || '<div class="diff"></div>'
         nil
       else
         result

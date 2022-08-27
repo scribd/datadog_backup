@@ -71,7 +71,7 @@ describe DatadogBackup::Dashboards do
     subject { dashboards.backup }
 
     it 'is expected to create a file' do
-      file = instance_double('File')
+      file = instance_double(File)
       allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return(file)
       allow(file).to receive(:write)
       allow(file).to receive(:close)

@@ -67,7 +67,7 @@ describe DatadogBackup::Monitors do
     subject { monitors.backup }
 
     it 'is expected to create a file' do
-      file = instance_double('File')
+      file = instance_double(File)
       allow(File).to receive(:open).with(monitors.filename(123_455), 'w').and_return(file)
       allow(file).to receive(:write)
       allow(file).to receive(:close)
