@@ -101,6 +101,12 @@ module DatadogBackup
       watcher.join if watcher.status
     end
 
+    def run!
+      puts(send(action.to_sym))
+    rescue SystemExit, Interrupt
+      ::DatadogBackup::ThreadPool.shutdown
+    end
+
     private
 
     def ask_to_restore(id, diff)
@@ -136,12 +142,6 @@ module DatadogBackup
       @resource_instances ||= resources.map do |resource|
         resource.new(@options)
       end
-    end
-
-    def run!
-      puts(send(action.to_sym))
-    rescue SystemExit, Interrupt
-      ::DatadogBackup::ThreadPool.shutdown
     end
   end
 end
