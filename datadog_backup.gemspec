@@ -13,10 +13,10 @@ Gem::Specification.new do |spec|
   spec.description   = 'A utility to backup and restore Datadog accounts'
   spec.homepage      = 'https://github.com/scribd/datadog_backup'
   spec.license       = 'MIT'
+  spec.metadata['rubygems_mfa_required'] = 'true'
 
   spec.files         = `git ls-files -z`.split("\x0")
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
-  spec.test_files    = spec.files.grep(%r{^spec/})
   spec.require_paths = ['lib']
 
   spec.required_ruby_version = ['>= 2.7']
