@@ -48,6 +48,9 @@ def prereqs(defaults) # rubocop:disable Metrics/AbcSize
     opts.on('--dashboards-only') do
       result[:resources] = [DatadogBackup::Dashboards]
     end
+    opts.on('--synthetics-only') do
+      result[:resources] = [DatadogBackup::Synthetics]
+    end
     opts.on(
       '--json',
       'format backups as JSON instead of YAML. Does not impact `diffs` nor `restore`, but do not mix formats in the same backup-dir.'
@@ -77,7 +80,7 @@ defaults = {
   action: nil,
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   diff_format: :color,
-  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
+  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors, DatadogBackup::Synthetics],
   output_format: :yaml,
   force_restore: false
 }
