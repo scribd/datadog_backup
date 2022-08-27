@@ -23,24 +23,6 @@ describe DatadogBackup::Dashboards do
       'title' => 'foo'
     }
   end
-  let(:all_dashboards) do
-    [
-      200,
-      {},
-      {
-        'dashboards' => [
-          dashboard_description
-        ]
-      }
-    ]
-  end
-  let(:example_dashboard) do
-    [
-      200,
-      {},
-      board_abc_123_def
-    ]
-  end
   let(:board_abc_123_def) do
     {
       'graphs' => [
@@ -61,6 +43,8 @@ describe DatadogBackup::Dashboards do
       'title' => 'example dashboard'
     }
   end
+  let(:all_dashboards) { respond_with200({ 'dashboards' => [dashboard_description] }) }
+  let(:example_dashboard) { respond_with200(board_abc_123_def) }
 
   before do
     stubs.get('/api/v1/dashboard') { all_dashboards }

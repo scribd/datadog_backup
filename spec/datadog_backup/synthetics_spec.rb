@@ -4,9 +4,6 @@ require 'spec_helper'
 
 describe DatadogBackup::Synthetics do
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
-  let(:all_synthetics) { respond_with200({ 'tests' => [api_test, browser_test] }) }
-  let(:api_synthetic) { respond_with200(api_test) }
-  let(:browser_synthetic) { respond_with200(browser_test) }
   let(:api_client_double) { Faraday.new { |f| f.adapter :test, stubs } }
   let(:tempdir) { Dir.mktmpdir }
   let(:synthetics) do
@@ -19,7 +16,6 @@ describe DatadogBackup::Synthetics do
     allow(synthetics).to receive(:api_service).and_return(api_client_double)
     return synthetics
   end
-
   let(:api_test) do
     { 'config' => { 'assertions' => [{ 'operator' => 'contains', 'property' => 'set-cookie', 'target' => '_user_id', 'type' => 'header' },
                                      { 'operator' => 'contains', 'target' => 'body message', 'type' => 'body' },
@@ -78,10 +74,9 @@ describe DatadogBackup::Synthetics do
       'tags' => ['env:test'],
       'type' => 'browser' }
   end
-
-  def respond_with200(body)
-    [200, {}, body]
-  end
+  let(:all_synthetics) { respond_with200({ 'tests' => [api_test, browser_test] }) }
+  let(:api_synthetic) { respond_with200(api_test) }
+  let(:browser_synthetic) { respond_with200(browser_test) }
 
   before do
     stubs.get('/api/v1/synthetics/tests') { all_synthetics }

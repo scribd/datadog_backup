@@ -16,7 +16,6 @@ describe DatadogBackup::Monitors do
     allow(monitors).to receive(:api_service).and_return(api_client_double)
     return monitors
   end
-
   let(:monitor_description) do
     {
       'query' => 'bar',
@@ -35,22 +34,8 @@ describe DatadogBackup::Monitors do
       'query' => 'bar'
     }
   end
-  let(:all_monitors) do
-    [
-      200,
-      {},
-      [
-        monitor_description
-      ]
-    ]
-  end
-  let(:example_monitor) do
-    [
-      200,
-      {},
-      monitor_description
-    ]
-  end
+  let(:all_monitors) { respond_with200([monitor_description]) }
+  let(:example_monitor) { respond_with200(monitor_description) }
 
   before do
     stubs.get('/api/v1/monitor') { all_monitors }
@@ -81,9 +66,7 @@ describe DatadogBackup::Monitors do
     example 'it ignores `overall_state` and `overall_state_modified`' do
       monitors.write_file(monitors.dump(monitor_description), monitors.filename(123_455))
       stubs.get('/api/v1/dashboard/123455') do
-        [
-          200,
-          {},
+        respond_with200(
           [
             {
               'query' => 'bar',
@@ -94,7 +77,7 @@ describe DatadogBackup::Monitors do
               'overall_state_modified' => '9999-07-27T22:55:55+00:00'
             }
           ]
-        ]
+        )
       end
 
       expect(monitors.diff(123_455)).to eq ''
