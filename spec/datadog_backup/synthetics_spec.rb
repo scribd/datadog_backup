@@ -5,7 +5,7 @@ require 'spec_helper'
 describe DatadogBackup::Synthetics do
   let(:stubs) { Faraday::Adapter::Test::Stubs.new }
   let(:api_client_double) { Faraday.new { |f| f.adapter :test, stubs } }
-  let(:tempdir) { Dir.mktmpdir }
+  let(:tempdir) { Dir.mktmpdir } # TODO: delete afterward
   let(:synthetics) do
     synthetics = described_class.new(
       action: 'backup',
@@ -28,9 +28,9 @@ describe DatadogBackup::Synthetics do
                                    'url' => 'https://www.example.com/' } },
       'creator' => { 'email' => 'user@example.com', 'handle' => 'user@example.com', 'name' => 'Hugh Zer' },
       'locations' => ['aws:ap-northeast-1', 'aws:eu-central-1', 'aws:eu-west-2', 'aws:us-west-2'],
-      'message' => "TEST: logged in user\n\nThis is a message.",
+      'message' => 'TEST: This is a test',
       'monitor_id' => 12_345,
-      'name' => 'TEST: logged in user',
+      'name' => 'TEST: This is a test',
       'options' => { 'follow_redirects' => true,
                      'httpVersion' => 'http1',
                      'min_failure_duration' => 120,
@@ -126,5 +126,88 @@ describe DatadogBackup::Synthetics do
     subject { synthetics.get_by_id('abc-123-def') }
 
     it { is_expected.to eq api_test }
+  end
+
+  describe '#diff' do # TODO: migrate to core_spec.rb, since #diff is not defined here.
+    subject { synthetics.diff('abc-123-def') }
+
+    before do
+      synthetics.write_file(synthetics.dump(api_test), synthetics.filename('abc-123-def'))
+    end
+
+    context 'when the test is identical' do
+      it { is_expected.to be_empty }
+    end
+
+    context 'when the remote is not found' do
+      subject(:invalid_diff) { synthetics.diff('invalid-id') }
+
+      before do
+        synthetics.write_file(synthetics.dump({ 'name' => 'invalid-diff' }), synthetics.filename('invalid-id'))
+      end
+
+      it {
+        expect(invalid_diff).to eq(<<~EODIFF
+          ---- {}
+          +---
+          +name: invalid-diff
+        EODIFF
+                                  )
+      }
+    end
+
+    context 'when there is a local update' do
+      before do
+        different_test = api_test.dup
+        different_test['message'] = 'Different message'
+        synthetics.write_file(synthetics.dump(different_test), synthetics.filename('abc-123-def'))
+      end
+
+      it { is_expected.to include(%(-message: 'TEST: This is a test'\n+message: Different message)) }
+    end
+  end
+
+  describe '#create' do
+    context 'when the type is api' do
+      subject(:create) { synthetics.create({ 'type' => 'api' }) }
+
+      before do
+        stubs.post('/api/v1/synthetics/tests/api') { [200, {}, { 'public_id' => 'api-create-abc' }] }
+      end
+
+      it { is_expected.to eq({ 'public_id' => 'api-create-abc' }) }
+    end
+
+    context 'when the type is browser' do
+      subject(:create) { synthetics.create({ 'type' => 'browser' }) }
+
+      before do
+        stubs.post('/api/v1/synthetics/tests/browser') { [200, {}, { 'public_id' => 'browser-create-abc' }] }
+      end
+
+      it { is_expected.to eq({ 'public_id' => 'browser-create-abc' }) }
+    end
+  end
+
+  describe '#update' do
+    context 'when the type is api' do
+      subject(:update) { synthetics.update('api-update-abc', { 'type' => 'api' }) }
+
+      before do
+        stubs.put('/api/v1/synthetics/tests/api/api-update-abc') { [200, {}, { 'public_id' => 'api-update-abc' }] }
+      end
+
+      it { is_expected.to eq({ 'public_id' => 'api-update-abc' }) }
+    end
+
+    context 'when the type is browser' do
+      subject(:update) { synthetics.update('browser-update-abc', { 'type' => 'browser' }) }
+
+      before do
+        stubs.put('/api/v1/synthetics/tests/browser/browser-update-abc') { [200, {}, { 'public_id' => 'browser-update-abc' }] }
+      end
+
+      it { is_expected.to eq({ 'public_id' => 'browser-update-abc' }) }
+    end
   end
 end

@@ -61,7 +61,7 @@ module DatadogBackup
       current = except(get_by_id(id)).deep_sort.to_yaml
       filesystem = except(load_from_file_by_id(id)).deep_sort.to_yaml
       result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
-      LOGGER.debug("Compared ID #{id} and found #{result}")
+      LOGGER.debug("Compared ID #{id} and found filesystem: #{filesystem} <=> current: #{current} == result: #{result}")
       result
     end
 
@@ -108,7 +108,7 @@ module DatadogBackup
       self.class.to_s.split(':').last.downcase
     end
 
-    # Calls out to Datadog and checks for a '200' response
+    # Create a new resource in Datadog
     def create(body)
       headers = {}
       response = api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
@@ -117,7 +117,7 @@ module DatadogBackup
       body
     end
 
-    # Calls out to Datadog and checks for a '200' response
+    # Update an existing resource in Datadog
     def update(id, body)
       headers = {}
       response = api_service.put("/api/#{api_version}/#{api_resource_name}/#{id}", body, headers)

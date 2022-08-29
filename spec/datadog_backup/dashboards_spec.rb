@@ -65,6 +65,18 @@ describe DatadogBackup::Dashboards do
     end
   end
 
+  describe '#filename' do
+    subject { dashboards.filename('abc-123-def') }
+
+    it { is_expected.to eq("#{tempdir}/dashboards/abc-123-def.json") }
+  end
+
+  describe '#get_by_id' do
+    subject { dashboards.get_by_id('abc-123-def') }
+
+    it { is_expected.to eq board_abc_123_def }
+  end
+
   describe '#diff' do
     it 'calls the api only once' do
       dashboards.write_file('{"a":"b"}', dashboards.filename('abc-123-def'))
@@ -89,11 +101,5 @@ describe DatadogBackup::Dashboards do
     subject { dashboards.except({ :a => :b, 'modified_at' => :c, 'url' => :d }) }
 
     it { is_expected.to eq({ a: :b }) }
-  end
-
-  describe '#get_by_id' do
-    subject { dashboards.get_by_id('abc-123-def') }
-
-    it { is_expected.to eq board_abc_123_def }
   end
 end
