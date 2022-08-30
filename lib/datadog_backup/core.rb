@@ -12,49 +12,12 @@ module DatadogBackup
     include ::DatadogBackup::LocalFilesystem
     include ::DatadogBackup::Options
 
-    @retry_options = {
+    RETRY_OPTIONS = {
       max: 5,
       interval: 0.05,
       interval_randomness: 0.5,
       backoff_factor: 2
-    }
-
-    def api_service
-      @api_service ||= Faraday.new(
-        url: api_url,
-        headers: {
-          'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
-          'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
-        }
-      ) do |faraday|
-        faraday.request :json
-        faraday.request :retry, @retry_options
-        faraday.response(:logger, LOGGER, { headers: true, bodies: LOGGER.debug?, log_level: :debug }) do |logger|
-          logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
-          logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
-        end
-        faraday.response :raise_error
-        faraday.response :json
-        faraday.adapter Faraday.default_adapter
-      end
-    end
-
-    def api_url
-      ENV.fetch('DD_SITE_URL', 'https://api.datadoghq.com/')
-    end
-
-    def api_version
-      raise 'subclass is expected to implement #api_version'
-    end
-
-    def api_resource_name
-      raise 'subclass is expected to implement #api_resource_name'
-    end
-
-    # Some resources have a different key for the id.
-    def id_keyname
-      'id'
-    end
+    }.freeze
 
     def backup
       raise 'subclass is expected to implement #backup'
@@ -165,6 +128,43 @@ module DatadogBackup
     end
 
     private
+
+    def api_url
+      ENV.fetch('DD_SITE_URL', 'https://api.datadoghq.com/')
+    end
+
+    def api_version
+      raise 'subclass is expected to implement #api_version'
+    end
+
+    def api_resource_name
+      raise 'subclass is expected to implement #api_resource_name'
+    end
+
+    # Some resources have a different key for the id.
+    def id_keyname
+      'id'
+    end
+
+    def api_service
+      @api_service ||= Faraday.new(
+        url: api_url,
+        headers: {
+          'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
+          'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
+        }
+      ) do |faraday|
+        faraday.request :json
+        faraday.request :retry, RETRY_OPTIONS
+        faraday.response(:logger, LOGGER, { headers: true, bodies: LOGGER.debug?, log_level: :debug }) do |logger|
+          logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
+          logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
+        end
+        faraday.response :raise_error
+        faraday.response :json
+        faraday.adapter Faraday.default_adapter
+      end
+    end
 
     # Create a new resource in Datadog, then move the old file to the new resource's ID
     def create_newly(file_id, body)

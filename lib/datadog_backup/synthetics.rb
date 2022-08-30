@@ -7,23 +7,6 @@ module DatadogBackup
       get_all.fetch('tests')
     end
 
-    def api_version
-      'v1'
-    end
-
-    def api_resource_name(body = nil)
-      return 'synthetics/tests' if body.nil?
-      return 'synthetics/tests' if body['type'].nil?
-      return 'synthetics/tests/browser' if body['type'].to_s == 'browser'
-      return 'synthetics/tests/api' if body['type'].to_s == 'api'
-
-      raise "Unknown type #{body['type']}"
-    end
-
-    def id_keyname
-      'public_id'
-    end
-
     def backup
       all.map do |synthetic|
         id = synthetic[id_keyname]
@@ -61,6 +44,25 @@ module DatadogBackup
       LOGGER.info 'Invalidating cache'
       @get_all = nil
       resbody
+    end
+
+    private
+
+    def api_version
+      'v1'
+    end
+
+    def api_resource_name(body = nil)
+      return 'synthetics/tests' if body.nil?
+      return 'synthetics/tests' if body['type'].nil?
+      return 'synthetics/tests/browser' if body['type'].to_s == 'browser'
+      return 'synthetics/tests/api' if body['type'].to_s == 'api'
+
+      raise "Unknown type #{body['type']}"
+    end
+
+    def id_keyname
+      'public_id'
     end
   end
 end
