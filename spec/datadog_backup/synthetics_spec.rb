@@ -123,9 +123,17 @@ describe DatadogBackup::Synthetics do
   end
 
   describe '#get_by_id' do
-    subject { synthetics.get_by_id('abc-123-def') }
+    context 'when the type is api' do
+      subject { synthetics.get_by_id('abc-123-def') }
 
-    it { is_expected.to eq api_test }
+      it { is_expected.to eq api_test }
+    end
+
+    context 'when the type is browser' do
+      subject { synthetics.get_by_id('456-ghi-789') }
+
+      it { is_expected.to eq browser_test }
+    end
   end
 
   describe '#diff' do # TODO: migrate to core_spec.rb, since #diff is not defined here.
@@ -172,7 +180,7 @@ describe DatadogBackup::Synthetics do
       subject(:create) { synthetics.create({ 'type' => 'api' }) }
 
       before do
-        stubs.post('/api/v1/synthetics/tests/api') { [200, {}, { 'public_id' => 'api-create-abc' }] }
+        stubs.post('/api/v1/synthetics/tests/api') { respond_with200({ 'public_id' => 'api-create-abc' }) }
       end
 
       it { is_expected.to eq({ 'public_id' => 'api-create-abc' }) }
@@ -182,7 +190,7 @@ describe DatadogBackup::Synthetics do
       subject(:create) { synthetics.create({ 'type' => 'browser' }) }
 
       before do
-        stubs.post('/api/v1/synthetics/tests/browser') { [200, {}, { 'public_id' => 'browser-create-abc' }] }
+        stubs.post('/api/v1/synthetics/tests/browser') { respond_with200({ 'public_id' => 'browser-create-abc' }) }
       end
 
       it { is_expected.to eq({ 'public_id' => 'browser-create-abc' }) }
@@ -194,7 +202,7 @@ describe DatadogBackup::Synthetics do
       subject(:update) { synthetics.update('api-update-abc', { 'type' => 'api' }) }
 
       before do
-        stubs.put('/api/v1/synthetics/tests/api/api-update-abc') { [200, {}, { 'public_id' => 'api-update-abc' }] }
+        stubs.put('/api/v1/synthetics/tests/api/api-update-abc') { respond_with200({ 'public_id' => 'api-update-abc' }) }
       end
 
       it { is_expected.to eq({ 'public_id' => 'api-update-abc' }) }
@@ -204,10 +212,52 @@ describe DatadogBackup::Synthetics do
       subject(:update) { synthetics.update('browser-update-abc', { 'type' => 'browser' }) }
 
       before do
-        stubs.put('/api/v1/synthetics/tests/browser/browser-update-abc') { [200, {}, { 'public_id' => 'browser-update-abc' }] }
+        stubs.put('/api/v1/synthetics/tests/browser/browser-update-abc') { respond_with200({ 'public_id' => 'browser-update-abc' }) }
       end
 
       it { is_expected.to eq({ 'public_id' => 'browser-update-abc' }) }
+    end
+  end
+
+  describe '#restore' do
+    context 'when the id exists' do
+      subject { synthetics.restore('abc-123-def') }
+
+      before do
+        synthetics.write_file(synthetics.dump({ 'name' => 'restore-valid-id', 'type' => 'api' }), synthetics.filename('abc-123-def'))
+        stubs.put('/api/v1/synthetics/tests/api/abc-123-def') { respond_with200({ 'public_id' => 'abc-123-def', 'type' => 'api' }) }
+      end
+
+      it { is_expected.to eq({ 'public_id' => 'abc-123-def', 'type' => 'api' }) }
+    end
+
+    context 'when the id does not exist' do
+      subject(:restore) { synthetics.restore('restore-invalid-id') }
+
+      before do
+        synthetics.write_file(synthetics.dump({ 'name' => 'restore-invalid-id', 'type' => 'api' }), synthetics.filename('restore-invalid-id'))
+        stubs.put('/api/v1/synthetics/tests/api/restore-invalid-id') { [404, {}, ''] }
+        stubs.post('/api/v1/synthetics/tests/api') { respond_with200({ 'public_id' => 'restore-valid-id' }) }
+        allow(synthetics).to receive(:create).and_call_original
+        allow(synthetics).to receive(:all).and_return([api_test, browser_test, { 'public_id' => 'restore-valid-id', 'type' => 'api' }])
+      end
+
+      it { is_expected.to eq({ 'public_id' => 'restore-valid-id', 'type' => 'api' }) }
+
+      it 'calls create with the contents of the original file' do
+        restore
+        expect(synthetics).to have_received(:create).with({ 'name' => 'restore-invalid-id', 'type' => 'api' })
+      end
+
+      it 'deletes the original file' do
+        restore
+        expect(File.exist?(synthetics.filename('restore-invalid-id'))).to be false
+      end
+
+      it 'creates a new file with the restored contents' do
+        restore
+        expect(File.exist?(synthetics.filename('restore-valid-id'))).to be true
+      end
     end
   end
 end

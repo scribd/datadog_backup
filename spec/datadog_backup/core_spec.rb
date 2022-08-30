@@ -66,7 +66,7 @@ describe DatadogBackup::Core do
     example 'it will post /api/v1/dashboard' do
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      stubs.post('/api/v1/dashboard', { 'a' => 'b' }) { [200, {}, { 'id' => 'whatever-id-abc' }] }
+      stubs.post('/api/v1/dashboard', { 'a' => 'b' }) {  respond_with200({ 'id' => 'whatever-id-abc' }) }
       create
       stubs.verify_stubbed_calls
     end
@@ -78,7 +78,7 @@ describe DatadogBackup::Core do
     example 'it puts /api/v1/dashboard' do
       allow(core).to receive(:api_version).and_return('v1')
       allow(core).to receive(:api_resource_name).and_return('dashboard')
-      stubs.put('/api/v1/dashboard/abc-123-def', { 'a' => 'b' }) { [200, {}, { 'id' => 'whatever-id-abc' }] }
+      stubs.put('/api/v1/dashboard/abc-123-def', { 'a' => 'b' }) { respond_with200({ 'id' => 'whatever-id-abc' }) }
       update
       stubs.verify_stubbed_calls
     end
@@ -100,7 +100,7 @@ describe DatadogBackup::Core do
     before do
       allow(core).to receive(:api_version).and_return('api-version-string')
       allow(core).to receive(:api_resource_name).and_return('api-resource-name-string')
-      stubs.get('/api/api-version-string/api-resource-name-string/abc-123-def') { [200, {}, { 'test' => 'ok' }] }
+      stubs.get('/api/api-version-string/api-resource-name-string/abc-123-def') { respond_with200({ 'test' => 'ok' }) }
       stubs.get('/api/api-version-string/api-resource-name-string/bad-123-id') do
         [404, {}, { 'error' => 'blahblah_not_found' }]
       end
@@ -128,7 +128,7 @@ describe DatadogBackup::Core do
           [404, {}, { 'error' => 'id not found' }]
         end
         stubs.post('/api/api-version-string/api-resource-name-string', { 'load' => 'ok' }) do
-          [200, {}, { 'id' => 'my-new-id' }]
+          respond_with200({ 'id' => 'my-new-id' })
         end
         allow(fileutils).to receive(:rm)
         allow(core).to receive(:create).with({ 'load' => 'ok' }).and_return({ 'id' => 'my-new-id' })

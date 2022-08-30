@@ -51,6 +51,11 @@ module DatadogBackup
       raise 'subclass is expected to implement #api_resource_name'
     end
 
+    # Some resources have a different key for the id.
+    def id_keyname
+      'id'
+    end
+
     def backup
       raise 'subclass is expected to implement #backup'
     end
@@ -74,6 +79,7 @@ module DatadogBackup
       end
     end
 
+    # Fetch the specified resource from Datadog
     def get(id)
       params = {}
       headers = {}
@@ -81,6 +87,8 @@ module DatadogBackup
       body_with_2xx(response)
     end
 
+    # Returns a list of all resources in Datadog
+    # Do not use directly, but use the child classes' #all method instead
     def get_all
       return @get_all if @get_all
 
@@ -90,10 +98,14 @@ module DatadogBackup
       @get_all = body_with_2xx(response)
     end
 
+    # Download the resource from Datadog and write it to a file
     def get_and_write_file(id)
-      write_file(dump(get_by_id(id)), filename(id))
+      body = get_by_id(id)
+      write_file(dump(body), filename(id))
+      body
     end
 
+    # Fetch the specified resource from Datadog and remove the banlist elements
     def get_by_id(id)
       except(get(id))
     end
@@ -113,7 +125,9 @@ module DatadogBackup
       headers = {}
       response = api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
       body = body_with_2xx(response)
-      LOGGER.warn "Successfully created #{body.fetch('id')} in datadog."
+      LOGGER.warn "Successfully created #{body.fetch(id_keyname)} in datadog."
+      LOGGER.info 'Invalidating cache'
+      @get_all = nil
       body
     end
 
@@ -123,9 +137,12 @@ module DatadogBackup
       response = api_service.put("/api/#{api_version}/#{api_resource_name}/#{id}", body, headers)
       body = body_with_2xx(response)
       LOGGER.warn "Successfully restored #{id} to datadog."
+      LOGGER.info 'Invalidating cache'
+      @get_all = nil
       body
     end
 
+    # If the resource exists in Datadog, update it. Otherwise, create it.
     def restore(id)
       body = load_from_file_by_id(id)
       begin
@@ -133,12 +150,11 @@ module DatadogBackup
       rescue RuntimeError => e
         raise e.message unless e.message.include?('update failed with error 404')
 
-        new_id = create(body).fetch('id')
-        FileUtils.rm(find_file_by_id(id))
-        get_and_write_file(new_id)
+        create_newly(id, body)
       end
     end
 
+    # Return the Faraday body from a response with a 2xx status code, otherwise raise an error
     def body_with_2xx(response)
       unless response.status.to_s =~ /^2/
         raise "#{caller_locations(1,
@@ -146,6 +162,15 @@ module DatadogBackup
       end
 
       response.body
+    end
+
+    private
+
+    # Create a new resource in Datadog, then move the old file to the new resource's ID
+    def create_newly(file_id, body)
+      new_id = create(body).fetch(id_keyname)
+      FileUtils.rm(find_file_by_id(file_id))
+      get_and_write_file(new_id)
     end
   end
 end

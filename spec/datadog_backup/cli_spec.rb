@@ -47,8 +47,8 @@ describe DatadogBackup::Cli do
         dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/deleted.json")
 
         stubs.get('/api/v1/dashboard') { all_dashboards }
-        stubs.get('/api/v1/dashboard/stillthere') { [200, {}, {}] }
-        stubs.get('/api/v1/dashboard/alsostillthere') { [200, {}, {}] }
+        stubs.get('/api/v1/dashboard/stillthere') { respond_with200({}) }
+        stubs.get('/api/v1/dashboard/alsostillthere') { respond_with200({}) }
       end
 
       it 'deletes the file locally as well' do
