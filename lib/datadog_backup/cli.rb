@@ -33,18 +33,6 @@ module DatadogBackup
       matching_resource_instance(any_resource_instance.class_from_id(id))
     end
 
-    def diffs
-      futures = all_diff_futures
-      ::DatadogBackup::ThreadPool.watcher.join
-
-      format_diff_output(
-        Concurrent::Promises
-          .zip(*futures)
-          .value!
-          .compact
-      )
-    end
-
     def getdiff(id)
       result = definitive_resource_instance(id).diff(id)
       case result
@@ -67,7 +55,7 @@ module DatadogBackup
           Diffy::CSS +
           '</style></head><body>' +
           diff_output.map do |id, diff|
-            "<br><br> ---<br><strong> id: #{id}</strong><br>" + diff
+            "<br><br> ---<br><strong> id: #{id}</strong><br>#{diff}"
           end.join('<br>') +
           '</body></html>'
       else
@@ -86,7 +74,7 @@ module DatadogBackup
 
       futures.each do |future|
         id, diff = *future.value!
-        next unless diff
+        next if diff.nil? || diff.empty?
 
         if @options[:force_restore]
           definitive_resource_instance(id).restore(id)

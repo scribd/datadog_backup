@@ -58,25 +58,6 @@ describe DatadogBackup::Cli do
     end
   end
 
-  describe '#diffs' do
-    subject(:diffs) { cli.diffs }
-
-    before do
-      dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
-      dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs2.json")
-      dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs3.json")
-      allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
-    end
-
-    it {
-      expect(diffs).to include(
-        " ---\n id: diffs1\n ---\n-text: diff2\n+text: diff\n",
-        " ---\n id: diffs3\n ---\n-text: diff2\n+text: diff\n",
-        " ---\n id: diffs2\n ---\n-text: diff2\n+text: diff\n"
-      )
-    }
-  end
-
   describe '#restore' do
     subject(:restore) { cli.restore }
 
