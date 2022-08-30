@@ -27,13 +27,14 @@ describe DatadogBackup::Core do
     end
 
     it {
-      expect(diff).to eq <<~EODIFF
+      expect(diff).to eq(<<~EODIFF
          ---
         -extra: diff1
         -text: diff1
         +extra: diff2
         +text: diff2
       EODIFF
+      .chomp)
     }
   end
 

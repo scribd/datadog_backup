@@ -93,7 +93,7 @@ describe DatadogBackup::Dashboards do
         -title: example dashboard
         +a: b
       EODASH
-                                                  )
+      .chomp)
     end
   end
 

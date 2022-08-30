@@ -155,12 +155,7 @@ describe DatadogBackup::Synthetics do
       end
 
       it {
-        expect(invalid_diff).to eq(<<~EODIFF
-          ---- {}
-          +---
-          +name: invalid-diff
-        EODIFF
-                                  )
+        expect(invalid_diff).to eq(%(---- {}\n+---\n+name: invalid-diff))
       }
     end
 
@@ -242,7 +237,7 @@ describe DatadogBackup::Synthetics do
         allow(synthetics).to receive(:all).and_return([api_test, browser_test, { 'public_id' => 'restore-valid-id', 'type' => 'api' }])
       end
 
-      it { is_expected.to eq({ 'public_id' => 'restore-valid-id', 'type' => 'api' }) }
+      it { is_expected.to eq({ 'type' => 'api' }) }
 
       it 'calls create with the contents of the original file' do
         restore
