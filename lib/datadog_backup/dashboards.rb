@@ -7,18 +7,6 @@ module DatadogBackup
       get_all.fetch('dashboards')
     end
 
-    def api_version
-      'v1'
-    end
-
-    def api_resource_name
-      'dashboard'
-    end
-
-    def id_keyname
-      'id'
-    end
-
     def backup
       LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
       futures = all.map do |dashboard|
@@ -37,6 +25,20 @@ module DatadogBackup
     def initialize(options)
       super(options)
       @banlist = %w[modified_at url].freeze
+    end
+
+    private
+
+    def api_version
+      'v1'
+    end
+
+    def api_resource_name
+      'dashboard'
+    end
+
+    def id_keyname
+      'id'
     end
   end
 end

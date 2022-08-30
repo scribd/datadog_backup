@@ -7,14 +7,6 @@ module DatadogBackup
       get_all
     end
 
-    def api_version
-      'v1'
-    end
-
-    def api_resource_name
-      'monitor'
-    end
-
     def backup
       all.map do |monitor|
         id = monitor['id']
@@ -30,6 +22,16 @@ module DatadogBackup
     def initialize(options)
       super(options)
       @banlist = %w[overall_state overall_state_modified matching_downtimes modified].freeze
+    end
+
+    private
+
+    def api_version
+      'v1'
+    end
+
+    def api_resource_name
+      'monitor'
     end
   end
 end
