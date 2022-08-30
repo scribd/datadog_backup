@@ -7,7 +7,7 @@ require 'deepsort'
 
 module DatadogBackup
   ##
-  # Meant to be mixed into DatadogBackup::Core
+  # Meant to be mixed into DatadogBackup::Resources
   # Relies on @options[:backup_dir] and @options[:output_format]
   module LocalFilesystem
     def all_files
