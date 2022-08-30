@@ -36,6 +36,8 @@ jobs:
       with:
         ruby-version: 2.7
         bundler-cache: true
+    - run: |
+        gem build
     - name: Zip
       run : |
         zip -r datadog_backup.zip ./*
@@ -44,10 +46,18 @@ jobs:
       uses: cycjimmy/semantic-release-action@v3
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_TOKEN }}
       with:
         semantic_version: 17
         extra_plugins: |
           @semantic-release/changelog@5
           @semantic-release/git@9
-          semantic-release-rubygem@1
+    - name: push to rubygems
+      if: ${{ steps.semantic.output.new_release_published }}
+      env:
+        GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_TOKEN }}
+        RUBYGEMS_MFA_KEY: ${{ secrets.RUBYGEMS_MFA_KEY }}
+        GEM_VERSION: ${{ steps.semantic.output.new_release_version }}
+      run: |
+        sudo apt-get install -y oathtool jq
+        TOKEN=$(oathtool --base32 --totp ${RUBYGEMS_MFA_KEY:?})
+        gem push datadog_backup-${GEM_VERSION:?}.gem  --otp ${TOKEN:?}

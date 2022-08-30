@@ -13,12 +13,6 @@ module.exports = {
       }
     ],
     [
-      "semantic-release-rubygem",
-      {
-        "gemFileDir": "."
-      }
-    ],
-    [
       "@semantic-release/git",
       {
         "assets": [
