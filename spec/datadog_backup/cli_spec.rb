@@ -29,16 +29,14 @@ describe DatadogBackup::Cli do
   describe '#backup' do
     context 'when dashboards are deleted in datadog' do
       let(:all_dashboards) do
-        [
-          200,
-          {},
+        respond_with200(
           {
             'dashboards' => [
               { 'id' => 'stillthere' },
               { 'id' => 'alsostillthere' }
             ]
           }
-        ]
+        )
       end
 
       before do
@@ -60,8 +58,14 @@ describe DatadogBackup::Cli do
 
   describe '#restore' do
     subject(:restore) { cli.restore }
+    let(:stdin) { class_double('STDIN') }
 
+    after(:all) do
+      $stdin = STDIN
+    end
+    
     before do
+      $stdin = stdin
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")
       allow(dashboards).to receive(:get_by_id).and_return({ 'text' => 'diff2' })
       allow(dashboards).to receive(:write_file)
@@ -69,7 +73,7 @@ describe DatadogBackup::Cli do
     end
 
     example 'starts interactive restore' do
-      allow($stdin).to receive(:gets).and_return('q')
+      allow(stdin).to receive(:gets).and_return('q')
 
       expect { restore }.to(
         output(/\(r\)estore to Datadog, overwrite local changes and \(d\)ownload, \(s\)kip, or \(q\)uit\?/).to_stdout
@@ -79,7 +83,7 @@ describe DatadogBackup::Cli do
 
     context 'when the user chooses to restore' do
       before do
-        allow($stdin).to receive(:gets).and_return('r')
+        allow(stdin).to receive(:gets).and_return('r')
       end
 
       example 'it restores from disk to server' do
@@ -90,7 +94,7 @@ describe DatadogBackup::Cli do
 
     context 'when the user chooses to download' do
       before do
-        allow($stdin).to receive(:gets).and_return('d')
+        allow(stdin).to receive(:gets).and_return('d')
       end
 
       example 'it writes from server to disk' do
@@ -101,7 +105,7 @@ describe DatadogBackup::Cli do
 
     context 'when the user chooses to skip' do
       before do
-        allow($stdin).to receive(:gets).and_return('s')
+        allow(stdin).to receive(:gets).and_return('s')
       end
 
       example 'it does not write to disk' do
@@ -117,7 +121,7 @@ describe DatadogBackup::Cli do
 
     context 'when the user chooses to quit' do
       before do
-        allow($stdin).to receive(:gets).and_return('q')
+        allow(stdin).to receive(:gets).and_return('q')
       end
 
       example 'it exits' do
@@ -126,11 +130,13 @@ describe DatadogBackup::Cli do
 
       example 'it does not write to disk' do
         restore
+      rescue SystemExit
         expect(dashboards).not_to have_received(:write_file)
       end
 
       example 'it does not update the server' do
         restore
+      rescue SystemExit
         expect(dashboards).not_to have_received(:update)
       end
     end
