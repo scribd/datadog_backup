@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 module DatadogBackup
+  # Describes what the user wants to see done.
   module Options
     def action
       @options[:action]

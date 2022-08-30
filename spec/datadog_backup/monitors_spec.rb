@@ -16,7 +16,6 @@ describe DatadogBackup::Monitors do
     allow(monitors).to receive(:api_service).and_return(api_client_double)
     return monitors
   end
-
   let(:monitor_description) do
     {
       'query' => 'bar',
@@ -35,22 +34,8 @@ describe DatadogBackup::Monitors do
       'query' => 'bar'
     }
   end
-  let(:all_monitors) do
-    [
-      200,
-      {},
-      [
-        monitor_description
-      ]
-    ]
-  end
-  let(:example_monitor) do
-    [
-      200,
-      {},
-      monitor_description
-    ]
-  end
+  let(:all_monitors) { respond_with200([monitor_description]) }
+  let(:example_monitor) { respond_with200(monitor_description) }
 
   before do
     stubs.get('/api/v1/monitor') { all_monitors }
@@ -67,22 +52,21 @@ describe DatadogBackup::Monitors do
     subject { monitors.backup }
 
     it 'is expected to create a file' do
-      file = double('file')
+      file = instance_double(File)
       allow(File).to receive(:open).with(monitors.filename(123_455), 'w').and_return(file)
-      expect(file).to receive(:write).with(::JSON.pretty_generate(clean_monitor_description))
+      allow(file).to receive(:write)
       allow(file).to receive(:close)
 
       monitors.backup
+      expect(file).to have_received(:write).with(::JSON.pretty_generate(clean_monitor_description))
     end
   end
 
   describe '#diff and #except' do
     example 'it ignores `overall_state` and `overall_state_modified`' do
       monitors.write_file(monitors.dump(monitor_description), monitors.filename(123_455))
-      stubs.get('/api/v1/dashboard/123455') {
-        [
-          200,
-          {},
+      stubs.get('/api/v1/dashboard/123455') do
+        respond_with200(
           [
             {
               'query' => 'bar',
@@ -93,8 +77,8 @@ describe DatadogBackup::Monitors do
               'overall_state_modified' => '9999-07-27T22:55:55+00:00'
             }
           ]
-        ]
-      }
+        )
+      end
 
       expect(monitors.diff(123_455)).to eq ''
 
@@ -109,13 +93,13 @@ describe DatadogBackup::Monitors do
   end
 
   describe '#get_by_id' do
-    context 'Integer' do
+    context 'when Integer' do
       subject { monitors.get_by_id(123_455) }
 
       it { is_expected.to eq monitor_description }
     end
 
-    context 'String' do
+    context 'when String' do
       subject { monitors.get_by_id('123455') }
 
       it { is_expected.to eq monitor_description }

@@ -5,14 +5,14 @@ require 'deepsort'
 require 'faraday'
 require 'faraday/retry'
 
-
-
 module DatadogBackup
+  # The default options for backing up and restores.
+  # This base class is meant to be extended by specific resources, such as Dashboards, Monitors, and so on.
   class Core
     include ::DatadogBackup::LocalFilesystem
     include ::DatadogBackup::Options
 
-    @@retry_options = {
+    @retry_options = {
       max: 5,
       interval: 0.05,
       interval_randomness: 0.5,
@@ -20,27 +20,27 @@ module DatadogBackup
     }
 
     def api_service
-      conn ||= Faraday.new(
-          url: api_url,
-          headers: {
-            'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
-            'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
-          }
-        ) do |faraday|
-            faraday.request :json
-            faraday.request :retry, @@retry_options
-            faraday.response(:logger, LOGGER, {headers: true, bodies: LOGGER.debug?, log_level: :debug}) do | logger |
-              logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
-              logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
-            end
-            faraday.response :raise_error
-            faraday.response :json
-            faraday.adapter Faraday.default_adapter
-          end
+      @api_service ||= Faraday.new(
+        url: api_url,
+        headers: {
+          'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
+          'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
+        }
+      ) do |faraday|
+        faraday.request :json
+        faraday.request :retry, @retry_options
+        faraday.response(:logger, LOGGER, { headers: true, bodies: LOGGER.debug?, log_level: :debug }) do |logger|
+          logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
+          logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
+        end
+        faraday.response :raise_error
+        faraday.response :json
+        faraday.adapter Faraday.default_adapter
+      end
     end
 
     def api_url
-      ENV.fetch('DD_SITE_URL', "https://api.datadoghq.com/")
+      ENV.fetch('DD_SITE_URL', 'https://api.datadoghq.com/')
     end
 
     def api_version
@@ -49,6 +49,11 @@ module DatadogBackup
 
     def api_resource_name
       raise 'subclass is expected to implement #api_resource_name'
+    end
+
+    # Some resources have a different key for the id.
+    def id_keyname
+      'id'
     end
 
     def backup
@@ -61,8 +66,8 @@ module DatadogBackup
       current = except(get_by_id(id)).deep_sort.to_yaml
       filesystem = except(load_from_file_by_id(id)).deep_sort.to_yaml
       result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
-      LOGGER.debug("Compared ID #{id} and found #{result}")
-      result
+      LOGGER.debug("Compared ID #{id} and found filesystem: #{filesystem} <=> current: #{current} == result: #{result}")
+      result.chomp
     end
 
     # Returns a hash with banlist elements removed
@@ -74,6 +79,7 @@ module DatadogBackup
       end
     end
 
+    # Fetch the specified resource from Datadog
     def get(id)
       params = {}
       headers = {}
@@ -81,18 +87,25 @@ module DatadogBackup
       body_with_2xx(response)
     end
 
+    # Returns a list of all resources in Datadog
+    # Do not use directly, but use the child classes' #all method instead
     def get_all
       return @get_all if @get_all
+
       params = {}
       headers = {}
       response = api_service.get("/api/#{api_version}/#{api_resource_name}", params, headers)
       @get_all = body_with_2xx(response)
     end
 
+    # Download the resource from Datadog and write it to a file
     def get_and_write_file(id)
-      write_file(dump(get_by_id(id)), filename(id))
+      body = get_by_id(id)
+      write_file(dump(body), filename(id))
+      body
     end
 
+    # Fetch the specified resource from Datadog and remove the banlist elements
     def get_by_id(id)
       except(get(id))
     end
@@ -107,43 +120,57 @@ module DatadogBackup
       self.class.to_s.split(':').last.downcase
     end
 
-    # Calls out to Datadog and checks for a '200' response
+    # Create a new resource in Datadog
     def create(body)
       headers = {}
-      response =  api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
+      response = api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
       body = body_with_2xx(response)
-      LOGGER.warn "Successfully created #{body.fetch('id')} in datadog."
+      LOGGER.warn "Successfully created #{body.fetch(id_keyname)} in datadog."
+      LOGGER.info 'Invalidating cache'
+      @get_all = nil
       body
     end
 
-    # Calls out to Datadog and checks for a '200' response
+    # Update an existing resource in Datadog
     def update(id, body)
       headers = {}
       response = api_service.put("/api/#{api_version}/#{api_resource_name}/#{id}", body, headers)
       body = body_with_2xx(response)
-      LOGGER.warn 'Successfully restored #{id} to datadog.'
+      LOGGER.warn "Successfully restored #{id} to datadog."
+      LOGGER.info 'Invalidating cache'
+      @get_all = nil
       body
     end
 
+    # If the resource exists in Datadog, update it. Otherwise, create it.
     def restore(id)
       body = load_from_file_by_id(id)
       begin
         update(id, body)
       rescue RuntimeError => e
-        if e.message.include?('update failed with error 404')
-          new_id = create(body).fetch('id')
+        raise e.message unless e.message.include?('update failed with error 404')
 
-          FileUtils.rm(find_file_by_id(id))
-          get_and_write_file(new_id)
-        else
-          raise e.message
-        end
+        create_newly(id, body)
       end
     end
 
+    # Return the Faraday body from a response with a 2xx status code, otherwise raise an error
     def body_with_2xx(response)
-      raise "#{caller_locations(1,1)[0].label} failed with error #{response.status}" unless response.status.to_s =~ /^2/
+      unless response.status.to_s =~ /^2/
+        raise "#{caller_locations(1,
+                                  1)[0].label} failed with error #{response.status}"
+      end
+
       response.body
+    end
+
+    private
+
+    # Create a new resource in Datadog, then move the old file to the new resource's ID
+    def create_newly(file_id, body)
+      new_id = create(body).fetch(id_keyname)
+      FileUtils.rm(find_file_by_id(file_id))
+      get_and_write_file(new_id)
     end
   end
 end

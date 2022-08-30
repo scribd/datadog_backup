@@ -68,13 +68,13 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#dump' do
-    context ':json' do
+    context 'when mode is :json' do
       subject { core.dump({ a: :b }) }
 
       it { is_expected.to eq(%({\n  "a": "b"\n})) }
     end
 
-    context ':yaml' do
+    context 'when mode is :yaml' do
       subject { core_yaml.dump({ 'a' => 'b' }) }
 
       it { is_expected.to eq(%(---\na: b\n)) }
@@ -82,13 +82,13 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#filename' do
-    context ':json' do
+    context 'when mode is :json' do
       subject { core.filename('abc-123-def') }
 
       it { is_expected.to eq("#{tempdir}/core/abc-123-def.json") }
     end
 
-    context ':yaml' do
+    context 'when mode is :yaml' do
       subject { core_yaml.filename('abc-123-def') }
 
       it { is_expected.to eq("#{tempdir}/core/abc-123-def.yaml") }
@@ -124,13 +124,13 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#load_from_file' do
-    context ':json' do
+    context 'when mode is :json' do
       subject { core.load_from_file(%({\n  "a": "b"\n}), :json) }
 
       it { is_expected.to eq('a' => 'b') }
     end
 
-    context ':yaml' do
+    context 'when mode is :yaml' do
       subject { core.load_from_file(%(---\na: b\n), :yaml) }
 
       it { is_expected.to eq('a' => 'b') }
@@ -138,7 +138,7 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#load_from_file_by_id' do
-    context 'written in json read in yaml mode' do
+    context 'when the backup is in json but the mode is :yaml' do
       subject { core_yaml.load_from_file_by_id('abc-123-def') }
 
       before { core.write_file(%({"a": "b"}), "#{tempdir}/core/abc-123-def.json") }
@@ -148,7 +148,7 @@ describe DatadogBackup::LocalFilesystem do
       it { is_expected.to eq('a' => 'b') }
     end
 
-    context 'written in yaml read in json mode' do
+    context 'when the backup is in yaml but the mode is :json' do
       subject { core.load_from_file_by_id('abc-123-def') }
 
       before { core.write_file(%(---\na: b), "#{tempdir}/core/abc-123-def.yaml") }
@@ -158,7 +158,7 @@ describe DatadogBackup::LocalFilesystem do
       it { is_expected.to eq('a' => 'b') }
     end
 
-    context 'Integer as parameter' do
+    context 'with Integer as parameter' do
       subject { core.load_from_file_by_id(12_345) }
 
       before { core.write_file(%(---\na: b), "#{tempdir}/core/12345.yaml") }
@@ -170,9 +170,9 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#write_file' do
-    subject { core.write_file('abc123', "#{tempdir}/core/abc-123-def.json") }
+    subject(:write_file) { core.write_file('abc123', "#{tempdir}/core/abc-123-def.json") }
 
-    let(:file_like_object) { double }
+    let(:file_like_object) { instance_double(File) }
 
     it 'writes a file to abc-123-def.json' do
       allow(File).to receive(:open).and_call_original
@@ -180,7 +180,7 @@ describe DatadogBackup::LocalFilesystem do
       allow(file_like_object).to receive(:write)
       allow(file_like_object).to receive(:close)
 
-      subject
+      write_file
 
       expect(file_like_object).to have_received(:write).with('abc123')
     end

@@ -3,13 +3,13 @@
 require 'open3'
 require 'timeout'
 
-describe 'bin/datadog_backup' do
+describe 'bin/datadog_backup' do # rubocop:disable RSpec/DescribeClass
   # Contract Or[nil,String] => self
   def run_bin(env = {}, args = '')
     status = nil
     output = ''
     cmd = "bin/datadog_backup #{args}"
-    Open3.popen2e(env, cmd) do |i, oe, t|
+    Open3.popen2e(env, cmd) do |_i, oe, t|
       pid = t.pid
 
       Timeout.timeout(4.0) do
@@ -44,9 +44,17 @@ describe 'bin/datadog_backup' do
     end
   end
 
-  it 'supplies help' do
-    out_err, status = run_bin(env, '--help')
-    expect(out_err).to match(/Usage: DD_API_KEY=/)
-    expect(status).to be_success
+  describe 'help' do
+    subject(:bin) { run_bin(env, '--help') }
+
+    it 'prints usage' do
+      out_err, _status = bin
+      expect(out_err).to match(/Usage: DD_API_KEY=/)
+    end
+
+    it 'exits cleanly' do
+      _out_err, status = bin
+      expect(status).to be_success
+    end
   end
 end

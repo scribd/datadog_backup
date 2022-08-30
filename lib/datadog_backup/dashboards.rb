@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module DatadogBackup
+  # Dashboards specific overrides for backup and restore.
   class Dashboards < Core
+    def all
+      get_all.fetch('dashboards')
+    end
 
     def api_version
       'v1'
@@ -11,13 +15,15 @@ module DatadogBackup
       'dashboard'
     end
 
+    def id_keyname
+      'id'
+    end
+
     def backup
       LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
-
-      dashboards = get_all.fetch('dashboards')
-      futures = dashboards.map do |board|
-        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, board) do |board|
-          id = board['id']
+      futures = all.map do |dashboard|
+        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, dashboard) do |board|
+          id = board[id_keyname]
           get_and_write_file(id)
         end
       end

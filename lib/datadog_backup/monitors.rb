@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 module DatadogBackup
+  # Monitor specific overrides for backup and restore.
   class Monitors < Core
+    def all
+      get_all
+    end
 
     def api_version
       'v1'
@@ -12,14 +16,14 @@ module DatadogBackup
     end
 
     def backup
-      get_all.map do |monitor|
+      all.map do |monitor|
         id = monitor['id']
         write_file(dump(get_by_id(id)), filename(id))
       end
     end
 
     def get_by_id(id)
-      monitor = get_all.select { |monitor| monitor['id'].to_s == id.to_s }.first
+      monitor = all.select { |m| m['id'].to_s == id.to_s }.first
       monitor.nil? ? {} : except(monitor)
     end
 

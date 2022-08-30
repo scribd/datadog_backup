@@ -11,8 +11,6 @@ $stdout = File.new('/dev/null', 'w+')
 require 'tmpdir'
 require 'datadog_backup'
 
-
-
 SPEC_ROOT = __dir__
 WORK_ROOT = File.expand_path(File.join(SPEC_ROOT, '..'))
 
@@ -37,4 +35,8 @@ RSpec.configure do |config|
   config.example_status_persistence_file_path = File.join(SPEC_ROOT, 'helpers', 'failures.txt')
 
   Kernel.srand config.seed
+end
+
+def respond_with200(body)
+  [200, {}, body]
 end

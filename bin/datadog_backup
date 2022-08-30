@@ -11,7 +11,6 @@ LOGGER.level = Logger::INFO
 
 require 'datadog_backup'
 
-
 def fatal(message)
   LOGGER.fatal(message)
   exit 1
@@ -19,10 +18,10 @@ end
 
 def options_valid?(options)
   %w[backup diffs restore].include?(options[:action])
-  %w[DD_API_KEY DD_APP_KEY].all? { |key| ENV[key] }
+  %w[DD_API_KEY DD_APP_KEY].all? { |key| ENV.fetch(key, nil) }
 end
 
-def prereqs(defaults)
+def prereqs(defaults) # rubocop:disable Metrics/AbcSize
   ARGV << '--help' if ARGV.empty?
 
   result = defaults.dup
@@ -48,6 +47,9 @@ def prereqs(defaults)
     end
     opts.on('--dashboards-only') do
       result[:resources] = [DatadogBackup::Dashboards]
+    end
+    opts.on('--synthetics-only') do
+      result[:resources] = [DatadogBackup::Synthetics]
     end
     opts.on(
       '--json',
@@ -78,7 +80,7 @@ defaults = {
   action: nil,
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   diff_format: :color,
-  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors],
+  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors, DatadogBackup::Synthetics],
   output_format: :yaml,
   force_restore: false
 }

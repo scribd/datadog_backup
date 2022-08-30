@@ -23,24 +23,6 @@ describe DatadogBackup::Dashboards do
       'title' => 'foo'
     }
   end
-  let(:all_dashboards) do
-    [
-      200,
-      {},
-      {
-        'dashboards' => [
-          dashboard_description
-        ]
-      }
-    ]
-  end
-  let(:example_dashboard) do
-    [
-      200,
-      {},
-      board_abc_123_def
-    ]
-  end
   let(:board_abc_123_def) do
     {
       'graphs' => [
@@ -61,6 +43,8 @@ describe DatadogBackup::Dashboards do
       'title' => 'example dashboard'
     }
   end
+  let(:all_dashboards) { respond_with200({ 'dashboards' => [dashboard_description] }) }
+  let(:example_dashboard) { respond_with200(board_abc_123_def) }
 
   before do
     stubs.get('/api/v1/dashboard') { all_dashboards }
@@ -71,20 +55,32 @@ describe DatadogBackup::Dashboards do
     subject { dashboards.backup }
 
     it 'is expected to create a file' do
-      file = double('file')
+      file = instance_double(File)
       allow(File).to receive(:open).with(dashboards.filename('abc-123-def'), 'w').and_return(file)
-      expect(file).to receive(:write).with(::JSON.pretty_generate(board_abc_123_def.deep_sort))
+      allow(file).to receive(:write)
       allow(file).to receive(:close)
 
       dashboards.backup
+      expect(file).to have_received(:write).with(::JSON.pretty_generate(board_abc_123_def.deep_sort))
     end
   end
 
+  describe '#filename' do
+    subject { dashboards.filename('abc-123-def') }
+
+    it { is_expected.to eq("#{tempdir}/dashboards/abc-123-def.json") }
+  end
+
+  describe '#get_by_id' do
+    subject { dashboards.get_by_id('abc-123-def') }
+
+    it { is_expected.to eq board_abc_123_def }
+  end
 
   describe '#diff' do
     it 'calls the api only once' do
       dashboards.write_file('{"a":"b"}', dashboards.filename('abc-123-def'))
-      expect(dashboards.diff('abc-123-def')).to eq(<<~EOF
+      expect(dashboards.diff('abc-123-def')).to eq(<<~EODASH
          ---
         -description: example dashboard
         -graphs:
@@ -96,8 +92,8 @@ describe DatadogBackup::Dashboards do
         -  title: example graph
         -title: example dashboard
         +a: b
-      EOF
-                                                  )
+      EODASH
+      .chomp)
     end
   end
 
@@ -105,11 +101,5 @@ describe DatadogBackup::Dashboards do
     subject { dashboards.except({ :a => :b, 'modified_at' => :c, 'url' => :d }) }
 
     it { is_expected.to eq({ a: :b }) }
-  end
-
-  describe '#get_by_id' do
-    subject { dashboards.get_by_id('abc-123-def') }
-
-    it { is_expected.to eq board_abc_123_def }
   end
 end
