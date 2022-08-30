@@ -1,3 +1,10 @@
+# [3.1.0](https://github.com/scribd/datadog_backup/compare/v3.0.0...v3.1.0) (2022-08-30)
+
+
+### Features
+
+* backup and restore synthetics ([#139](https://github.com/scribd/datadog_backup/issues/139)) ([a46cadc](https://github.com/scribd/datadog_backup/commit/a46cadc7d196dcb0f20bf31d06cde6a13a390835))
+
 # [3.0.0](https://github.com/scribd/datadog_backup/compare/v2.0.2...v3.0.0) (2022-08-25)
 
 
