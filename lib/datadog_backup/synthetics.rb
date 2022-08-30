@@ -2,7 +2,7 @@
 
 module DatadogBackup
   # Synthetic specific overrides for backup and restore.
-  class Synthetics < Core
+  class Synthetics < Resources
     def all
       get_all.fetch('tests')
     end

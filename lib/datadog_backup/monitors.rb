@@ -2,7 +2,7 @@
 
 module DatadogBackup
   # Monitor specific overrides for backup and restore.
-  class Monitors < Core
+  class Monitors < Resources
     def all
       get_all
     end

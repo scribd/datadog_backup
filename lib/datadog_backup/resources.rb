@@ -8,7 +8,7 @@ require 'faraday/retry'
 module DatadogBackup
   # The default options for backing up and restores.
   # This base class is meant to be extended by specific resources, such as Dashboards, Monitors, and so on.
-  class Core
+  class Resources
     include ::DatadogBackup::LocalFilesystem
     include ::DatadogBackup::Options
 

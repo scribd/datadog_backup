@@ -2,7 +2,7 @@
 
 module DatadogBackup
   # Dashboards specific overrides for backup and restore.
-  class Dashboards < Core
+  class Dashboards < Resources
     def all
       get_all.fetch('dashboards')
     end

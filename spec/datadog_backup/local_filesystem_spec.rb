@@ -4,16 +4,16 @@ require 'spec_helper'
 
 describe DatadogBackup::LocalFilesystem do
   let(:tempdir) { Dir.mktmpdir }
-  let(:core) do
-    DatadogBackup::Core.new(
+  let(:resources) do
+    DatadogBackup::Resources.new(
       action: 'backup',
       backup_dir: tempdir,
       resources: [DatadogBackup::Dashboards],
       output_format: :json
     )
   end
-  let(:core_yaml) do
-    DatadogBackup::Core.new(
+  let(:resources_yaml) do
+    DatadogBackup::Resources.new(
       action: 'backup',
       backup_dir: tempdir,
       resources: [],
@@ -22,7 +22,7 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#all_files' do
-    subject { core.all_files }
+    subject { resources.all_files }
 
     before do
       File.new("#{tempdir}/all_files.json", 'w')
@@ -36,7 +36,7 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#all_file_ids_for_selected_resources' do
-    subject { core.all_file_ids_for_selected_resources }
+    subject { resources.all_file_ids_for_selected_resources }
 
     before do
       Dir.mkdir("#{tempdir}/dashboards")
@@ -54,28 +54,28 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#class_from_id' do
-    subject { core.class_from_id('abc-123-def') }
+    subject { resources.class_from_id('abc-123-def') }
 
     before do
-      core.write_file('abc', "#{tempdir}/core/abc-123-def.json")
+      resources.write_file('abc', "#{tempdir}/resources/abc-123-def.json")
     end
 
     after do
-      FileUtils.rm "#{tempdir}/core/abc-123-def.json"
+      FileUtils.rm "#{tempdir}/resources/abc-123-def.json"
     end
 
-    it { is_expected.to eq DatadogBackup::Core }
+    it { is_expected.to eq DatadogBackup::Resources }
   end
 
   describe '#dump' do
     context 'when mode is :json' do
-      subject { core.dump({ a: :b }) }
+      subject { resources.dump({ a: :b }) }
 
       it { is_expected.to eq(%({\n  "a": "b"\n})) }
     end
 
     context 'when mode is :yaml' do
-      subject { core_yaml.dump({ 'a' => 'b' }) }
+      subject { resources_yaml.dump({ 'a' => 'b' }) }
 
       it { is_expected.to eq(%(---\na: b\n)) }
     end
@@ -83,20 +83,20 @@ describe DatadogBackup::LocalFilesystem do
 
   describe '#filename' do
     context 'when mode is :json' do
-      subject { core.filename('abc-123-def') }
+      subject { resources.filename('abc-123-def') }
 
-      it { is_expected.to eq("#{tempdir}/core/abc-123-def.json") }
+      it { is_expected.to eq("#{tempdir}/resources/abc-123-def.json") }
     end
 
     context 'when mode is :yaml' do
-      subject { core_yaml.filename('abc-123-def') }
+      subject { resources_yaml.filename('abc-123-def') }
 
-      it { is_expected.to eq("#{tempdir}/core/abc-123-def.yaml") }
+      it { is_expected.to eq("#{tempdir}/resources/abc-123-def.yaml") }
     end
   end
 
   describe '#file_type' do
-    subject { core.file_type("#{tempdir}/file_type.json") }
+    subject { resources.file_type("#{tempdir}/file_type.json") }
 
     before do
       File.new("#{tempdir}/file_type.json", 'w')
@@ -110,7 +110,7 @@ describe DatadogBackup::LocalFilesystem do
   end
 
   describe '#find_file_by_id' do
-    subject { core.find_file_by_id('find_file') }
+    subject { resources.find_file_by_id('find_file') }
 
     before do
       File.new("#{tempdir}/find_file.json", 'w')
@@ -125,13 +125,13 @@ describe DatadogBackup::LocalFilesystem do
 
   describe '#load_from_file' do
     context 'when mode is :json' do
-      subject { core.load_from_file(%({\n  "a": "b"\n}), :json) }
+      subject { resources.load_from_file(%({\n  "a": "b"\n}), :json) }
 
       it { is_expected.to eq('a' => 'b') }
     end
 
     context 'when mode is :yaml' do
-      subject { core.load_from_file(%(---\na: b\n), :yaml) }
+      subject { resources.load_from_file(%(---\na: b\n), :yaml) }
 
       it { is_expected.to eq('a' => 'b') }
     end
@@ -139,44 +139,44 @@ describe DatadogBackup::LocalFilesystem do
 
   describe '#load_from_file_by_id' do
     context 'when the backup is in json but the mode is :yaml' do
-      subject { core_yaml.load_from_file_by_id('abc-123-def') }
+      subject { resources_yaml.load_from_file_by_id('abc-123-def') }
 
-      before { core.write_file(%({"a": "b"}), "#{tempdir}/core/abc-123-def.json") }
+      before { resources.write_file(%({"a": "b"}), "#{tempdir}/resources/abc-123-def.json") }
 
-      after { FileUtils.rm "#{tempdir}/core/abc-123-def.json" }
+      after { FileUtils.rm "#{tempdir}/resources/abc-123-def.json" }
 
       it { is_expected.to eq('a' => 'b') }
     end
 
     context 'when the backup is in yaml but the mode is :json' do
-      subject { core.load_from_file_by_id('abc-123-def') }
+      subject { resources.load_from_file_by_id('abc-123-def') }
 
-      before { core.write_file(%(---\na: b), "#{tempdir}/core/abc-123-def.yaml") }
+      before { resources.write_file(%(---\na: b), "#{tempdir}/resources/abc-123-def.yaml") }
 
-      after { FileUtils.rm "#{tempdir}/core/abc-123-def.yaml" }
+      after { FileUtils.rm "#{tempdir}/resources/abc-123-def.yaml" }
 
       it { is_expected.to eq('a' => 'b') }
     end
 
     context 'with Integer as parameter' do
-      subject { core.load_from_file_by_id(12_345) }
+      subject { resources.load_from_file_by_id(12_345) }
 
-      before { core.write_file(%(---\na: b), "#{tempdir}/core/12345.yaml") }
+      before { resources.write_file(%(---\na: b), "#{tempdir}/resources/12345.yaml") }
 
-      after { FileUtils.rm "#{tempdir}/core/12345.yaml" }
+      after { FileUtils.rm "#{tempdir}/resources/12345.yaml" }
 
       it { is_expected.to eq('a' => 'b') }
     end
   end
 
   describe '#write_file' do
-    subject(:write_file) { core.write_file('abc123', "#{tempdir}/core/abc-123-def.json") }
+    subject(:write_file) { resources.write_file('abc123', "#{tempdir}/resources/abc-123-def.json") }
 
     let(:file_like_object) { instance_double(File) }
 
     it 'writes a file to abc-123-def.json' do
       allow(File).to receive(:open).and_call_original
-      allow(File).to receive(:open).with("#{tempdir}/core/abc-123-def.json", 'w').and_return(file_like_object)
+      allow(File).to receive(:open).with("#{tempdir}/resources/abc-123-def.json", 'w').and_return(file_like_object)
       allow(file_like_object).to receive(:write)
       allow(file_like_object).to receive(:close)
 

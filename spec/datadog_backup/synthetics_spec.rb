@@ -136,7 +136,7 @@ describe DatadogBackup::Synthetics do
     end
   end
 
-  describe '#diff' do # TODO: migrate to core_spec.rb, since #diff is not defined here.
+  describe '#diff' do # TODO: migrate to resources_spec.rb, since #diff is not defined here.
     subject { synthetics.diff('abc-123-def') }
 
     before do
