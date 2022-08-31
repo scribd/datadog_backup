@@ -58,12 +58,13 @@ describe DatadogBackup::Cli do
 
   describe '#restore' do
     subject(:restore) { cli.restore }
-    let(:stdin) { class_double('STDIN') }
+
+    let(:stdin) { class_double($stdin) }
 
     after(:all) do
       $stdin = STDIN
     end
-    
+
     before do
       $stdin = stdin
       dashboards.write_file('{"text": "diff"}', "#{tempdir}/dashboards/diffs1.json")

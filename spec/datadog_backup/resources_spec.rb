@@ -67,7 +67,7 @@ describe DatadogBackup::Resources do
     example 'it will post /api/v1/dashboard' do
       allow(resources).to receive(:api_version).and_return('v1')
       allow(resources).to receive(:api_resource_name).and_return('dashboard')
-      stubs.post('/api/v1/dashboard', { 'a' => 'b' }) {  respond_with200({ 'id' => 'whatever-id-abc' }) }
+      stubs.post('/api/v1/dashboard', { 'a' => 'b' }) { respond_with200({ 'id' => 'whatever-id-abc' }) }
       create
       stubs.verify_stubbed_calls
     end

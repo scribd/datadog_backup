@@ -9,168 +9,153 @@ module DatadogBackup
   # The default options for backing up and restores.
   # This base class is meant to be extended by specific resources, such as Dashboards, Monitors, and so on.
   class Resources
-    include ::DatadogBackup::LocalFilesystem
-    include ::DatadogBackup::Options
+    ##
+    # Class variables and methods
+    include LocalFilesystem
 
-    RETRY_OPTIONS = {
-      max: 5,
-      interval: 0.05,
-      interval_randomness: 0.5,
-      backoff_factor: 2
-    }.freeze
+    @@api_version = 'v1'
+    @@api_resource_name = nil
+    @@id_keyname = 'id'
+    @@banlist = []
+    @@api_service = DatadogBackup::Client.new
 
-    def backup
-      raise 'subclass is expected to implement #backup'
-    end
+    @all = nil
 
-    # Returns the diffy diff.
-    # Optionally, supply an array of keys to remove from comparison
-    def diff(id)
-      current = except(get_by_id(id)).deep_sort.to_yaml
-      filesystem = except(load_from_file_by_id(id)).deep_sort.to_yaml
-      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
-      LOGGER.debug("Compared ID #{id} and found filesystem: #{filesystem} <=> current: #{current} == result: #{result}")
-      result.chomp
-    end
-
-    # Returns a hash with banlist elements removed
-    def except(hash)
-      hash.tap do # tap returns self
-        @banlist.each do |key|
-          hash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
-        end
+    def self.all
+      @all ||= get_all.map do |resource|
+        new(resource[@@id_keyname], resource)
       end
-    end
-
-    # Fetch the specified resource from Datadog
-    def get(id)
-      params = {}
-      headers = {}
-      response = api_service.get("/api/#{api_version}/#{api_resource_name}/#{id}", params, headers)
-      body_with_2xx(response)
+      LOGGER.info "Found #{@all.length} #{@@api_resource_name}s in Datadog"
+      @all
     end
 
     # Returns a list of all resources in Datadog
     # Do not use directly, but use the child classes' #all method instead
-    def get_all
+    def self.get_all
       return @get_all if @get_all
+
+      LOGGER.info("Fetching all #{@@api_resource_name}s from Datadog")
 
       params = {}
       headers = {}
-      response = api_service.get("/api/#{api_version}/#{api_resource_name}", params, headers)
-      @get_all = body_with_2xx(response)
+      @get_all = @@api_service.get_body("/api/#{@@api_version}/#{@@api_resource_name}", params, headers)
     end
 
-    # Download the resource from Datadog and write it to a file
-    def get_and_write_file(id)
-      body = get_by_id(id)
-      write_file(dump(body), filename(id))
-      body
+    # Fetch the specified resource from Datadog and remove the @@banlist elements
+    def self.get_by_id(id)
+      self.all.find { |resource| resource.id == id }
     end
 
-    # Fetch the specified resource from Datadog and remove the banlist elements
-    def get_by_id(id)
-      except(get(id))
+    def self.backup_all
+      all.map(&:backup)
     end
 
-    def initialize(options)
-      @options = options
-      @banlist = []
-      ::FileUtils.mkdir_p(mydir)
+    def self.invalidate_cache
+      LOGGER.info 'Invalidating cache'
+      @get_all = nil
+    end
+
+    def self.myclass
+      to_s.split(':').last.downcase
+    end
+
+    ##
+    # Instance methods
+
+    attr_reader :id, :body
+
+    # If the `id` is nil, then we can only #create from the `body`.
+    # If the `id` is not nil, then we can #update or #restore.
+    def initialize(id = nil, body = nil)
+      raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
+
+      @id = id
+      @body = body ? sanitize(body) : get(@id)
+    end
+
+    # Fetch the resource from Datadog
+    def get
+      params = {}
+      headers = {}
+      body = @@api_service.get_body("/api/#{@@api_version}/#{@@api_resource_name}/#{@id}", params, headers)
+      @body = sanitize(body)
+    end
+
+    # Returns the diffy diff.
+    # Optionally, supply an array of keys to remove from comparison
+    def diff
+      current = @body.to_yaml
+      filesystem = body_from_backup.to_yaml
+      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s($options[:diff_format])
+      LOGGER.debug("Compared ID #{@id} and found filesystem: #{filesystem} <=> current: #{current} == result: #{result}")
+      result.chomp
+    end
+
+    def dump
+      case $options[:output_format]
+      when :json
+        JSON.pretty_generate(sanitize(@body))
+      when :yaml
+        YAML.dump(sanitize(@body))
+      else
+        raise 'invalid output_format specified or not specified'
+      end
     end
 
     def myclass
-      self.class.to_s.split(':').last.downcase
+      self.class.myclass
     end
 
-    # Create a new resource in Datadog
-    def create(body)
+    def create(api_resource_name = @@api_resource_name)
       headers = {}
-      response = api_service.post("/api/#{api_version}/#{api_resource_name}", body, headers)
-      body = body_with_2xx(response)
-      LOGGER.warn "Successfully created #{body.fetch(id_keyname)} in datadog."
-      LOGGER.info 'Invalidating cache'
-      @get_all = nil
+      body = @@api_service.post_body("/api/#{@@api_version}/#{api_resource_name}", @body, headers)
+      @id = body[@@id_keyname]
+      LOGGER.warn "Successfully created #{@id} in datadog."
+      self.class.invalidate_cache
       body
     end
 
-    # Update an existing resource in Datadog
-    def update(id, body)
+    def update(api_resource_name = @@api_resource_name)
       headers = {}
-      response = api_service.put("/api/#{api_version}/#{api_resource_name}/#{id}", body, headers)
-      body = body_with_2xx(response)
-      LOGGER.warn "Successfully restored #{id} to datadog."
-      LOGGER.info 'Invalidating cache'
-      @get_all = nil
+      body = @@api_service.put_body("/api/#{@@api_version}/#{api_resource_name}/#{@id}", @body, headers)
+      LOGGER.warn "Successfully restored #{@id} to datadog."
+      self.class.invalidate_cache
       body
     end
 
-    # If the resource exists in Datadog, update it. Otherwise, create it.
-    def restore(id)
-      body = load_from_file_by_id(id)
+    def restore
+      @body = body_from_backup
       begin
-        update(id, body)
+        update
       rescue RuntimeError => e
         raise e.message unless e.message.include?('update failed with error 404')
 
-        create_newly(id, body)
+        create_newly
+      ensure
+        @body
       end
-    end
-
-    # Return the Faraday body from a response with a 2xx status code, otherwise raise an error
-    def body_with_2xx(response)
-      unless response.status.to_s =~ /^2/
-        raise "#{caller_locations(1,
-                                  1)[0].label} failed with error #{response.status}"
-      end
-
-      response.body
     end
 
     private
 
-    def api_url
-      ENV.fetch('DD_SITE_URL', 'https://api.datadoghq.com/')
-    end
-
-    def api_version
-      raise 'subclass is expected to implement #api_version'
-    end
-
-    def api_resource_name
-      raise 'subclass is expected to implement #api_resource_name'
-    end
-
-    # Some resources have a different key for the id.
-    def id_keyname
-      'id'
-    end
-
-    def api_service
-      @api_service ||= Faraday.new(
-        url: api_url,
-        headers: {
-          'DD-API-KEY' => ENV.fetch('DD_API_KEY'),
-          'DD-APPLICATION-KEY' => ENV.fetch('DD_APP_KEY')
-        }
-      ) do |faraday|
-        faraday.request :json
-        faraday.request :retry, RETRY_OPTIONS
-        faraday.response(:logger, LOGGER, { headers: true, bodies: LOGGER.debug?, log_level: :debug }) do |logger|
-          logger.filter(/(DD-API-KEY:)([^&]+)/, '\1[REDACTED]')
-          logger.filter(/(DD-APPLICATION-KEY:)([^&]+)/, '\1[REDACTED]')
-        end
-        faraday.response :raise_error
-        faraday.response :json
-        faraday.adapter Faraday.default_adapter
-      end
-    end
-
     # Create a new resource in Datadog, then move the old file to the new resource's ID
-    def create_newly(file_id, body)
-      new_id = create(body).fetch(id_keyname)
-      FileUtils.rm(find_file_by_id(file_id))
-      get_and_write_file(new_id)
+    def create_newly
+      delete_backup
+      create
+      backup
+    end
+
+    # Returns a hash with @@banlist elements removed
+    def except(hash)
+      outhash = hash.dup
+      @@banlist.each do |key|
+        outhash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
+      end
+      outhash
+    end
+
+    def sanitize(body)
+      except(body.deep_sort)
     end
   end
 end
