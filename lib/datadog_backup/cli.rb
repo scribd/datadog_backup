@@ -6,7 +6,52 @@ require 'amazing_print'
 module DatadogBackup
   # CLI is the command line interface for the datadog_backup gem.
   class Cli
-    include ::DatadogBackup::Options
+    def initialize(options)
+      $options = options
+    end
+
+    def backup
+      $options[:resources].each(&:purge)
+      $options[:resources].each(&:backup_all)
+      any_resource_instance.all_files
+    end
+
+    def restore
+      futures = all_diff_futures
+      watcher = ::DatadogBackup::ThreadPool.watcher
+
+      futures.each do |future|
+        id, diff = *future.value!
+        next if diff.nil? || diff.empty?
+
+        if $options[:force_restore]
+          definitive_resource_instance(id).restore(id)
+        else
+          ask_to_restore(id, diff)
+        end
+      end
+      watcher.join if watcher.status
+    end
+
+    def run!
+      case $options[:action]
+      when 'backup'
+        LOGGER.info('Starting backup.')
+        puts backup
+      when 'restore'
+        LOGGER.info('Starting restore.')
+        puts restore
+      else
+        fatal 'No action specified.'
+      end
+    rescue SystemExit, Interrupt
+      ::DatadogBackup::ThreadPool.shutdown
+    end
+
+    private
+
+    ##
+    # The diff methods
 
     def all_diff_futures
       LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
@@ -19,33 +64,9 @@ module DatadogBackup
       end
     end
 
-    def any_resource_instance
-      resource_instances.first
-    end
-
-    def backup
-      resource_instances.each(&:purge)
-      resource_instances.each(&:backup)
-      any_resource_instance.all_files
-    end
-
-    def definitive_resource_instance(id)
-      matching_resource_instance(any_resource_instance.class_from_id(id))
-    end
-
-    def getdiff(id)
-      result = definitive_resource_instance(id).diff(id)
-      case result
-      when '---' || '' || "\n" || '<div class="diff"></div>'
-        nil
-      else
-        result
-      end
-    end
-
     # rubocop:disable Style/StringConcatenation
     def format_diff_output(diff_output)
-      case diff_format
+      case $options[:diff_format]
       when nil, :color
         diff_output.map do |id, diff|
           " ---\n id: #{id}\n#{diff}"
@@ -64,34 +85,19 @@ module DatadogBackup
     end
     # rubocop:enable Style/StringConcatenation
 
-    def initialize(options)
-      @options = options
-    end
-
-    def restore
-      futures = all_diff_futures
-      watcher = ::DatadogBackup::ThreadPool.watcher
-
-      futures.each do |future|
-        id, diff = *future.value!
-        next if diff.nil? || diff.empty?
-
-        if @options[:force_restore]
-          definitive_resource_instance(id).restore(id)
-        else
-          ask_to_restore(id, diff)
-        end
+    def getdiff(id)
+      LOGGER.debug("Searching for diff for #{id}.")
+      result = definitive_resource_instance(id).get_by_id(id).diff
+      case result
+      when '---' || '' || "\n" || '<div class="diff"></div>'
+        nil
+      else
+        result
       end
-      watcher.join if watcher.status
     end
 
-    def run!
-      puts(send(action.to_sym))
-    rescue SystemExit, Interrupt
-      ::DatadogBackup::ThreadPool.shutdown
-    end
-
-    private
+    ##
+    # Interact with the user
 
     def ask_to_restore(id, diff)
       puts '--------------------------------------------------------------------------------'
@@ -118,14 +124,14 @@ module DatadogBackup
       end
     end
 
-    def matching_resource_instance(klass)
-      resource_instances.select { |resource_instance| resource_instance.instance_of?(klass) }.first
+    ##
+    # Finding the right resource instance to use.
+    def any_resource_instance
+      $options[:resources].first
     end
 
-    def resource_instances
-      @resource_instances ||= resources.map do |resource|
-        resource.new(@options)
-      end
+    def definitive_resource_instance(id)
+      any_resource_instance.class_from_id(id)
     end
   end
 end

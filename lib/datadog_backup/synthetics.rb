@@ -3,66 +3,42 @@
 module DatadogBackup
   # Synthetic specific overrides for backup and restore.
   class Synthetics < Resources
-    def all
-      get_all.fetch('tests')
+    @api_version = 'v1'
+    @api_resource_name = 'synthetics/tests' # used for list, but #instance_resource_name is used for get, create, update
+    @id_keyname = 'public_id'
+    @banlist = %w[creator created_at modified_at monitor_id public_id].freeze
+    @api_service = DatadogBackup::Client.new
+    @dig_in_list_body = 'tests'
+
+    def instance_resource_name
+      return 'synthetics/tests/browser' if @body.fetch('type') == 'browser'
+      return 'synthetics/tests/api' if @body.fetch('type') == 'api'
     end
 
-    def backup
-      all.map do |synthetic|
-        id = synthetic[id_keyname]
-        get_and_write_file(id)
+    def get
+      if @body.nil?
+        begin
+          breakloop = false
+          super(api_resource_name: 'synthetics/tests/api')
+        rescue Faraday::ResourceNotFound
+          if breakloop
+            raise 'Could not find resource'
+          else
+            breakloop = true
+            super(api_resource_name: 'synthetics/tests/browser')
+          end
+        end
+      else
+        super(api_resource_name: instance_resource_name)
       end
     end
 
-    def get_by_id(id)
-      synthetic = all.select { |s| s[id_keyname].to_s == id.to_s }.first
-      synthetic.nil? ? {} : except(synthetic)
+    def create
+      super(api_resource_name: instance_resource_name)
     end
 
-    def initialize(options)
-      super(options)
-      @banlist = %w[creator created_at modified_at monitor_id public_id].freeze
-    end
-
-    def create(body)
-      create_api_resource_name = api_resource_name(body)
-      headers = {}
-      response = api_service.post("/api/#{api_version}/#{create_api_resource_name}", body, headers)
-      resbody = body_with_2xx(response)
-      LOGGER.warn "Successfully created #{resbody.fetch(id_keyname)} in datadog."
-      LOGGER.info 'Invalidating cache'
-      @get_all = nil
-      resbody
-    end
-
-    def update(id, body)
-      update_api_resource_name = api_resource_name(body)
-      headers = {}
-      response = api_service.put("/api/#{api_version}/#{update_api_resource_name}/#{id}", body, headers)
-      resbody = body_with_2xx(response)
-      LOGGER.warn "Successfully restored #{id} to datadog."
-      LOGGER.info 'Invalidating cache'
-      @get_all = nil
-      resbody
-    end
-
-    private
-
-    def api_version
-      'v1'
-    end
-
-    def api_resource_name(body = nil)
-      return 'synthetics/tests' if body.nil?
-      return 'synthetics/tests' if body['type'].nil?
-      return 'synthetics/tests/browser' if body['type'].to_s == 'browser'
-      return 'synthetics/tests/api' if body['type'].to_s == 'api'
-
-      raise "Unknown type #{body['type']}"
-    end
-
-    def id_keyname
-      'public_id'
+    def update
+      super(api_resource_name: instance_resource_name)
     end
   end
 end
