@@ -1,3 +1,16 @@
+## [3.1.1](https://github.com/scribd/datadog_backup/compare/v3.1.0...v3.1.1) (2022-09-01)
+
+
+### Bug Fixes
+
+* catch SystemExit so that rspec can complete ([9eee0e5](https://github.com/scribd/datadog_backup/commit/9eee0e5c5ea857baeafcf3fbc0f1c8f3748b0ca8))
+* specify minimum ruby version in Gemfile ([c7f48f9](https://github.com/scribd/datadog_backup/commit/c7f48f95269a23549e28576434292d4ba1332d59))
+
+
+### Reverts
+
+* Revert "fix: specify minimum ruby version in Gemfile" ([e934ac2](https://github.com/scribd/datadog_backup/commit/e934ac2611c9bb557a181dd2f6f6b2678287773d))
+
 # [3.1.0](https://github.com/scribd/datadog_backup/compare/v3.0.0...v3.1.0) (2022-08-30)
 
 
