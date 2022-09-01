@@ -3,19 +3,21 @@
 module DatadogBackup
   # Dashboards specific overrides for backup and restore.
   class Dashboards < Resources
-    class<<self
-      @api_version = 'v1'
-      @api_resource_name = 'dashboard'
-      @id_keyname = 'id'
-      @banlist = %w[modified_at url].freeze
+    @api_version = 'v1'
+    @api_resource_name = 'dashboard'
+    @id_keyname = 'id'
+    @banlist = %w[modified_at url].freeze
+    @api_service = DatadogBackup::Client.new
 
-      def self.all
-        LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
+    class<<self
+
+      def all
         return @all if @all
 
+        LOGGER.info("Fetching dashboards on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
         futures = get_all.map do |resource|
           Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, resource) do |dashboard|
-            d = new(dashboard[@id_keyname])
+            d = new_resource(id: dashboard.fetch(@id_keyname))
             d.get
             d
           end
@@ -26,9 +28,8 @@ module DatadogBackup
         @all = Concurrent::Promises.zip(*futures).value!
       end
 
-      def self.get_all
+      def get_all
         raw = super
-        warn raw
         raw.fetch('dashboards')
       end
     end

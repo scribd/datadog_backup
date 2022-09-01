@@ -13,13 +13,16 @@ module DatadogBackup
     # Class variables and methods
     include LocalFilesystem
 
-    class <<self
-      @api_version = 'v1'
-      @api_resource_name = nil
-      @id_keyname = 'id'
-      @banlist = %w[].freeze
+    @api_version = nil
+    @api_resource_name = nil
+    @id_keyname = nil
+    @banlist = %w[].freeze
+    @api_service = DatadogBackup::Client.new
 
-      def new_resource(id = nil, body = nil)
+    class <<self
+
+
+      def new_resource(id: nil, body: nil)
         raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
 
         new(
@@ -29,13 +32,13 @@ module DatadogBackup
           api_resource_name: @api_resource_name,
           id_keyname: @id_keyname,
           banlist: @banlist,
-          api_service: DatadogBackup::Client.new
+          api_service: @api_service
         )
       end
 
       def all
         @all ||= get_all.map do |resource|
-          new(resource[@id_keyname], resource)
+          new_resource(id: resource.fetch(@id_keyname), body: resource)
         end
         LOGGER.info "Found #{@all.length} #{@api_resource_name}s in Datadog"
         @all
@@ -78,26 +81,20 @@ module DatadogBackup
 
     # If the `id` is nil, then we can only #create from the `body`.
     # If the `id` is not nil, then we can #update or #restore.
-    private def initialize(params)
+    private def initialize(id: nil, body: nil, api_version:, api_resource_name:, id_keyname:, banlist:, api_service:)
       raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
 
-      @id = params[:id]
-      @body = params[:body] ? sanitize(params[:body]) : get(@id)
+      @api_version = api_version
+      @api_resource_name = api_resource_name
+      @id_keyname = id_keyname
+      @banlist = banlist
+      @api_service = api_service
 
-      @api_version = params[:api_version]
-      @api_resource_name = params[:api_resource_name]
-      @id_keyname = params[:id_keyname]
-      @banlist = params[:banlist]
-      @api_service = params[:api_service]
+      @id = id
+      @body = body ? sanitize(body) : get
     end
 
-    # Fetch the resource from Datadog
-    def get
-      params = {}
-      headers = {}
-      body = @api_service.get_body("/api/#{@api_version}/#{@api_resource_name}/#{@id}", params, headers)
-      @body = sanitize(body)
-    end
+
 
     # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
@@ -124,7 +121,15 @@ module DatadogBackup
       self.class.myclass
     end
 
-    def create(api_resource_name = @api_resource_name)
+    # Fetch the resource from Datadog
+    def get(api_resource_name: @api_resource_name)
+      params = {}
+      headers = {}
+      body = @api_service.get_body("/api/#{@api_version}/#{api_resource_name}/#{@id}", params, headers)
+      @body = sanitize(body)
+    end
+
+    def create(api_resource_name: @api_resource_name)
       headers = {}
       body = @api_service.post_body("/api/#{@api_version}/#{api_resource_name}", @body, headers)
       @id = body[@id_keyname]
@@ -133,7 +138,7 @@ module DatadogBackup
       body
     end
 
-    def update(api_resource_name = @api_resource_name)
+    def update(api_resource_name: @api_resource_name)
       headers = {}
       body = @api_service.put_body("/api/#{@api_version}/#{api_resource_name}/#{@id}", @body, headers)
       LOGGER.warn "Successfully restored #{@id} to datadog."

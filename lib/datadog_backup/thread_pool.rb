@@ -3,8 +3,8 @@
 module DatadogBackup
   # Used by CLI and Dashboards to size thread pool according to available CPU resourcess.
   module ThreadPool
-    min_threads = 1 # Concurrent.processor_count
-    max_threads = 1 # Concurrent.processor_count * 2
+    min_threads = Concurrent.processor_count
+    max_threads = Concurrent.processor_count * 2
 
     TPOOL = ::Concurrent::ThreadPoolExecutor.new(
       min_threads: min_threads,
