@@ -3,15 +3,16 @@
 module DatadogBackup
   # Synthetic specific overrides for backup and restore.
   class Synthetics < Resources
-    @@api_version = 'v1'
-    @@api_resource_name = 'synthetics/tests'
-    @@id_keyname = 'public_id'
-    @@banlist = %w[creator created_at modified_at monitor_id public_id].freeze
-    @@api_service = DatadogBackup::Client.new
+    class<<self
+      @api_version = 'v1'
+      @api_resource_name = 'synthetics/tests'
+      @id_keyname = 'public_id'
+      @banlist = %w[creator created_at modified_at monitor_id public_id].freeze
 
-    def self.get_all
-      raw = super
-      raw.fetch('tests')
+      def self.get_all
+        raw = super
+        raw.fetch('tests')
+      end
     end
 
     def instance_resource_name

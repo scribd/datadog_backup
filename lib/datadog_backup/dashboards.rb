@@ -3,35 +3,35 @@
 module DatadogBackup
   # Dashboards specific overrides for backup and restore.
   class Dashboards < Resources
-    @@api_version = 'v1'
-    @@api_resource_name = 'dashboard'
-    @@id_keyname = 'id'
-    @@banlist = %w[modified_at url].freeze
-    @@api_service = DatadogBackup::Client.new
+    class<<self
+      @api_version = 'v1'
+      @api_resource_name = 'dashboard'
+      @id_keyname = 'id'
+      @banlist = %w[modified_at url].freeze
 
-    @all = nil
+      def self.all
+        LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
+        return @all if @all
 
-    def self.all
-      LOGGER.info("Starting diffs on #{::DatadogBackup::ThreadPool::TPOOL.max_length} threads")
-      return @all if @all
-
-      futures = get_all.map do |resource|
-        Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, resource) do |dashboard|
-          d = new(dashboard[@@id_keyname])
-          d.get
-          d
+        futures = get_all.map do |resource|
+          Concurrent::Promises.future_on(::DatadogBackup::ThreadPool::TPOOL, resource) do |dashboard|
+            d = new(dashboard[@id_keyname])
+            d.get
+            d
+          end
         end
+
+        watcher = ::DatadogBackup::ThreadPool.watcher
+        watcher.join if watcher.status
+        @all = Concurrent::Promises.zip(*futures).value!
       end
 
-      watcher = ::DatadogBackup::ThreadPool.watcher
-      watcher.join if watcher.status
-      @all = Concurrent::Promises.zip(*futures).value!
+      def self.get_all
+        raw = super
+        warn raw
+        raw.fetch('dashboards')
+      end
     end
 
-    def self.get_all
-      raw = super
-      warn raw
-      raw.fetch('dashboards')
-    end
   end
 end

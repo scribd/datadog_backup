@@ -9,8 +9,6 @@ module DatadogBackup
       backoff_factor: 2
     }.freeze
 
-    attr_reader :client
-
     def initialize
       @client = Faraday.new(
         url: ENV.fetch('DD_SITE_URL', 'https://api.datadoghq.com/'),
