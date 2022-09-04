@@ -24,8 +24,9 @@ module DatadogBackup
         end
 
         def find_file_by_id(id)
-          idx = all_file_ids.index(id)
+          idx = all_file_ids.index(id.to_s)
           return all_files[idx] if idx
+
           raise "Could not find file for #{id}"
         end
 

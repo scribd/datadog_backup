@@ -29,11 +29,11 @@ module DatadogBackup
         sanitize(self.class.load_from_file_by_id(@id))
       end
 
-      private
-
       def filename
         ::File.join(mydir, "#{@id}.#{$options[:output_format]}")
       end
+
+      private
 
       def mydir
         self.class.mydir

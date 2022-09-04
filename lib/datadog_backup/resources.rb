@@ -19,9 +19,7 @@ module DatadogBackup
     @banlist = %w[].freeze
     @api_service = DatadogBackup::Client.new
 
-    class <<self
-
-
+    class << self
       def new_resource(id: nil, body: nil)
         raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
 
@@ -58,7 +56,7 @@ module DatadogBackup
 
       # Fetch the specified resource from Datadog and remove the @banlist elements
       def get_by_id(id)
-        self.all.find { |resource| resource.id == id }
+        all.find { |resource| resource.id == id }
       end
 
       def backup_all
@@ -81,7 +79,7 @@ module DatadogBackup
 
     # If the `id` is nil, then we can only #create from the `body`.
     # If the `id` is not nil, then we can #update or #restore.
-    private def initialize(id: nil, body: nil, api_version:, api_resource_name:, id_keyname:, banlist:, api_service:)
+    private def initialize(api_version:, api_resource_name:, id_keyname:, banlist:, api_service:, id: nil, body: nil)
       raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
 
       @api_version = api_version
@@ -93,8 +91,6 @@ module DatadogBackup
       @id = id
       @body = body ? sanitize(body) : get
     end
-
-
 
     # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
@@ -109,9 +105,9 @@ module DatadogBackup
     def dump
       case $options[:output_format]
       when :json
-        JSON.pretty_generate(sanitize(@body))
+        JSON.pretty_generate(sanitized_body)
       when :yaml
-        YAML.dump(sanitize(@body))
+        YAML.dump(sanitized_body)
       else
         raise 'invalid output_format specified or not specified'
       end
@@ -179,6 +175,10 @@ module DatadogBackup
 
     def sanitize(body)
       except(body.deep_sort)
+    end
+
+    def sanitized_body
+      sanitize(@body)
     end
   end
 end

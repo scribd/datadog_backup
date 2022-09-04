@@ -9,7 +9,7 @@ module DatadogBackup
     @banlist = %w[creator created_at modified_at monitor_id public_id].freeze
     @api_service = DatadogBackup::Client.new
 
-    class<<self
+    class << self
       def get_all
         raw = super
         raw.fetch('tests')
@@ -20,7 +20,7 @@ module DatadogBackup
       return 'synthetics/tests/browser' if @body.fetch('type') == 'browser'
       return 'synthetics/tests/api' if @body.fetch('type') == 'api'
     end
-    
+
     def get
       super(api_resource_name: instance_resource_name)
     end

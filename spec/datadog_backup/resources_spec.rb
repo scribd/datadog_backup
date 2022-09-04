@@ -18,6 +18,7 @@ describe DatadogBackup::Resources do
     return resources
   end
 
+
   describe '#diff' do
     subject(:diff) { resources.diff('diff') }
 
@@ -37,6 +38,22 @@ describe DatadogBackup::Resources do
       .chomp)
     }
   end
+
+  
+  describe '#dump' do
+    context 'when mode is :json' do
+      subject { resources.dump({ a: :b }) }
+
+      it { is_expected.to eq(%({\n  "a": "b"\n})) }
+    end
+
+    context 'when mode is :yaml' do
+      subject { resources_yaml.dump({ 'a' => 'b' }) }
+
+      it { is_expected.to eq(%(---\na: b\n)) }
+    end
+  end
+
 
   describe '#except' do
     subject { resources.except({ a: :b, b: :c }) }

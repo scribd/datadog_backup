@@ -9,8 +9,7 @@ module DatadogBackup
     @banlist = %w[modified_at url].freeze
     @api_service = DatadogBackup::Client.new
 
-    class<<self
-
+    class << self
       def all
         return @all if @all
 
@@ -33,6 +32,5 @@ module DatadogBackup
         raw.fetch('dashboards')
       end
     end
-
   end
 end
