@@ -18,79 +18,65 @@ module DatadogBackup
     @id_keyname = nil
     @banlist = %w[].freeze
     @api_service = DatadogBackup::Client.new
+    @dig_in_list_body = nil # What keys do I need to traverse to get the list of resources?
 
-    class << self
-      def new_resource(id: nil, body: nil)
-        raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
+    def self.new_resource(id: nil, body: nil)
+      raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
 
-        new(
-          id: id,
-          body: body,
-          api_version: @api_version,
-          api_resource_name: @api_resource_name,
-          id_keyname: @id_keyname,
-          banlist: @banlist,
-          api_service: @api_service
-        )
-      end
-
-      def all
-        @all ||= get_all.map do |resource|
-          new_resource(id: resource.fetch(@id_keyname), body: resource)
-        end
-        LOGGER.info "Found #{@all.length} #{@api_resource_name}s in Datadog"
-        @all
-      end
-
-      # Returns a list of all resources in Datadog
-      # Do not use directly, but use the child classes' #all method instead
-      def get_all
-        return @get_all if @get_all
-
-        LOGGER.info("#{myclass}: Fetching all #{@api_resource_name} from Datadog")
-
-        params = {}
-        headers = {}
-        @get_all = @api_service.get_body("/api/#{@api_version}/#{@api_resource_name}", params, headers)
-      end
-
-      # Fetch the specified resource from Datadog and remove the @banlist elements
-      def get_by_id(id)
-        all.find { |resource| resource.id == id }
-      end
-
-      def backup_all
-        all.map(&:backup)
-      end
-
-      def invalidate_cache
-        LOGGER.info 'Invalidating cache'
-        @get_all = nil
-      end
-
-      def myclass
-        to_s.split(':').last.downcase
-      end
+      new(
+        id: id,
+        body: body,
+        api_version: @api_version,
+        api_resource_name: @api_resource_name,
+        id_keyname: @id_keyname,
+        banlist: @banlist,
+        api_service: @api_service
+      )
     end
+
+    def self.all
+      @all ||= get_all.map do |resource|
+        new_resource(id: resource.fetch(@id_keyname), body: resource)
+      end
+      LOGGER.info "Found #{@all.length} #{@api_resource_name}s in Datadog"
+      @all
+    end
+
+    # Returns a list of all resources in Datadog
+    # Do not use directly, but use the child classes' #all method instead
+    def self.get_all
+      return @get_all if @get_all
+
+      LOGGER.info("#{myclass}: Fetching all #{@api_resource_name} from Datadog")
+
+      params = {}
+      headers = {}
+      body = @api_service.get_body("/api/#{@api_version}/#{@api_resource_name}", params, headers)
+      @get_all = @dig_in_list_body ? body.fetch(*@dig_in_list_body) : body
+    end
+
+    # Fetch the specified resource from Datadog and remove the @banlist elements
+    def self.get_by_id(id)
+      all.find { |resource| resource.id == id }
+    end
+
+    def self.backup_all
+      all.map(&:backup)
+    end
+
+    def self.invalidate_cache
+      LOGGER.info 'Invalidating cache'
+      @get_all = nil
+    end
+
+    def self.myclass
+      to_s.split(':').last.downcase
+    end
+
     ##
     # Instance methods
 
     attr_reader :id, :body, :api_version, :api_resource_name, :id_keyname, :banlist, :api_service
-
-    # If the `id` is nil, then we can only #create from the `body`.
-    # If the `id` is not nil, then we can #update or #restore.
-    private def initialize(api_version:, api_resource_name:, id_keyname:, banlist:, api_service:, id: nil, body: nil)
-      raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
-
-      @api_version = api_version
-      @api_resource_name = api_resource_name
-      @id_keyname = id_keyname
-      @banlist = banlist
-      @api_service = api_service
-
-      @id = id
-      @body = body ? sanitize(body) : get
-    end
 
     # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
@@ -171,6 +157,21 @@ module DatadogBackup
         outhash.delete(key) # delete returns the value at the deleted key, hence the tap wrapper
       end
       outhash
+    end
+
+    # If the `id` is nil, then we can only #create from the `body`.
+    # If the `id` is not nil, then we can #update or #restore.
+    def initialize(api_version:, api_resource_name:, id_keyname:, banlist:, api_service:, id: nil, body: nil)
+      raise ArgumentError, 'id and body cannot both be nil' if id.nil? && body.nil?
+
+      @api_version = api_version
+      @api_resource_name = api_resource_name
+      @id_keyname = id_keyname
+      @banlist = banlist
+      @api_service = api_service
+
+      @id = id
+      @body = body ? sanitize(body) : get
     end
 
     def sanitize(body)

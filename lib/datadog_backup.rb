@@ -9,6 +9,7 @@ require_relative 'datadog_backup/thread_pool'
 require_relative 'datadog_backup/resources/local_filesystem/class_methods'
 require_relative 'datadog_backup/resources/local_filesystem'
 require_relative 'datadog_backup/resources'
+
 require_relative 'datadog_backup/dashboards'
 require_relative 'datadog_backup/monitors'
 require_relative 'datadog_backup/synthetics'

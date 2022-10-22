@@ -8,13 +8,7 @@ module DatadogBackup
     @id_keyname = 'public_id'
     @banlist = %w[creator created_at modified_at monitor_id public_id].freeze
     @api_service = DatadogBackup::Client.new
-
-    class << self
-      def get_all
-        raw = super
-        raw.fetch('tests')
-      end
-    end
+    @dig_in_list_body = 'tests'
 
     def instance_resource_name
       return 'synthetics/tests/browser' if @body.fetch('type') == 'browser'

@@ -8,5 +8,6 @@ module DatadogBackup
     @id_keyname = 'id'
     @banlist = %w[overall_state overall_state_modified matching_downtimes modified].freeze
     @api_service = DatadogBackup::Client.new
+    @dig_in_list_body = nil
   end
 end

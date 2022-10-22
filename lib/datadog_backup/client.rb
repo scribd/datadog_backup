@@ -39,7 +39,7 @@ module DatadogBackup
       body_with_2xx(response)
     end
 
-    def update_body(path, body, headers = {})
+    def put_body(path, body, headers = {})
       response = @client.put(path, body, headers)
       body_with_2xx(response)
     end

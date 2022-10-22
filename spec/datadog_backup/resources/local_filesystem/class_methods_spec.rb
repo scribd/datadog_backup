@@ -102,7 +102,7 @@ describe 'DatadogBackup' do
           context 'with Integer as parameter' do
             subject { resources.load_from_file_by_id(12_345) }
 
-            it { is_expected.to eq({ 'id' => 12345, 'file_type' => 'json' }) }
+            it { is_expected.to eq({ 'id' => 12_345, 'file_type' => 'json' }) }
           end
         end
 
@@ -130,14 +130,14 @@ describe 'DatadogBackup' do
           context 'when the resource is DatadogBackup::Dashboards' do
             subject(:purge) { DatadogBackup::Dashboards.purge }
 
-            specify {
+            specify do
               allow(FileUtils).to receive(:rm)
               purge
               expect(FileUtils).to have_received(:rm).with([
-                "#{$options[:backup_dir]}/dashboards/abc-123-def.json",
-                "#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml"
-              ])
-            }
+                                                             "#{$options[:backup_dir]}/dashboards/abc-123-def.json",
+                                                             "#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml"
+                                                           ])
+            end
           end
         end
       end
