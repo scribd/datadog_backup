@@ -6,7 +6,7 @@ module DatadogBackup
     @api_version = 'v1'
     @api_resource_name = 'monitor'
     @id_keyname = 'id'
-    @banlist = %w[overall_state overall_state_modified matching_downtimes modified].freeze
+    @banlist = %w[id matching_downtimes modified overall_state overall_state_modified].freeze
     @api_service = DatadogBackup::Client.new
     @dig_in_list_body = nil
   end

@@ -9,9 +9,9 @@ describe 'DatadogBackup' do
         end
 
         before(:context) do
-          Dir.mkdir("#{$options[:backup_dir]}/dashboards")
-          Dir.mkdir("#{$options[:backup_dir]}/monitors")
-          Dir.mkdir("#{$options[:backup_dir]}/synthetics")
+          FileUtils.mkdir_p("#{$options[:backup_dir]}/dashboards")
+          FileUtils.mkdir_p("#{$options[:backup_dir]}/monitors")
+          FileUtils.mkdir_p("#{$options[:backup_dir]}/synthetics")
           File.write("#{$options[:backup_dir]}/dashboards/abc-123-def.json", '{"id": "abc-123-def", "file_type": "json"}')
           File.write("#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml", "---\nid: ghi-456-jkl\nfile_type: yaml\n")
           File.write("#{$options[:backup_dir]}/monitors/12345.json", '{"id":12345, "file_type": "json"}')

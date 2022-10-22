@@ -31,28 +31,16 @@ module DatadogBackup
 
     def get_body(path, params = {}, headers = {})
       response = @client.get(path, params, headers)
-      body_with_2xx(response)
+      response.body
     end
 
     def post_body(path, body, headers = {})
       response = @client.post(path, body, headers)
-      body_with_2xx(response)
+      response.body
     end
 
     def put_body(path, body, headers = {})
       response = @client.put(path, body, headers)
-      body_with_2xx(response)
-    end
-
-    private
-
-    # Return the Faraday body from a response with a 2xx status code, otherwise raise an error
-    def body_with_2xx(response)
-      unless response.status.to_s =~ /^2/
-        raise "#{caller_locations(1,
-                                  1)[0].label} failed with error #{response.status}"
-      end
-
       response.body
     end
   end

@@ -16,7 +16,21 @@ module DatadogBackup
     end
 
     def get
-      super(api_resource_name: instance_resource_name)
+      if @body.nil?
+        begin
+          breakloop = false
+          super(api_resource_name: 'synthetics/tests/api')
+        rescue Faraday::ResourceNotFound
+          if breakloop
+            raise 'Could not find resource'
+          else
+            breakloop = true
+            super(api_resource_name: 'synthetics/tests/browser')
+          end
+        end
+      else
+        super(api_resource_name: instance_resource_name)
+      end
     end
 
     def create
