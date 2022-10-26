@@ -16,7 +16,9 @@ module DatadogBackup
     end
 
     def get
-      if !defined? @body
+      if defined? @body
+        super(api_resource_name: instance_resource_name)
+      else
         begin
           breakloop = false
           super(api_resource_name: 'synthetics/tests/api')
@@ -28,8 +30,6 @@ module DatadogBackup
             super(api_resource_name: 'synthetics/tests/browser')
           end
         end
-      else
-        super(api_resource_name: instance_resource_name)
       end
     end
 

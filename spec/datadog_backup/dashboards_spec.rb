@@ -37,7 +37,7 @@ describe DatadogBackup::Dashboards do
         subject { described_class.new_resource }
 
         it 'raises an ArgumentError' do
-          expect {subject}.to raise_error(ArgumentError) 
+          expect { subject }.to raise_error(ArgumentError)
         end
       end
     end
