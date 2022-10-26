@@ -3,8 +3,12 @@
 require 'spec_helper'
 
 describe DatadogBackup::Resources::LocalFilesystem do
-  let(:dashboard) do
+  subject(:dashboard) do
     DatadogBackup::Dashboards.new_resource(id: 'abc-123-def', body: { id: 'abc-123-def' })
+  end
+
+  before do
+    $options[:output_format] = :json
   end
 
   describe '#backup' do
