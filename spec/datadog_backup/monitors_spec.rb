@@ -76,13 +76,14 @@ describe DatadogBackup::Monitors do
 
       before do
         allow(abc).to receive(:body_from_backup)
-          .and_return({ 'name' => 'Local Copy' })
+          .and_return({ 'id' => 'abc-123-def', 'name' => 'Local Copy' })
         $options[:diff_format] = 'text'
       end
 
       it {
         expect(diff).to eq(<<~EODIFF
            ---
+           id: abc-123-def
           -name: Test Monitor
           +name: Local Copy
         EODIFF
@@ -98,7 +99,7 @@ describe DatadogBackup::Monitors do
           $options[:output_format] = :json
         end
 
-        it { is_expected.to eq(%({\n  "name": "Test Monitor"\n})) }
+        it { is_expected.to eq(%({\n  "id": "abc-123-def",\n  "name": "Test Monitor"\n})) }
       end
 
       context 'when mode is :yaml' do
@@ -106,7 +107,7 @@ describe DatadogBackup::Monitors do
           $options[:output_format] = :yaml
         end
 
-        it { is_expected.to eq(%(---\nname: Test Monitor\n)) }
+        it { is_expected.to eq(%(---\nid: abc-123-def\nname: Test Monitor\n)) }
       end
     end
 
@@ -119,7 +120,7 @@ describe DatadogBackup::Monitors do
     describe '#get' do
       subject(:get) { abc.get }
 
-      it { is_expected.to eq('name' => 'Test Monitor') }
+      it { is_expected.to eq('id' => 'abc-123-def', 'name' => 'Test Monitor') }
     end
 
     describe '#create' do
@@ -127,7 +128,7 @@ describe DatadogBackup::Monitors do
 
       it 'posts to the API' do
         expect_any_instance_of(DatadogBackup::Client).to receive(:post_body)
-          .with('/api/v1/monitor', { 'name' => 'Test Monitor' }, {})
+          .with('/api/v1/monitor', { 'id' => 'abc-123-def', 'name' => 'Test Monitor' }, {})
           .and_return({ 'id' => 'abc-999-def' })
         create
       end
@@ -138,7 +139,7 @@ describe DatadogBackup::Monitors do
 
       it 'posts to the API' do
         expect_any_instance_of(DatadogBackup::Client).to receive(:put_body)
-          .with('/api/v1/monitor/abc-123-def', { 'name' => 'Test Monitor' }, {})
+          .with('/api/v1/monitor/abc-123-def', { 'id' => 'abc-123-def', 'name' => 'Test Monitor' }, {})
           .and_return({ 'id' => 'abc-123-def' })
         update
       end
