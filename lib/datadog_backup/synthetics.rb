@@ -16,7 +16,7 @@ module DatadogBackup
     end
 
     def get
-      if @body.nil?
+      if !defined? @body
         begin
           breakloop = false
           super(api_resource_name: 'synthetics/tests/api')
