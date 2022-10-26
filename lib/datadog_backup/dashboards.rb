@@ -12,10 +12,15 @@ module DatadogBackup
 
     def self.all
       @all ||= get_all.map do |resource|
-        new_resource(id: resource.fetch(@id_keyname))
+        Concurrent::Promises.future_on(DatadogBackup::ThreadPool::TPOOL, resource) do |r|
+          new_resource(id: r.fetch(@id_keyname))
+        end
       end
       LOGGER.info "Found #{@all.length} #{@api_resource_name}s in Datadog"
-      @all
+
+      watcher = DatadogBackup::ThreadPool.watcher
+      watcher.join if watcher.status
+      Concurrent::Promises.zip(*@all).value!
     end
   end
 end
