@@ -9,8 +9,8 @@ LOGGER.level = Logger::ERROR
 $stdout = File.new('/dev/null', 'w+')
 
 # Mock DD API Key unless provided by environment.
-ENV['DD_API_KEY'] = 'abc123' unless ENV.has_key? 'DD_API_KEY'
-ENV['DD_APP_KEY'] = 'abc123' unless ENV.has_key? 'DD_APP_KEY'
+ENV['DD_API_KEY'] = 'abc123' unless ENV.key? 'DD_API_KEY'
+ENV['DD_APP_KEY'] = 'abc123' unless ENV.key? 'DD_APP_KEY'
 
 require 'tmpdir'
 require 'factory_bot'

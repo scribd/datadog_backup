@@ -34,9 +34,11 @@ describe DatadogBackup::Monitors do
       end
 
       context 'with no id and no body' do
-        subject { proc { described_class.new_resource } }
+        subject { described_class.new_resource }
 
-        it { is_expected.to raise_error(ArgumentError) }
+        it 'raises an ArgumentError' do
+          expect {subject}.to raise_error(ArgumentError) 
+        end
       end
     end
 

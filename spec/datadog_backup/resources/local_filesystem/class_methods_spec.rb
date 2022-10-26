@@ -133,10 +133,12 @@ describe 'DatadogBackup' do
             specify do
               allow(FileUtils).to receive(:rm)
               purge
-              expect(FileUtils).to have_received(:rm).with([
-                                                             "#{$options[:backup_dir]}/dashboards/abc-123-def.json",
-                                                             "#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml"
-                                                           ])
+              expect(FileUtils).to have_received(:rm).with(
+                array_including(
+                  "#{$options[:backup_dir]}/dashboards/abc-123-def.json",
+                  "#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml"
+                )
+              )
             end
           end
         end
