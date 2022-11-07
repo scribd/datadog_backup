@@ -16,6 +16,8 @@ describe 'DatadogBackup' do
           File.write("#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml", "---\nid: ghi-456-jkl\nfile_type: yaml\n")
           File.write("#{$options[:backup_dir]}/monitors/12345.json", '{"id":12345, "file_type": "json"}')
           File.write("#{$options[:backup_dir]}/monitors/67890.yaml", "---\nid: 67890\nfile_type: yaml\n")
+          File.write("#{$options[:backup_dir]}/synthetics/mno-789-pqr.json", '{"type": "api"}')
+          File.write("#{$options[:backup_dir]}/synthetics/stu-012-vwx.yaml", "---\ntype: browser\n")
         end
 
         after(:context) do
@@ -33,7 +35,9 @@ describe 'DatadogBackup' do
               "#{$options[:backup_dir]}/dashboards/abc-123-def.json",
               "#{$options[:backup_dir]}/dashboards/ghi-456-jkl.yaml",
               "#{$options[:backup_dir]}/monitors/12345.json",
-              "#{$options[:backup_dir]}/monitors/67890.yaml"
+              "#{$options[:backup_dir]}/monitors/67890.yaml",
+              "#{$options[:backup_dir]}/synthetics/mno-789-pqr.json",
+              "#{$options[:backup_dir]}/synthetics/stu-012-vwx.yaml"
             )
           }
         end
@@ -41,38 +45,102 @@ describe 'DatadogBackup' do
         describe '.all_file_ids' do
           subject { resources.all_file_ids }
 
-          it { is_expected.to contain_exactly('abc-123-def', 'ghi-456-jkl', '12345', '67890') }
+          it { is_expected.to contain_exactly('abc-123-def', 'ghi-456-jkl', '12345', '67890', 'mno-789-pqr', 'stu-012-vwx') }
         end
 
         describe '.all_file_ids_for_selected_resources' do
           subject { resources.all_file_ids_for_selected_resources }
 
-          around do |example|
-            old_resources = $options[:resources]
+          context 'Dashboards' do
+            around do |example|
+              old_resources = $options[:resources]
 
-            begin
-              $options[:resources] = [DatadogBackup::Dashboards]
-              example.run
-            ensure
-              $options[:resources] = old_resources
+              begin
+                $options[:resources] = [DatadogBackup::Dashboards]
+                example.run
+              ensure
+                $options[:resources] = old_resources
+              end
+            end
+
+            specify do
+              expect(subject).to contain_exactly('abc-123-def', 'ghi-456-jkl')
             end
           end
 
-          specify do
-            expect(subject).to contain_exactly('abc-123-def', 'ghi-456-jkl')
+          context 'Monitors' do
+            around do |example|
+              old_resources = $options[:resources]
+
+              begin
+                $options[:resources] = [DatadogBackup::Monitors]
+                example.run
+              ensure
+                $options[:resources] = old_resources
+              end
+            end
+
+            specify do
+              expect(subject).to contain_exactly('12345', '67890')
+            end
+          end
+
+          context 'Synthetics' do
+            around do |example|
+              old_resources = $options[:resources]
+
+              begin
+                $options[:resources] = [DatadogBackup::Synthetics]
+                example.run
+              ensure
+                $options[:resources] = old_resources
+              end
+            end
+
+            specify do
+              expect(subject).to contain_exactly('mno-789-pqr', 'stu-012-vwx')
+            end
           end
         end
 
         describe '.class_from_id' do
-          subject { resources.class_from_id('abc-123-def') }
+          context 'Dashboards' do
+            subject { resources.class_from_id('abc-123-def') }
 
-          it { is_expected.to eq DatadogBackup::Dashboards }
+            it { is_expected.to eq DatadogBackup::Dashboards }
+          end
+
+          context 'Monitors' do
+            subject { resources.class_from_id('12345') }
+
+            it { is_expected.to eq DatadogBackup::Monitors }
+          end
+
+          context 'Synthetics' do
+            subject { resources.class_from_id('mno-789-pqr') }
+
+            it { is_expected.to eq DatadogBackup::Synthetics }
+          end
         end
 
         describe '.find_file_by_id' do
-          subject { resources.find_file_by_id('abc-123-def') }
+          context 'Dashboards' do
+            subject { resources.find_file_by_id('abc-123-def') }
 
-          it { is_expected.to eq "#{$options[:backup_dir]}/dashboards/abc-123-def.json" }
+            it { is_expected.to eq "#{$options[:backup_dir]}/dashboards/abc-123-def.json" }
+          end
+
+          context 'Monitors' do
+            subject { resources.find_file_by_id('12345') }
+
+            it { is_expected.to eq "#{$options[:backup_dir]}/monitors/12345.json" }
+          end
+
+          context 'Synthetics' do
+            subject { resources.find_file_by_id('mno-789-pqr') }
+
+            it { is_expected.to eq "#{$options[:backup_dir]}/synthetics/mno-789-pqr.json" }
+          end
         end
 
         describe '.load_from_file_by_id' do
