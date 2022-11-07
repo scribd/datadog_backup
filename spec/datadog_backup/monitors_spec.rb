@@ -6,29 +6,29 @@ describe DatadogBackup::Monitors do
   before do
     allow_any_instance_of(DatadogBackup::Client).to receive(:get_body)
       .with('/api/v1/monitor', {}, {})
-      .and_return([{ 'id' => 'abc-123-def' }])
+      .and_return([FactoryBot.body(:monitor)])
 
     allow_any_instance_of(DatadogBackup::Client).to receive(:get_body)
-      .with('/api/v1/monitor/abc-123-def', {}, {})
-      .and_return({ 'id' => 'abc-123-def', 'name' => 'Test Monitor' })
+      .with('/api/v1/monitor/12345', {}, {})
+      .and_return(FactoryBot.body(:monitor))
   end
 
   describe 'Class Methods' do
     describe '.new_resource' do
       context 'with id and body' do
-        subject { described_class.new_resource(id: 'abc-123-def', body: { id: 'abc-123-def' }) }
+        subject { described_class.new_resource(id: '12345', body: FactoryBot.body(:monitor)) }
 
         it { is_expected.to be_a(described_class) }
       end
 
       context 'with id and no body' do
-        subject { described_class.new_resource(id: 'abc-123-def') }
+        subject { described_class.new_resource(id: '12345') }
 
         it { is_expected.to be_a(described_class) }
       end
 
       context 'with no id and with body' do
-        subject { described_class.new_resource(body: { id: 'abc-123-def' }) }
+        subject { described_class.new_resource(body: FactoryBot.body(:monitor)) }
 
         it { is_expected.to be_a(described_class) }
       end
@@ -52,13 +52,13 @@ describe DatadogBackup::Monitors do
     describe '.get_all' do
       subject { described_class.get_all }
 
-      it { is_expected.to eq([{ 'id' => 'abc-123-def' }]) }
+      it { is_expected.to eq([FactoryBot.body(:monitor)]) }
     end
 
     describe '.get_by_id' do
-      subject { described_class.get_by_id('abc-123-def').id }
+      subject { described_class.get_by_id('12345').id }
 
-      it { is_expected.to eq('abc-123-def') }
+      it { is_expected.to eq('12345') }
     end
 
     describe '.myclass' do
@@ -69,22 +69,21 @@ describe DatadogBackup::Monitors do
   end
 
   describe 'Instance Methods' do
-    subject(:abc) { described_class.new_resource(id: 'abc-123-def') }
+    subject(:abc) { build(:monitor) }
 
     describe '#diff' do
-      subject(:diff) { abc.diff }
+      subject(:diff) { abc.diff('text') }
 
       before do
         allow(abc).to receive(:body_from_backup)
-          .and_return({ 'id' => 'abc-123-def', 'name' => 'Local Copy' })
-        $options[:diff_format] = 'text'
+          .and_return({ 'id' => '12345', 'name' => 'Local Copy' })
       end
 
       it {
         expect(diff).to eq(<<~EODIFF
            ---
-           id: abc-123-def
-          -name: Test Monitor
+           id: '12345'
+          -name: '12345'
           +name: Local Copy
         EODIFF
         .chomp)
@@ -92,24 +91,19 @@ describe DatadogBackup::Monitors do
     end
 
     describe '#dump' do
-      subject(:dump) { abc.dump }
-
       context 'when mode is :json' do
-        before do
-          $options[:output_format] = :json
-        end
+        subject(:json) { abc.dump(:json) }
 
-        it { is_expected.to eq(%({\n  "id": "abc-123-def",\n  "name": "Test Monitor"\n})) }
+        it { is_expected.to eq(JSON.pretty_generate(FactoryBot.body(:monitor))) }
       end
 
       context 'when mode is :yaml' do
-        before do
-          $options[:output_format] = :yaml
-        end
+        subject(:yaml) { abc.dump(:yaml) }
 
-        it { is_expected.to eq(%(---\nid: abc-123-def\nname: Test Monitor\n)) }
+        it { is_expected.to eq(FactoryBot.body(:monitor).to_yaml) }
       end
     end
+
 
     describe '#myclass' do
       subject { abc.myclass }
@@ -120,7 +114,7 @@ describe DatadogBackup::Monitors do
     describe '#get' do
       subject(:get) { abc.get }
 
-      it { is_expected.to eq('id' => 'abc-123-def', 'name' => 'Test Monitor') }
+      it { is_expected.to eq(FactoryBot.body(:monitor)) }
     end
 
     describe '#create' do
@@ -128,7 +122,7 @@ describe DatadogBackup::Monitors do
 
       it 'posts to the API' do
         expect_any_instance_of(DatadogBackup::Client).to receive(:post_body)
-          .with('/api/v1/monitor', { 'id' => 'abc-123-def', 'name' => 'Test Monitor' }, {})
+          .with('/api/v1/monitor',  FactoryBot.body(:monitor) , {})
           .and_return({ 'id' => 'abc-999-def' })
         create
       end
@@ -139,8 +133,8 @@ describe DatadogBackup::Monitors do
 
       it 'posts to the API' do
         expect_any_instance_of(DatadogBackup::Client).to receive(:put_body)
-          .with('/api/v1/monitor/abc-123-def', { 'id' => 'abc-123-def', 'name' => 'Test Monitor' }, {})
-          .and_return({ 'id' => 'abc-123-def' })
+          .with('/api/v1/monitor/12345', FactoryBot.body(:monitor), {})
+          .and_return(FactoryBot.body(:monitor))
         update
       end
     end

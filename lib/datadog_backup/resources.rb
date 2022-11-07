@@ -27,16 +27,16 @@ module DatadogBackup
 
     # Returns the diffy diff.
     # Optionally, supply an array of keys to remove from comparison
-    def diff
+    def diff(diff_format = $options[:diff_format])
       current = @body.to_yaml
       filesystem = body_from_backup.to_yaml
-      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s($options[:diff_format])
+      result = ::Diffy::Diff.new(current, filesystem, include_plus_and_minus_in_html: true).to_s(diff_format)
       LOGGER.debug("Compared ID #{@id} and found filesystem: #{filesystem} <=> current: #{current} == result: #{result}")
       result.chomp
     end
 
-    def dump
-      case $options[:output_format]
+    def dump(format = $options[:output_format])
+      case format
       when :json
         JSON.pretty_generate(sanitized_body)
       when :yaml

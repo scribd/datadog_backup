@@ -6,7 +6,7 @@ module DatadogBackup
     @api_version = 'v1'
     @api_resource_name = 'synthetics/tests' # used for list, but #instance_resource_name is used for get, create, update
     @id_keyname = 'public_id'
-    @banlist = %w[creator created_at modified_at monitor_id public_id].freeze
+    @banlist = %w[creator created_at modified_at monitor_id].freeze
     @api_service = DatadogBackup::Client.new
     @dig_in_list_body = 'tests'
 
