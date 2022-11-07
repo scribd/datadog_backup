@@ -2,8 +2,6 @@
 
 require 'diffy'
 require 'deepsort'
-require 'faraday'
-require 'faraday/retry'
 
 module DatadogBackup
   # The default options for backing up and restores.
