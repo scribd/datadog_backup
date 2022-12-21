@@ -8,7 +8,12 @@ LOGGER = Logger.new($stderr)
 LOGGER.level = Logger::ERROR
 $stdout = File.new('/dev/null', 'w+')
 
+# Mock DD API Key unless provided by environment.
+ENV['DD_API_KEY'] = 'abc123' unless ENV.key? 'DD_API_KEY'
+ENV['DD_APP_KEY'] = 'abc123' unless ENV.key? 'DD_APP_KEY'
+
 require 'tmpdir'
+require 'factory_bot'
 require 'datadog_backup'
 
 SPEC_ROOT = __dir__
@@ -81,7 +86,7 @@ RSpec.configure do |config|
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
   # particularly slow.
-  config.profile_examples = 10
+  config.profile_examples = 2
 
   # Run specs in random order to surface order dependencies. If you find an
   # order dependency and want to debug it, you can fix the order by providing
@@ -97,8 +102,36 @@ RSpec.configure do |config|
 
   # Make RSpec available throughout the rspec unit test suite
   config.expose_dsl_globally = true
+
+  config.include FactoryBot::Syntax::Methods
+
+  config.before(:suite) do
+    FactoryBot.find_definitions
+  end
 end
 
 def respond_with200(body)
   [200, {}, body]
+end
+
+tempdir = Dir.mktmpdir
+$options = {
+  action: nil,
+  backup_dir: tempdir,
+  diff_format: :color,
+  resources: [
+    DatadogBackup::Dashboards,
+    DatadogBackup::Monitors,
+    DatadogBackup::Synthetics
+  ],
+  output_format: :json,
+  force_restore: false
+}
+
+def cleanup
+  FileUtils.rm_rf($options[:backup_dir])
+end
+
+at_exit do
+  cleanup
 end
