@@ -71,6 +71,7 @@ parameter            | description                                              
 --no-color           | removes colored output from diff format
 --diff-format FORMAT | one of `color`, `html_simple`, `html`                                                                                         | `color`
 --force-restore      | Force restore to Datadog. Do not ask to validate. Non-interactive.
+--disable-array-sort | Do not sort array elements, to preserver order of dashboard widgets.
 --h, --help          | help
 
 ## Environment variables
