@@ -20,6 +20,15 @@ describe DatadogBackup::LocalFilesystem do
       output_format: :yaml
     )
   end
+  let(:resources_disable_array_sort) do
+    DatadogBackup::Resources.new(
+      action: 'backup',
+      backup_dir: tempdir,
+      resources: [DatadogBackup::Dashboards],
+      output_format: :json,
+      disable_array_sort: true
+    )
+  end
 
   describe '#all_files' do
     subject { resources.all_files }
@@ -78,6 +87,18 @@ describe DatadogBackup::LocalFilesystem do
       subject { resources_yaml.dump({ 'a' => 'b' }) }
 
       it { is_expected.to eq(%(---\na: b\n)) }
+    end
+
+    context 'when array sorting is enabled' do
+      subject { resources.dump({ a: [ :c, :b ] }) }
+
+      it { is_expected.to eq(%({\n  \"a\": [\n    \"b\",\n    \"c\"\n  ]\n})) }
+    end
+
+    context 'when array sorting is disabled' do
+      subject { resources_disable_array_sort.dump({ a: [ :c, :b ] }) }
+
+      it { is_expected.to eq(%({\n  \"a\": [\n    \"c\",\n    \"b\"\n  ]\n})) }
     end
   end
 

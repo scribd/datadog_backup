@@ -66,6 +66,9 @@ def prereqs(defaults) # rubocop:disable Metrics/AbcSize
     opts.on('--force-restore', 'Force restore to Datadog. Do not ask to validate. Non-interactive.') do
       result[:force_restore] = true
     end
+    opts.on('--disable-array-sort', 'Do not sort array elements, to preserver order of dashboard widgets.') do
+      result[:disable_array_sort] = true
+    end
   end
   options.parse!
 
@@ -82,7 +85,8 @@ defaults = {
   diff_format: :color,
   resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors, DatadogBackup::Synthetics],
   output_format: :yaml,
-  force_restore: false
+  force_restore: false,
+  disable_array_sort: false
 }
 
 DatadogBackup::Cli.new(prereqs(defaults)).run!

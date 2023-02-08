@@ -31,5 +31,9 @@ module DatadogBackup
     def force_restore
       @options[:force_restore]
     end
+
+    def disable_array_sort
+      @options[:disable_array_sort]
+    end
   end
 end
