@@ -231,7 +231,7 @@ describe DatadogBackup::Synthetics do
 
       before do
         synthetics.write_file(synthetics.dump({ 'name' => 'restore-invalid-id', 'type' => 'api' }), synthetics.filename('restore-invalid-id'))
-        stubs.put('/api/v1/synthetics/tests/api/restore-invalid-id') { [404, {}, ''] }
+        stubs.put('/api/v1/synthetics/tests/api/restore-invalid-id') { raise Faraday::ResourceNotFound }
         stubs.post('/api/v1/synthetics/tests/api') { respond_with200({ 'public_id' => 'restore-valid-id' }) }
         allow(synthetics).to receive(:create).and_call_original
         allow(synthetics).to receive(:all).and_return([api_test, browser_test, { 'public_id' => 'restore-valid-id', 'type' => 'api' }])

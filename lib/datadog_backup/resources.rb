@@ -110,9 +110,7 @@ module DatadogBackup
       body = load_from_file_by_id(id)
       begin
         update(id, body)
-      rescue RuntimeError => e
-        raise e.message unless e.message.include?('update failed with error 404')
-
+      rescue Faraday::ResourceNotFound => e
         create_newly(id, body)
       end
     end
