@@ -22,6 +22,15 @@ module DatadogBackup
       Concurrent::Promises.zip(*futures).value!
     end
 
+    def get_by_id(id)
+      begin
+        dashboard = except(get(id))
+      rescue Faraday::ResourceNotFound => e
+        dashboard = {}
+      end
+      except(dashboard)
+    end
+
     def initialize(options)
       super(options)
       @banlist = %w[modified_at url].freeze

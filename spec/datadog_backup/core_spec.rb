@@ -103,7 +103,7 @@ describe DatadogBackup::Resources do
       allow(resources).to receive(:api_resource_name).and_return('api-resource-name-string')
       stubs.get('/api/api-version-string/api-resource-name-string/abc-123-def') { respond_with200({ 'test' => 'ok' }) }
       stubs.get('/api/api-version-string/api-resource-name-string/bad-123-id') do
-        [404, {}, { 'error' => 'blahblah_not_found' }]
+        raise Faraday::ResourceNotFound
       end
       allow(resources).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
     end
@@ -126,7 +126,7 @@ describe DatadogBackup::Resources do
       before do
         allow(resources).to receive(:load_from_file_by_id).and_return({ 'load' => 'ok' })
         stubs.put('/api/api-version-string/api-resource-name-string/bad-123-id') do
-          [404, {}, { 'error' => 'id not found' }]
+          raise Faraday::ResourceNotFound
         end
         stubs.post('/api/api-version-string/api-resource-name-string', { 'load' => 'ok' }) do
           respond_with200({ 'id' => 'my-new-id' })
