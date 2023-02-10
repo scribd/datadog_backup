@@ -1,3 +1,10 @@
+# [3.2.0](https://github.com/scribd/datadog_backup/compare/v3.1.1...v3.2.0) (2023-02-10)
+
+
+### Features
+
+* Deepsort skip sorting arrays ([d9cba97](https://github.com/scribd/datadog_backup/commit/d9cba97015d1af636ca9c03605ef14fa8dcb6d21))
+
 ## [3.1.1](https://github.com/scribd/datadog_backup/compare/v3.1.0...v3.1.1) (2022-09-01)
 
 
