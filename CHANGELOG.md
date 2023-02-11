@@ -1,3 +1,10 @@
+## [3.2.1](https://github.com/scribd/datadog_backup/compare/v3.2.0...v3.2.1) (2023-02-11)
+
+
+### Bug Fixes
+
+* update error handling for restore ([233b1b2](https://github.com/scribd/datadog_backup/commit/233b1b27d485e7502dd47ca01670cea0576e920d))
+
 # [3.2.0](https://github.com/scribd/datadog_backup/compare/v3.1.1...v3.2.0) (2023-02-10)
 
 
