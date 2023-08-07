@@ -48,6 +48,9 @@ def prereqs(defaults) # rubocop:disable Metrics/AbcSize
     opts.on('--dashboards-only') do
       result[:resources] = [DatadogBackup::Dashboards]
     end
+    opts.on('--slos-only') do
+      result[:resources] = [DatadogBackup::SLOs]
+    end
     opts.on('--synthetics-only') do
       result[:resources] = [DatadogBackup::Synthetics]
     end
@@ -83,7 +86,7 @@ defaults = {
   action: nil,
   backup_dir: File.join(ENV.fetch('PWD'), 'backup'),
   diff_format: :color,
-  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors, DatadogBackup::Synthetics],
+  resources: [DatadogBackup::Dashboards, DatadogBackup::Monitors, DatadogBackup::SLOs, DatadogBackup::Synthetics],
   output_format: :yaml,
   force_restore: false,
   disable_array_sort: false
