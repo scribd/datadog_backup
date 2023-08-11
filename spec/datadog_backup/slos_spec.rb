@@ -22,7 +22,7 @@ describe DatadogBackup::SLOs do
         {"id"=>"abc-123", "name"=>"CI Stability", "tags"=>["kind:availability", "team:my_team"], "monitor_tags"=>[], "thresholds"=>[{"timeframe"=>"7d", "target"=>98.0, "target_display"=>"98."}, {"timeframe"=>"30d", "target"=>98.0, "target_display"=>"98."}, {"timeframe"=>"90d", "target"=>98.0, "target_display"=>"98."}], "type"=>"metric", "type_id"=>1, "description"=>"something helpful", "timeframe"=>"30d", "target_threshold"=>98.0, "query"=>{"denominator"=>"sum:metric.ci_things{*}.as_count()", "numerator"=>"sum:metric.ci_things{*}.as_count()-sum:metric.ci_things{infra_failure}.as_count()"}, "creator"=>{"name"=>"Thelma Patterson", "handle"=>"thelma.patterson@example.com", "email"=>"thelma.patterson@example.com"}, "created_at"=>1571335531, "modified_at"=>1687844157},
         {"id"=>"sbc-124", "name"=>"A Latency SLO", "tags"=>["team:my_team", "kind:latency"], "monitor_tags"=>[], "thresholds"=>[{"timeframe"=>"7d", "target"=>95.0, "target_display"=>"95."}, {"timeframe"=>"30d", "target"=>95.0, "target_display"=>"95."}, {"timeframe"=>"90d", "target"=>95.0, "target_display"=>"95."}], "type"=>"monitor", "type_id"=>0, "description"=>"", "timeframe"=>"30d", "target_threshold"=>95.0, "monitor_ids"=>[13158755], "creator"=>{"name"=>"Louise Montague", "handle"=>"louise.montague@example.com", "email"=>"louise.montague@example.com"}, "created_at"=>1573162531, "modified_at"=>1685819875}
       ],
-      "error"=>nil,
+      "errors"=>[],
       "metadata"=>{"page"=>{"total_count"=>359, "total_filtered_count"=>359}}
     }
   end
