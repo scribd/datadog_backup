@@ -70,7 +70,7 @@ describe DatadogBackup::SLOs do
         "created_at" => 1571335531,
         "modified_at" => 1687844157
       },
-      "error" => nil
+      "errors" => []
     }
   end
   let(:slo_sbc_124) do
