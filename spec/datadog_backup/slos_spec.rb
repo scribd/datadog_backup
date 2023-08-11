@@ -114,7 +114,7 @@ describe DatadogBackup::SLOs do
         "created_at"=>1573162531,
         "modified_at"=>1685819875
       },
-      "error" => nil
+      "errors" => []
     }
   end
   let(:all_slos) { respond_with200(fetched_slos) }
