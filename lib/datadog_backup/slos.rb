@@ -4,7 +4,7 @@ module DatadogBackup
   # SLO specific overrides for backup and restore.
   class SLOs < Resources
     def all
-      get_all.fetch('data')
+      get_all
     end
 
     def backup
@@ -34,6 +34,16 @@ module DatadogBackup
     def initialize(options)
       super(options)
       @banlist = %w[modified_at url].freeze
+    end
+
+    # Return the Faraday body from a response with a 2xx status code, otherwise raise an error
+    def body_with_2xx(response)
+      unless response.status.to_s =~ /^2/
+        raise "#{caller_locations(1,
+                                  1)[0].label} failed with error #{response.status}"
+      end
+
+      response.body.fetch('data')
     end
 
     private

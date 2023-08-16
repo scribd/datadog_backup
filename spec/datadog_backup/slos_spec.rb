@@ -28,98 +28,98 @@ describe DatadogBackup::SLOs do
   end
   let(:slo_abc_123) do
     {
-      "data" => {
-        "id" => "abc-123",
-        "name" => "CI Stability",
-        "tags" => [
-          "kind:availability",
-          "team:my_team",
-        ],
-        "monitor_tags" => [],
-        "thresholds" => [
-          {
-            "timeframe" => "7d",
-            "target" => 98.0,
-            "target_display" => "98."
-          },
-          {
-            "timeframe" => "30d",
-            "target" => 98.0,
-            "target_display" => "98."
-          },
-          {
-            "timeframe" => "90d",
-            "target" => 98.0,
-            "target_display" => "98."
-          }
-        ],
-        "type" => "metric",
-        "type_id" => 1,
-        "description" => "something helpful",
-        "timeframe" => "30d",
-        "target_threshold" => 98.0,
-        "query" => {
-          "denominator" => "sum:metric.ci_things{*}.as_count()",
-          "numerator" => "sum:metric.ci_things{*}.as_count()-sum:metric.ci_things{infra_failure}.as_count()"
+      "id" => "abc-123",
+      "name" => "CI Stability",
+      "tags" => [
+        "kind:availability",
+        "team:my_team",
+      ],
+      "monitor_tags" => [],
+      "thresholds" => [
+        {
+          "timeframe" => "7d",
+          "target" => 98.0,
+          "target_display" => "98."
         },
-        "creator" => {
-          "name" => "Thelma Patterson",
-          "handle" => "thelma.patterson@example.com",
-          "email" => "thelma.patterson@example.com"
+        {
+          "timeframe" => "30d",
+          "target" => 98.0,
+          "target_display" => "98."
         },
-        "created_at" => 1571335531,
-        "modified_at" => 1687844157
+        {
+          "timeframe" => "90d",
+          "target" => 98.0,
+          "target_display" => "98."
+        }
+      ],
+      "type" => "metric",
+      "type_id" => 1,
+      "description" => "something helpful",
+      "timeframe" => "30d",
+      "target_threshold" => 98.0,
+      "query" => {
+        "denominator" => "sum:metric.ci_things{*}.as_count()",
+        "numerator" => "sum:metric.ci_things{*}.as_count()-sum:metric.ci_things{infra_failure}.as_count()"
       },
-      "errors" => []
+      "creator" => {
+        "name" => "Thelma Patterson",
+        "handle" => "thelma.patterson@example.com",
+        "email" => "thelma.patterson@example.com"
+      },
+      "created_at" => 1571335531,
+      "modified_at" => 1687844157
     }
   end
   let(:slo_sbc_124) do
     {
-      "data" => {
-        "id" => "sbc-124",
-        "name" => "A Latency SLO",
-        "tags" => [
-          "kind:latency",
-          "team:my_team",
-        ],
-        "monitor_tags" => [],
-        "thresholds" => [
-          {
-            "timeframe" => "7d",
-            "target" => 98.0,
-            "target_display" => "98."
-          },
-          {
-            "timeframe" => "30d",
-            "target" => 98.0,
-            "target_display" => "98."
-          },
-          {
-            "timeframe" => "90d",
-            "target" => 98.0,
-            "target_display" => "98."
-          }
-        ],
-        "type" => "monitor",
-        "type_id"=>0,
-        "description"=>"",
-        "timeframe"=>"30d",
-        "target_threshold"=>95.0,
-        "monitor_ids"=>[ 13158755 ],
-        "creator"=>{
-          "name"=>"Louise Montague",
-          "handle"=>"louise.montague@example.com",
-          "email"=>"louise.montague@example.com"
+      "id" => "sbc-124",
+      "name" => "A Latency SLO",
+      "tags" => [
+        "kind:latency",
+        "team:my_team",
+      ],
+      "monitor_tags" => [],
+      "thresholds" => [
+        {
+          "timeframe" => "7d",
+          "target" => 98.0,
+          "target_display" => "98."
         },
-        "created_at"=>1573162531,
-        "modified_at"=>1685819875
+        {
+          "timeframe" => "30d",
+          "target" => 98.0,
+          "target_display" => "98."
+        },
+        {
+          "timeframe" => "90d",
+          "target" => 98.0,
+          "target_display" => "98."
+        }
+      ],
+      "type" => "monitor",
+      "type_id"=>0,
+      "description"=>"",
+      "timeframe"=>"30d",
+      "target_threshold"=>95.0,
+      "monitor_ids"=>[ 13158755 ],
+      "creator"=>{
+        "name"=>"Louise Montague",
+        "handle"=>"louise.montague@example.com",
+        "email"=>"louise.montague@example.com"
       },
-      "errors" => []
+      "created_at"=>1573162531,
+      "modified_at"=>1685819875
     }
   end
+  let(:slo_abc_123_response) do
+    { "data" => slo_abc_123, "errors" => [] }
+  end
+  let(:slo_sbc_124_response) do
+    { "data" => slo_sbc_124, "errors" => [] }
+  end
   let(:all_slos) { respond_with200(fetched_slos) }
-  let(:example_slo1) { respond_with200(slo_abc_123) }
-  let(:example_slo2) { respond_with200(slo_sbc_124) }
+  let(:example_slo1) { respond_with200(slo_abc_123_response) }
+  let(:example_slo2) { respond_with200(slo_sbc_124_response) }
 
   before do
     stubs.get('/api/v1/slo') { all_slos }
@@ -164,38 +164,35 @@ describe DatadogBackup::SLOs do
       slos.write_file('{"a":"b"}', slos.filename('abc-123'))
       expect(slos.diff('abc-123')).to eq(<<~EODASH
          ---
-        -data:
-        -  created_at: 1571335531
-        -  creator:
-        -    email: thelma.patterson@example.com
-        -    handle: thelma.patterson@example.com
-        -    name: Thelma Patterson
-        -  description: something helpful
-        -  id: abc-123
-        -  modified_at: 1687844157
-        -  monitor_tags: []
-        -  name: CI Stability
-        -  query:
-        -    denominator: sum:metric.ci_things{*}.as_count()
-        -    numerator: sum:metric.ci_things{*}.as_count()-sum:metric.ci_things{infra_failure}.as_count()
-        -  tags:
-        -  - kind:availability
-        -  - team:my_team
-        -  target_threshold: 98.0
-        -  thresholds:
-        -  - target: 98.0
-        -    target_display: '98.'
-        -    timeframe: 30d
-        -  - target: 98.0
-        -    target_display: '98.'
-        -    timeframe: 7d
-        -  - target: 98.0
-        -    target_display: '98.'
-        -    timeframe: 90d
+        -created_at: 1571335531
+        -creator:
+        -  email: thelma.patterson@example.com
+        -  handle: thelma.patterson@example.com
+        -  name: Thelma Patterson
+        -description: something helpful
+        -id: abc-123
+        -monitor_tags: []
+        -name: CI Stability
+        -query:
+        -  denominator: sum:metric.ci_things{*}.as_count()
+        -  numerator: sum:metric.ci_things{*}.as_count()-sum:metric.ci_things{infra_failure}.as_count()
+        -tags:
+        -- kind:availability
+        -- team:my_team
+        -target_threshold: 98.0
+        -thresholds:
+        -- target: 98.0
+        -  target_display: '98.'
         -  timeframe: 30d
-        -  type: metric
-        -  type_id: 1
-        -error:
+        -- target: 98.0
+        -  target_display: '98.'
+        -  timeframe: 7d
+        -- target: 98.0
+        -  target_display: '98.'
+        -  timeframe: 90d
+        -timeframe: 30d
+        -type: metric
+        -type_id: 1
         +a: b
       EODASH
       .chomp)
