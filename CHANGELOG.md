@@ -1,3 +1,10 @@
+# [3.3.0](https://github.com/scribd/datadog_backup/compare/v3.2.1...v3.3.0) (2023-08-17)
+
+
+### Features
+
+* backup SLOs ([#155](https://github.com/scribd/datadog_backup/issues/155)) ([6cca6e7](https://github.com/scribd/datadog_backup/commit/6cca6e7567895673e94c7de80022c821553698ee)), closes [#1](https://github.com/scribd/datadog_backup/issues/1)
+
 ## [3.2.1](https://github.com/scribd/datadog_backup/compare/v3.2.0...v3.2.1) (2023-02-11)
 
 
