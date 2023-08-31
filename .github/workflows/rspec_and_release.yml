@@ -40,7 +40,7 @@ jobs:
         zip -r datadog_backup.zip ./*
     - name: Semantic Release
       id: semantic
-      uses: cycjimmy/semantic-release-action@v3
+      uses: cycjimmy/semantic-release-action@v4
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GEM_HOST_API_KEY: ${{ secrets.RUBYGEMS_API_TOKEN }}
