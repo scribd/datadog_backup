@@ -16,7 +16,8 @@ module DatadogBackup
       max: 5,
       interval: 0.05,
       interval_randomness: 0.5,
-      backoff_factor: 2
+      backoff_factor: 2,
+      rate_limit_reset_header: 'x-ratelimit-reset'
     }.freeze
 
     def backup
