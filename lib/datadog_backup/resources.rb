@@ -18,7 +18,7 @@ module DatadogBackup
       interval_randomness: 0.5,
       backoff_factor: 2,
       rate_limit_reset_header: 'x-ratelimit-reset',
-      retry_statuses: [429]
+      exceptions: [Faraday::TooManyRequestsError] + Faraday::Retry::Middleware::DEFAULT_EXCEPTIONS
     }.freeze
 
     def backup
