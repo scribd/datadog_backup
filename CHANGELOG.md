@@ -1,3 +1,15 @@
+# [4.0.0](https://github.com/scribd/datadog_backup/compare/v3.3.0...v4.0.0) (2024-04-30)
+
+
+### Bug Fixes
+
+* Deprecate Ruby 3.0 and Drop support for Ruby 2.7 ([#163](https://github.com/scribd/datadog_backup/issues/163)) ([3d81d65](https://github.com/scribd/datadog_backup/commit/3d81d652bfb35f06b61dfb679c4d9e0d3567efcb))
+
+
+### BREAKING CHANGES
+
+* ruby 2.7 is no longer supported. Please upgrade to ruby 3.0 or higher.
+
 # [3.3.0](https://github.com/scribd/datadog_backup/compare/v3.2.1...v3.3.0) (2023-08-17)
 
 
