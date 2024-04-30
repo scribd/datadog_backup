@@ -10,11 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Ruby 2.7.1
+    - uses: actions/checkout@v4
+    - name: Set up Ruby 3.1
       uses: ruby/setup-ruby@v1
       with:
-        ruby-version: 2.7.1
+        ruby-version: 3.1
     - name: perform backup
       env:
         DD_API_KEY: ${{ secrets.DD_API_KEY }}
@@ -24,7 +24,7 @@ jobs:
           bundle install --jobs 4 --retry 3
           bundle exec datadog_backup backup
     - name: commit changes
-      uses: stefanzweifel/git-auto-commit-action@v4
+      uses: stefanzweifel/git-auto-commit-action@v5
       with:
         commit_message: "Changes as of run: ${{ github.run_id }}"
         file_pattern: backup/
