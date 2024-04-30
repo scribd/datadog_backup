@@ -1,3 +1,10 @@
+## [4.0.1](https://github.com/scribd/datadog_backup/compare/v4.0.0...v4.0.1) (2024-04-30)
+
+
+### Bug Fixes
+
+* YAML.dump quotes y when dumping ([#164](https://github.com/scribd/datadog_backup/issues/164)) ([f1d6e0d](https://github.com/scribd/datadog_backup/commit/f1d6e0d68bea1da4e37dd971cb710dfccffa0c56))
+
 # [4.0.0](https://github.com/scribd/datadog_backup/compare/v3.3.0...v4.0.0) (2024-04-30)
 
 
