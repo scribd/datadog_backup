@@ -12,7 +12,7 @@ describe DatadogBackup::Deprecations do
     allow(logger).to receive(:warn)
   end
 
-  %w[2.4.10 2.5.9 2.6.8].each do |ruby_version|
+  %w[2.5.9 2.6.8 2.7 3.0.4].each do |ruby_version|
     describe "#check#{ruby_version}" do
       it 'does warn' do
         stub_const('RUBY_VERSION', ruby_version)
@@ -22,7 +22,7 @@ describe DatadogBackup::Deprecations do
     end
   end
 
-  %w[2.7.4 3.0.4 3.1.2 3.2.0-preview1].each do |ruby_version|
+  %w[3.1.2 3.2.0-preview1].each do |ruby_version|
     describe "#check#{ruby_version}" do
       it 'does not warn' do
         stub_const('RUBY_VERSION', ruby_version)
