@@ -34,7 +34,7 @@ module DatadogBackup
       when :json
         JSON.pretty_generate(object.deep_sort(array: disable_array_sort ? false : true))
       when :yaml
-        YAML.dump(object.deep_sort(array: disable_array_sort ? false : true))
+        YAML.dump(object.deep_sort(array: disable_array_sort ? false : true)).gsub('"y":','y:')
       else
         raise 'invalid output_format specified or not specified'
       end
