@@ -1,3 +1,10 @@
+## [4.0.2](https://github.com/scribd/datadog_backup/compare/v4.0.1...v4.0.2) (2025-03-25)
+
+
+### Bug Fixes
+
+* DEVPLAT-3294 Update github actions due to ubuntu-20.04 deprecation ([#167](https://github.com/scribd/datadog_backup/issues/167)) ([2930525](https://github.com/scribd/datadog_backup/commit/2930525eb72d0bfbd978c7dce2c1738f52c847e0))
+
 ## [4.0.1](https://github.com/scribd/datadog_backup/compare/v4.0.0...v4.0.1) (2024-04-30)
 
 
